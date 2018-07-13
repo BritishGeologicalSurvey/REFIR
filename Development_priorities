@@ -9,6 +9,7 @@
 		+ Average 
 	* Modify FoxScreen to display the vertical profiles of weather conditions (T and wind)
 
+- Modify the format for reading radar data from Iceland (see, e.g., http://brunnur.vedur.is/radar/vespa/hekla/eht_hekla_2018-07-13.txt). This has been changed from when REFIR was first developed. 
 - Implement the possibility to run in reanalysis mode. As it is now, REFIR runs in realtime, but it is possible to simulate the datastream (see folder simulated_data_stream). I want this to be better organized, as an option that the user can choose from the beginning. This will in turn activate the reanalysis mode for the weather data retrieval.
 - When starting FIX, the user can choose between different Icelandic volcano as the eruption location (see fig. 13, which bases on the volcano_list.ini). This file can be generated with FoxSet.py in refir_config, either using the defaul Iceland configuration or manually adding new volcano. I want this to change radically, by using the official smithsonian Institute list of volcanoes (see volcanoExport file in REFIR), since this list as unique IDs. The generation of Cband.ini, Xband.ini and Cam.ini has to be made manually by the user, since it will be observatory-specific
 - Include Woodhouse et al. (2013) model (eq. 30 of the paper stored in docs). This will mean:
