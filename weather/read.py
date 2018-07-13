@@ -46,18 +46,7 @@ def extract_data_gfs(year,month,day,validity,wtfile_prof_step):
 				mb_tmp.append(records1[i][4].split(' '))	
 			elif records1[i][3] == 'VGRD':
 				v_tmp.append(records2[i][1])
-		elif level == 'tropopause':
-			if records1[i][3] == 'UGRD':
-				u_trp=float(records2[i][1])
-			elif records1[i][3] == 'VGRD':
-				v_trp=float(records2[i][1])
-			elif records1[i][3] == 'HGT':
-				hgt_trp=float(records2[i][1])
-			elif records1[i][3] == 'TMP':
-				tmp_k_trp=float(records2[i][1])
 		i+=1
-	tmp_c_trp=tmp_k_trp-273.15
-	wind_trp=(u_trp**2+v_trp**2)**0.5
 	for i in range(0,len(u_tmp)):
 		u.append(float(u_tmp[i]))
 		v.append(float(v_tmp[i]))
@@ -69,19 +58,14 @@ def extract_data_gfs(year,month,day,validity,wtfile_prof_step):
 		p.append(mb[i]*100)
 	p[len(u_tmp)-1]=100000
 	prof_file='profile_data_'+validity+'.txt'
-	trop_file='tropopause_data_'+validity+'.txt'
 	wt_output=open(prof_file,'w')
-	wt_output_trp=open(trop_file,'w')
 	wt_output.write('  HGT[m]         P[Pa]       T[K]       T[C]     U[m/s]     V[m/s]  WIND[m/s]\n')
-	wt_output_trp.write('  HGT[m]       T[K]       T[C]     U[m/s]     V[m/s]  WIND[m/s]\n')
 	
 	for i in range(0,len(u)):
 		wt_output.write('%8.2f %13.2f %10.2f %10.2f %10.2f %10.2f %10.2f\n' % (hgt[i],p[i],tmp_k[i],tmp_c[i],u[i],v[i],wind[i]))
-	wt_output_trp.write('%8.2f %10.2f %10.2f %10.2f %10.2f %10.2f\n' % (hgt_trp,tmp_k_trp,tmp_c_trp,u_trp,v_trp,wind_trp))
 	wt_output.close()
-	wt_output_trp.close()
 # Elaborate data and save relevant weather parameter
-	weather_parameters(year,month,day,validity,wind_trp,hgt_trp,prof_file)	
+	weather_parameters(year,month,day,validity,prof_file)	
 
 def extract_data_erain(year,month,day,validity,wtfile_prof_step):
 	from calc_wt_par import weather_parameters
@@ -138,4 +122,4 @@ def extract_data_erain(year,month,day,validity,wtfile_prof_step):
 	wind_trp = 0
 	hgt_trp = 0
 # Elaborate data and save relevant weather parameter
-	weather_parameters(year,month,day,validity,wind_trp,hgt_trp,prof_file)	
+	weather_parameters(year,month,day,validity,prof_file)	

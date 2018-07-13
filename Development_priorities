@@ -1,12 +1,8 @@
 - Implement the weather package. This means:
-	* When the user runs FIX, after the selection of the volcano location, we need to give the user the possibility to choose whether to use manually entered weather parameters or automatically retrieved ones. In the latter case, the panel shown in Fig. 16 of the manual has to be changed, specifically we need to remove the following entries:
-		+ Height stratosphere
-		+ Temp. grad. troposphere
-		+ Temp. grad. trs <-> str.
-		+ Temp. grad. stratosphere
-		+ Plume height-avg. windspeed
-	... and replace with: (decide if to use plume-height averaged value also for Woodhouse model, like Degruyter-Bonadonna. Woodhouse suggests to use the tropopause height as a reference limit, but what if the plume is higher than this level? In fact, in FALL3D Woodhouse is implemented with the top plume height...)
-		+ Average 
+	* When the user runs FIX, after the selection of the volcano location, we need to give the user the possibility to choose whether to use manually entered weather parameters or automatically retrieved ones. In the latter case, the panel shown in Fig. 16 of the manual has to be changed, specifically we need to remove all the entries below "atmospheric conditions" with something like:
+		+ "Automatically retrieved by GFS 0.25degree" if in forecast mode
+		or
+		+ "Automatically retrieved by ECMWF ERAInterim" if in reanalysis mode
 	* Modify FoxScreen to display the vertical profiles of weather conditions (T and wind)
 
 - Modify the format for reading radar data from Iceland (see, e.g., http://brunnur.vedur.is/radar/vespa/hekla/eht_hekla_2018-07-13.txt). This has been changed from when REFIR was first developed. 

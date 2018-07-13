@@ -1,4 +1,4 @@
-def weather_parameters(year,month,day,validity,wind_trp,hgt_trp,prof_file):
+def weather_parameters(year,month,day,validity,prof_file):
 	u=[]
 	v=[]
 	wind=[]
@@ -95,37 +95,9 @@ def weather_parameters(year,month,day,validity,wind_trp,hgt_trp,prof_file):
 	N_avg=N_avg**0.5
 	V_avg=V_avg/(H_top-H_source)
 
+# Woodhouse (2013) Ws parameter
+	Ws=(1.44*V_H_top)/(N_avg*H_top)
 # Open file to store weather parameter needed for calculating MER
 	wt_par='weather_parameters_'+validity+'.txt'
 	fwt_par=open(wt_par,'w')
-# If tropopause data are not available, then calculate Ws of Woodhouse model from weather conditions at top plume height
-	if hgt_trp == 0:
-		Ws=(1.44*V_H_top)/(N_avg*H_top)
-		fwt_par.write('Atmospheric pressure at the source [Pa] = %8.5e\nAtmospheric temperature at the source [K] = %8.5e\n\nData needed for Degruyter & Bonadonna (2012) model\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nPlume height-averaged wind speed [m/s] = %8.5e\n\nData needed for Woodhouse et al. (2013) model\nAbsolute top plume height [m] = %8.5e\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nWind speed at top plume height [m/s] = %8.5e\nWs = %8.5e\n' % (P_H_source,T_H_source,N_avg,V_avg,H_top,N_avg,V_H_top,Ws))
-	else:
-#Calculate average N over from the source to the tropopause, when tropopause data are available
-		N_avg_trp=0
-		for i in range(i_H_source,-1,-1):
-			if hgt[i] > hgt_trp:
-				break
-			elif H_source < hgt[i] < hgt_trp:
-				if hgt[i-1]>hgt_trp:
-					#Interpolate N to H_top
-					slope_N=(N[i-1]-N[i])/(hgt[i-1]-hgt[i])
-					q_N=-hgt[i]*slope_N+N[i]
-					N_H_top=q_N+slope_N*hgt_trp
-					N_avg_trp=N_avg_trp+0.5*(N[i]+N_H_top)*abs(hgt[i]-hgt_trp)
-				else:
-					N_avg_trp=N_avg_trp+0.5*(N[i]+N[i-1])*abs(hgt[i]-hgt[i-1])
-			else:
-				#Interpolate N to H_source
-				slope_N=(N[i-1]-N[i])/(hgt[i-1]-hgt[i])
-				q_N=-hgt[i]*slope_N+N[i]
-				N_H_source=q_N+slope_N*H_source
-				N_avg_trp=N_avg_trp+0.5*(N[i-1]+N_H_source)*abs(hgt[i-1]-H_source)
-
-		N_avg_trp=N_avg_trp/(hgt_trp-H_source)
-		N_avg_trp=N_avg_trp**0.5
-		Ws=(1.44*wind_trp)/(N_avg_trp*hgt_trp)
-# Open file for storing weather parameters
-		fwt_par.write('Atmospheric pressure at the source [Pa] = %8.5e\nAtmospheric temperature at the source [K] = %8.5e\n\nData needed for Degruyter & Bonadonna (2012) model\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nPlume height-averaged wind speed [m/s] = %8.5e\n\nData needed for Woodhouse et al. (2013) model\nTropopause height [m] = %8.5e\nTroposphere height-averaged buoyancy frequency [1/s] = %8.5e\nWind speed at the tropopause [m/s] = %8.5e\nWs = %8.5e\n' % (P_H_source,T_H_source,N_avg,V_avg,hgt_trp,N_avg_trp,wind_trp,Ws))
+	fwt_par.write('Atmospheric pressure at the source [Pa] = %8.5e\nAtmospheric temperature at the source [K] = %8.5e\n\nData needed for Degruyter & Bonadonna (2012) model\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nPlume height-averaged wind speed [m/s] = %8.5e\n\nData needed for Woodhouse et al. (2013) model\nAbsolute top plume height [m] = %8.5e\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nWind speed at top plume height [m/s] = %8.5e\nWs = %8.5e\n' % (P_H_source,T_H_source,N_avg,V_avg,H_top,N_avg,V_H_top,Ws))
