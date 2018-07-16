@@ -169,17 +169,20 @@ def era_interim_retrieve(eruption_start,eruption_stop,lon_source,lat_source):
 
         # Convert grib1 to grib2 with the NOAA Perl script. To make it more portable and avoiding the need to set up many paths, I have included in the package also the required files and scripts that are originally available in the grib2 installation folder
 	print('Converting grib1 data to grib2')
-	os.system('perl grib1to2/grb1to2.pl pressure_level.grib')
 
 	wtfile='weather_data_'+date_bis
-	os.system('mv pressure_level.grib.grb2 '+wtfile)
-	wtfile_int='weather_data_interpolated_'+date_bis
-        wtfile_prof='profile_'+date_bis+'.txt'
+	if(os.name == 'posix'):
+		os.system('perl grib1to2/grb1to2.pl pressure_level.grib')
+		os.system('mv pressure_level.grib.grb2 '+wtfile)
+	elif(os.name == 'nt'):
+		os.system('grib_set -s edition=2 pressure_level.grib ' + wtfile)
+	#wtfile_int='weather_data_interpolated_'+date_bis
+	wtfile_prof='profile_'+date_bis+'.txt'
         #Interpolate data to a higher resolution grid
 #        print('Interpolating weather data to a finer grid around the source')
-#        os.system('wgrib2 '+wtfile+' -set_grib_type same -new_grid_winds earth -new_grid latlon '+lon_corner+':10:0.1 '+lat_corner+':10:0.1 '+wtfile_int)
-        print('Saving weather data along the vertical at the vent location')
-        os.system('wgrib2 '+wtfile+' -s -lon '+slon_source+' '+slat_source+'  >'+wtfile_prof)
+#       os.system('wgrib2 '+wtfile+' -set_grib_type same -new_grid_winds earth -new_grid latlon '+lon_corner+':10:0.1 '+lat_corner+':10:0.1 '+wtfile_int)
+	print('Saving weather data along the vertical at the vent location')
+	os.system('wgrib2 '+wtfile+' -s -lon '+slon_source+' '+slat_source+'  >'+wtfile_prof)
 # Split wtfile_prof into multiple file, each one for a specific time step
 	splitLen = 148
 	outputBase = 'profile_'
@@ -188,14 +191,14 @@ def era_interim_retrieve(eruption_start,eruption_stop,lon_source,lat_source):
 	dest = None
 	steps=[]
 	for line in input:
-    		if count % splitLen == 0:
-        		if dest: dest.close()
+		if count % splitLen == 0:
+			if dest: dest.close()
 			first_line=line.split(':')
 			val=first_line[2].split('d=')
-        		dest = open(outputBase + val[1] + '.txt', 'w')
+			dest = open(outputBase + val[1] + '.txt', 'w')
 			steps.append(val[1])
-    		dest.write(line)
-    		count += 1
+			dest.write(line)
+			count += 1
 	input.close()
 	dest.close()
 	for validity in steps:

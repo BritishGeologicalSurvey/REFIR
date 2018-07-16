@@ -20,4 +20,9 @@ hour=now[11:13]
 minute=now[14:16]
 folder='data_'+year+month+day+hour+minute
 os.system('mkdir '+folder)
-os.system('mv pressure_level.grib weather_* profile_* tropopause_* '+folder)
+if (os.name == 'posix'):
+	os.system('mv pressure_level.grib weather_* profile_* tropopause_* '+folder)
+elif (os.name == 'nt'):
+	os.system('move pressure_level.grib ' + folder)
+	os.system('move weather_* ' + folder)
+	os.system('move profile_* ' + folder)
