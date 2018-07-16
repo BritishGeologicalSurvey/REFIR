@@ -69,22 +69,22 @@ def gfs_forecast_retrieve(lon_source,lat_source):
 	wtfile='gfs.t'+anl+'z.pgrb2.0p25.'+fcst	
 	url='http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.'+year+month+day+anl+'/'+wtfile
 	try:
-        	urllib2.urlopen(url)
+		urllib2.urlopen(url)
 	except urllib2.HTTPError,e:
 #       checksLogger.error('HTTPError = ' + str(e.code))
 		ianl=ianl-6
-        	ifcst=ifcst+6
-        	print('Forecast file '+wtfile+ ' not yet available. Retrieving the equivalent from the previous forecast')
+		ifcst=ifcst+6
+		print('Forecast file '+wtfile+ ' not yet available. Retrieving the equivalent from the previous forecast')
 	except urllib2.URLError, e:
  #      checksLogger.error('URLError = ' + str(e.reason))
-        	ianl=ianl-6
-        	ifcst=ifcst+6
-        	print('Forecast file '+wtfile+ ' not yet available. Retrieving the equivalent from the previous forecast')
+		ianl=ianl-6
+		ifcst=ifcst+6
+		print('Forecast file '+wtfile+ ' not yet available. Retrieving the equivalent from the previous forecast')
 
 	if ianl < 10:
-        	anl='0'+str(ianl)
+			anl='0'+str(ianl)
 	else:
-        	anl=str(ianl)
+			anl=str(ianl)
 
 	slon_source=str(lon_source)
 	slat_source=str(lat_source)
@@ -106,9 +106,9 @@ def gfs_forecast_retrieve(lon_source,lat_source):
 			fcst='f'+str(ifcst)
 		abs_validity=year+month+day+validity
 		wtfile_dwnl='gfs.t'+anl+'z.pgrb2.0p25.'+fcst	
-        	wtfile='weather_data_'+year+month+day+anl+'_'+fcst
-        	wtfile_int='weather_data_interpolated_'+year+month+day+anl+'_'+fcst
-        	wtfile_prof='profile_'+year+month+day+anl+validity+'.txt'
+		wtfile='weather_data_'+year+month+day+anl+'_'+fcst
+		wtfile_int='weather_data_interpolated_'+year+month+day+anl+'_'+fcst
+		wtfile_prof='profile_'+year+month+day+anl+validity+'.txt'
 		url='http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.'+year+month+day+anl+'/'+wtfile_dwnl
 		print('Downloading forecast file '+url)
 		urllib.urlretrieve(url,wtfile)
@@ -137,19 +137,19 @@ def era_interim_retrieve(eruption_start,eruption_stop,lon_source,lat_source):
 	month_stop=eruption_stop[4:6]
 	day_stop=eruption_stop[6:8]	
 	hour_stop=eruption_stop[8:10]
-        slon_source=str(lon_source)
-        slat_source=str(lat_source)
-        date=year_start+'-'+month_start+'-'+day_start+'/to/'+year_stop+'-'+month_stop+'-'+day_stop
-        date_bis=year_start+'-'+month_start+'-'+day_start+'_to_'+year_stop+'-'+month_stop+'-'+day_stop
+	slon_source=str(lon_source)
+	slat_source=str(lat_source)
+	date=year_start+'-'+month_start+'-'+day_start+'/to/'+year_stop+'-'+month_stop+'-'+day_stop
+	date_bis=year_start+'-'+month_start+'-'+day_start+'_to_'+year_stop+'-'+month_stop+'-'+day_stop
 	lat_SW=str(int(lat_source)-2)
 	lon_SW=str(int(lon_source)-2)
 	lat_NE=str(int(lat_source)+2)
 	lon_NE=str(int(lon_source)+2)
 	lon_corner=str(int(lon_source))
-        lat_corner=str(int(lat_source))
+	lat_corner=str(int(lat_source))
 	area=lat_SW+'/'+lon_SW+'/'+lat_NE+'/'+lon_NE
 
-        server = ECMWFDataServer()
+	server = ECMWFDataServer()
 	server.retrieve({
  	"class": "ei",
     		"dataset": "interim",
@@ -167,7 +167,7 @@ def era_interim_retrieve(eruption_start,eruption_stop,lon_source,lat_source):
     		'target'    : "pressure_level.grib"
 	})
 
-        # Convert grib1 to grib2 with the NOAA Perl script. To make it more portable and avoiding the need to set up many paths, I have included in the package also the required files and scripts that are originally available in the grib2 installation folder
+	# Convert grib1 to grib2 with the NOAA Perl script. To make it more portable and avoiding the need to set up many paths, I have included in the package also the required files and scripts that are originally available in the grib2 installation folder
 	print('Converting grib1 data to grib2')
 
 	wtfile='weather_data_'+date_bis
