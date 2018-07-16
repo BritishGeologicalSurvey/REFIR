@@ -171,16 +171,8 @@ def era_interim_retrieve(eruption_start,eruption_stop,lon_source,lat_source):
 	print('Converting grib1 data to grib2')
 
 	wtfile='weather_data_'+date_bis
-	if(os.name == 'posix'):
-		os.system('perl grib1to2/grb1to2.pl pressure_level.grib')
-		os.system('mv pressure_level.grib.grb2 '+wtfile)
-	elif(os.name == 'nt'):
-		os.system('grib_set -s edition=2 pressure_level.grib ' + wtfile)
-	#wtfile_int='weather_data_interpolated_'+date_bis
+	os.system('grib_set -s edition=2 pressure_level.grib ' + wtfile)
 	wtfile_prof='profile_'+date_bis+'.txt'
-        #Interpolate data to a higher resolution grid
-#        print('Interpolating weather data to a finer grid around the source')
-#       os.system('wgrib2 '+wtfile+' -set_grib_type same -new_grid_winds earth -new_grid latlon '+lon_corner+':10:0.1 '+lat_corner+':10:0.1 '+wtfile_int)
 	print('Saving weather data along the vertical at the vent location')
 	os.system('wgrib2 '+wtfile+' -s -lon '+slon_source+' '+slat_source+'  >'+wtfile_prof)
 # Split wtfile_prof into multiple file, each one for a specific time step
@@ -197,8 +189,8 @@ def era_interim_retrieve(eruption_start,eruption_stop,lon_source,lat_source):
 			val=first_line[2].split('d=')
 			dest = open(outputBase + val[1] + '.txt', 'w')
 			steps.append(val[1])
-			dest.write(line)
-			count += 1
+		dest.write(line)
+		count += 1
 	input.close()
 	dest.close()
 	for validity in steps:
