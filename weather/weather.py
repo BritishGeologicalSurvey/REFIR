@@ -2,7 +2,7 @@ from retrieve_data import era_interim_retrieve
 from retrieve_data import gfs_forecast_retrieve
 import os
 from datetime import datetime,date,timedelta
-mode='forecast' # This will be an input
+mode='reanalysis' # This will be an input
 lon_source=10.36 # this will be an input in the function
 lat_source=41.06 # this will be an input in the function
 eruption_start='2010041700'
