@@ -92,9 +92,7 @@ except  EnvironmentError:
     #file does not exist yet
     print("Error -file volcano_list.ini not found!")        
         
-        
-        
-        
+
 volcanoes = [(label[0],0), (label[1],1),
     (label[2],2),
     (label[3],3),
