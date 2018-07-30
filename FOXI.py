@@ -127,9 +127,6 @@ woodhlink = "http://www.maths.bris.ac.uk/~mw9428/PlumeRiseQH/FutureVolcSys/Plume
 timebase = 30
 analysis = 0 # Analysis mode will calculate individual MER for all models and time bases
 
-
-
-
 Freq = 2500 # Set Frequency To 2500 Hertz
 Dur = 100 # Set Duration To 1000 ms == 1 second
 Dur2 = 200 # Set Duration To 1000 ms == 1 second
@@ -274,8 +271,6 @@ def read_sensors():
     
 read_sensors()
 
-
-
 try:
     if sys.version_info[0] < 3:
         from Tkinter import *
@@ -391,8 +386,6 @@ mwmer_max=0
 mwmer_avg=0
 mwmer_min=0
 
-
-
 #default values for plot mode settings
 PM_Nplot = 1
 PM_PHplot = 1
@@ -411,21 +404,15 @@ def init_dial():
     logger1.info(" ")
     logger1.info("*** step 1 successful ***")
 
-
 init_dial()
 
-
 hires_tiba = 0 #if FOXI in Auto30 mode has switched to 15 this variable gets 15
-
 
 EQcode = 0
 MQcode = 0
 
-
 Min_DiaOBSold = 0
 Max_DiaOBSold = 0
-
-
 
 #HERE BEGIN of while loop!
 
@@ -864,8 +851,6 @@ while 1:
   
     def writeline(data):
         fd.write(data + "\n")
-        
-
 
     SensOO=[ISKEF_on,ISEGS_on,Cband3_on,Cband4_on,Cband5_on,Cband6_on,ISX1_on,ISX2_on,Xband3_on,Xband4_on,Xband5_on,Xband6_on,GFZ1_on,GFZ2_on,GFZ3_on,Cam4_on,Cam5_on,Cam6_on]
 
@@ -1342,9 +1327,6 @@ while 1:
         LATE_Xm = [Latest_plh_ISX1m,Latest_plh_ISX2m,Latest_plh_Xband3m,Latest_plh_Xband4m,Latest_plh_Xband5m,Latest_plh_Xband6m]
         del gc.garbage[:]
 
-    
-    
-    
     def indiv_plh_stack(timediff,plh,unc,qf,source,onoff):
             """stacks all plume height data sorted by source"""
             global Cband1_stack
@@ -1903,9 +1885,6 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
         plt.close(fig)
         del gc.garbage[:]
 
-
-
-
     
     def stacksort(timediff,plh,unc,qf,source,onoff):
         """sorts data according to up-to-dateness"""
@@ -2108,17 +2087,12 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
     else:
         logger3.info("All non-auto stream data switched OFF!")
 
-
-    
     #Getting data from radar files
     logger3.info("")
     logger3.info("*************************************************")
     logger3.info("Continuing with auto-stream C-band radar data")
     logger3.info("*************************************************")
     logger3.info("")
-    
-    
-        
     
     def radartimeC (radarC_file, unc_C, qf_C, source_C):
         """reads C-radar data"""
@@ -2183,9 +2157,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
                 else:
                     h_C=KF_a+KF_b*(plumeh*1000-vent_h)
                 stacksort(time_diffe_min,h_C,unc_C,qf_C,source_C,1)
- 
-    
-    
+
     uncertyC = [unc_ISKEF,unc_ISEGS,unc_Cband3,unc_Cband4,unc_Cband5,unc_Cband6]
     QF_C = [qfak_ISKEF,qfak_ISEGS,qfak_Cband3,qfak_Cband4,qfak_Cband5,qfak_Cband6]
     uncertyX = [unc_ISX1,unc_ISX2,unc_Xband3,unc_Xband4,unc_Xband5,unc_Xband6]
@@ -2680,16 +2652,12 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
 # section which has to be adjusted to put your data on a webpage of your choice           
             #ftp = FTP("130.209.165.1")
 
-    
-    
-                
+
         hbe_file(N3h,result3h_stack[0],result3h_stack[1],result3h_stack[2],180)
         hbe_file(N1h,result1h_stack[0],result1h_stack[1],result1h_stack[2],60)
         hbe_file(N30min,result30_stack[0],result30_stack[1],result30_stack[2],30)
         hbe_file(N15min,result15_stack[0],result15_stack[1],result15_stack[2],15)
-        
 
-        
         #HERE ADD ON OPTION POSSIBLE:
         
         if timebase == -1:
@@ -2731,15 +2699,13 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
             c_wws = 247 # Scollo 2008
             MER_ww=(H_in/c_ww)**4
             return(MER_ww)
-        
-        
+
         def mer_Sparks(H_in):
             
             V_sparks = (H_in/1670)**(1/0.259)
             M_sp = V_sparks * rho_dre
             return(M_sp)
-        
-        
+
         def mer_Mastin(H_in):
             rho_dre_M = 2500
             V_mastin = (H_in/2000)**(1/0.241)
@@ -2752,9 +2718,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
             M_mtg = rho_dre * V_mtg #Mastin, adjusted by Gudmundsson 2012
             logger5.debug("MTG: " + str(H_med)+"m "+ str(H_max)+"m "+ str(M_mtg)+"m ")
             return(M_mtg)
-        
-        
-        
+
         def mer_degbon(H_in):
 
             g = 9.81 	#gravitational acceleration (m s^-2) 
@@ -2848,8 +2812,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
             	Vbar.append(x)
             capitalGreekPi= (6*2**(5/2))/(z_1**4)*(Nbar[-1]*H_in/Vbar[-1])*(alpha/beta)**2
             return(capitalGreekPi)
-            
-     
+
         def Woodh ():
             """reads Woodhouse data from file"""
             #!!! file should be a oneliner!!!
@@ -3198,11 +3161,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
             MER_Stat1h = stat2_mer(mer_stack1h)
             MER_Stat30 = stat2_mer(mer_stack30)
             MER_Stat15 = stat2_mer(mer_stack15)
-    
-    
-    
-    
-    
+
         def merstat_file(n,mer_stat,tiba):
             """ logs statistic summary of  MER on spec. time base tiba in a file"""
             try:
@@ -3261,9 +3220,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
 +str(Qf_absmax)+"\t"+str(Qfmer_min)+"\t"+str(Qfmer)+"\t"+str(Qfmer_max)+"\t"+str(tiba)+"\n")
             FILE1.close()
         
-        
-        
-        
+
         def save_mer_logfile(n,hbe,mer_stat,MERww,MERsp,MERma,tiba):
             """ logs continously statistic summary of MER in a file"""
             global cur_hbe,cur_hbe_min,cur_hbe_max,cur_MERMIN_hmin,cur_MERMAX_hmin,\
@@ -3353,8 +3310,6 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
 "\t"+str(qfak_Xband3)+"\t"+str(qfak_Xband4)+"\t"+str(qfak_Xband5)+"\t"+str(qfak_Xband6)+\
 "\t"+str(qfak_Cam4)+"\t"+str(qfak_Cam5)+"\t"+str(qfak_Cam6)+"\n")
             FILE1.close()
-        
-
             
         """
         _mer_log.txt file contains overview of all parameter used for MER plus results:
@@ -3583,8 +3538,6 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
             qfrt.close()
             return(True)
         
-        
-        
         def ExpMER_import(importfile,exp_src,wf_exp):
             """importing routine for exp. MER data"""
             global wf
@@ -3736,9 +3689,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
         logger7.debug("-------------------------------------")
         logger7.debug("-------------------------------------")
         logger7.debug("")
-        
-        
-        
+
         def EMER_best(N,stack):
             """calculating the key figures for exp. MER"""
             global wemer_min,wemer_avg,wemer_max,EQcode
@@ -3827,9 +3778,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
                 
             else:
                 print("") #...data set older than 180 minutes...
-        
-        
-        
+
         def manMER_import():
             """imports all manually added MER data"""
             oo_manMER,wf_manMER,manMER_min,manMER_max = np.loadtxt("fix_MERin.txt",\

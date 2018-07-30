@@ -50,6 +50,62 @@ if sys.version_info[0] < 3:
 else:
     from tkinter import *
 
+class mode_GUI:
+    def __init__(self,master):
+        self.master = master
+        master.title("REFIR Operation Mode")
+
+        self.label1 = Label(master, text= "REFIR Operation Mode",  font = ("Verdana", 14,\
+            "bold"), fg = "navy")
+        self.label1.pack()
+        self.label2 = Label(master, text= "Mode Selection",  font = ("Verdana", 8,\
+            "bold"), fg = "navy")
+        self.label2.pack()
+
+        self.button1 = Button(master,text="Reanalysis",\
+            font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
+                command=self.mode_reanalysis())
+        self.button1.pack()
+        self.button2 = Button(master, text="Real Time",\
+            font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
+                command=self.mode_realtime())
+        self.button2.pack()
+
+        self.label3 = Label(master, text= "Weather data",  font = ("Verdana", 8,\
+            "bold"), fg = "navy")
+        self.label3.pack()
+
+        self.button3 = Button(master, text="Automatic Retrieve",\
+            font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
+                command=self.weather_auto())
+        self.button3.pack()
+        self.button4 = Button(master,text="Manual entry",\
+            font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
+                command=self.weather_manual())
+        self.button4.pack()
+
+    def mode_reanalysis(self):
+        global run_type
+        run_type=1
+
+    def mode_realtime(self):
+        global run_type
+        run_type=2
+
+    def weather_auto(self):
+        global weather
+        weather=1
+
+    def weather_manual(self):
+        global weather
+        weather=2
+
+root = Tk()
+prova_gui = mode_GUI()
+root.mainloop()
+print(run_type,weather)
+
+
 dir1 = os.path.dirname(__file__)
 PlumeRiseFile = "PlumeRise_Foxi"
 root = Tk()
@@ -57,6 +113,11 @@ root.title("select the volcano")
 vulkan = 0
 vulk = IntVar()
 vulk.set(0)  # initializing the choice
+
+mode = IntVar()
+mode.set(1)
+meteo = IntVar()
+meteo.set(1)
 
 try:
     label = ['n.a.','n.a.','n.a.','n.a.','n.a.','n.a.','n.a.','n.a.','n.a.','n.a.']
@@ -98,13 +159,13 @@ volcanoes = [(label[0],0), (label[1],1),
     (label[3],3),
     (label[4],4),
     (label[5],5), (label[6],6), (label[7],7), (label[8],8), (label[9],9)]
-    
+
 def ShowChoiceVulk():
     print (vulk.get())
     global vulkan
     vulkan = vulk.get()
 
-Label(root, 
+Label(root,
       text="""Select eruption site:""", font = "Verdana 12 bold",
       justify = LEFT,
       padx = 20).pack()
@@ -121,16 +182,12 @@ for txt, val in volcanoes:
 
 mainloop()
 
-
-
 time_update = datetime.datetime.utcnow()
 print("**** REFIR FIX system is booting ****")
 print("Selected volcano: ")
 print(vulk.get())
 
 ISKEF,ISEGS,ISX1,ISX2,GFZ1,GFZ2,GFZ3=0,0,0,0,0,0,0
-
-
 
 fndb= os.path.join(dir1+'/refir_config','volc_database.ini')
 vent_h, dist_ISKEF, dist_ISEGS, dist_Cband3, dist_Cband4, dist_Cband5, dist_Cband6,\
@@ -152,8 +209,6 @@ try:
 except  IndexError:
     #only one entry
     huj=0
-
-
 
 P0 = 101325
 P_0_in_default = P0*math.exp(-vent_h/7990)
@@ -200,9 +255,6 @@ loc_GFZ3= 0
 loc_Cam4= 0
 loc_Cam5= 0
 loc_Cam6= 0
-
-
-
 
 def read_sensors():
     """reads IDs and GPS coordinates from *.ini files"""
@@ -571,7 +623,6 @@ IDCam = []
 LatCam= []
 LonCam= []
 
-
 try:
     fnCam= os.path.join(dir1+'/refir_config','Cam.ini')
     with open (fnCam) as f:
@@ -602,11 +653,6 @@ minlat = min(min(LatC or volc_lat),min(LatX or volc_lat),min(LatCam or volc_lat)
 maxlat = max(max(LatC or volc_lat),max(LatX or volc_lat),max(LatCam or volc_lat),max(volc_lat))+0.5
 minlon = min(min(LonC or volc_lon),min(LonX or volc_lon),min(LonCam or volc_lon),min(volc_lon))-0.5
 maxlon = max(max(LonC or volc_lon),max(LonX or volc_lon),max(LonCam or volc_lon),max(volc_lon))+0.5
-
-    
-
-
-    
     
 def checkbox_oo(oo_var):
     """returns True or False when called by an on/off switch"""
@@ -848,7 +894,6 @@ cal_Xband5a,cal_Xband5b,cal_Xband6a,cal_Xband6b
         time_OBS = datetime.datetime(1979,4,30)
         defaultvalues(vent_h)
 
-
 masterklick = Tk()
 
 def save_default_file(): 
@@ -1045,10 +1090,6 @@ def Xradarerror(distance,beamwidth):
     print("UNCERTAINTY iS: " +str(err_plh))
     return (err_plh)
 
-
-
-
-
 qfak_ISKEF = Cradarquality(dist_ISKEF,sens_bwidth[0])[0]
 qf_ISKEF = Cradarquality(dist_ISKEF,sens_bwidth[0])[1]
 qf_fg_ISKEF = Cradarquality(dist_ISKEF,sens_bwidth[0])[2]
@@ -1182,8 +1223,6 @@ def gfz_vistable(gfz_v):
         gfz_vis_str="OFFLINE"
         gfz_vis_fg="red"
     return (gfz_vis_str,gfz_vis_fg)
-
-
 
 def entfernung(dist):
     """returns distance and sector indicator"""
@@ -2195,9 +2234,6 @@ grid(row=13, column=4)
     
     plotmode.mainloop()
 
-
-
-
 #OVERVIEW AND CONTROL PANEL
 def sourcecontrol():
     global ISKEF
@@ -2521,7 +2557,6 @@ def sourcecontrol():
        
     overviewPHS.mainloop()
 
-
 def default_parameter_panel():
     get_last_data()
     master1 = Toplevel()
@@ -2702,7 +2737,6 @@ def default_parameter_panel():
     
     master1.mainloop()
 
-
 # observed plume height input
 
 TimeNUNA = datetime.datetime.utcnow()
@@ -2787,8 +2821,6 @@ def entfliste():
     else:
         None
     return (liEntf)
-
-
 
 def add_plhobs():
     global Hmin_obs_in
@@ -3087,12 +3119,10 @@ column=6,columnspan=4)
 
     plhobs.mainloop()
 
-
 TimeObs1 = "--------"
 TimeUpdate1 = "--------"
 default_txt = "!!! NOTE: Set initial parameters and activate plume height sensors !!!"
 default_bg = "yellow"
-
 
 def check_configfile():
     global bgcol
@@ -3141,8 +3171,7 @@ def check_configfile():
         default_bg = "lime green"
         sdefault_txt.set(default_txt)
         bgcol.set("lime green")
- 
-        
+
 sTimeUpdate1 = StringVar()
 sTimeObs1 = StringVar()
 sdefault_txt = StringVar()
@@ -3190,7 +3219,6 @@ logged").grid(row=1, column=0, sticky=W,columnspan=2)
     command=analysis_update).grid(row=7, column=0,columnspan=2)
 
     anam.mainloop()
-
 
 def tb_mode():
     global timebase
@@ -3420,7 +3448,6 @@ Cal_Xband5a,Cal_Xband5b,Cal_Xband6a,Cal_Xband6b
     
     calibP.mainloop()
 
-
 def conv_fF():
     global Oo_wood, Oo_RMER, Wtf_wood, Wtf_RMER
     global oo_wood, oo_RMER, wtf_wood, wtf_RMER
@@ -3570,7 +3597,6 @@ def expe_MERF():
     
     expe_MER.mainloop()
 
-
 def man_MERF():
 
     global oo_manual, Oo_manual, Wtf_manual, wtf_manual #on/off manual MER input
@@ -3702,7 +3728,6 @@ str(wtf_manual)+"\t"+str(min_manMER)+"\t"+str(max_manMER)+"\t"+str("7")+"\t"\
     
     man_MER.mainloop()
 
-
 def fmer_modeF():
     global Oo_exp, Oo_con, Wtf_exp, Wtf_con
     global oo_exp, oo_con, wtf_exp, wtf_con
@@ -3753,8 +3778,6 @@ def fmer_modeF():
     command=fmer_mode_update).grid(row=7, column=1,columnspan=3)
     
     fmer_mode.mainloop()
-
-
 
 
 masterklick.title("Operation Control Board - REFIR FIX")
@@ -3813,12 +3836,9 @@ Button(masterklick, text="Calibration",\
     font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
 width=18,height=2, command=calibF).grid(row=6, column=1)
 
-
-
 Button(masterklick, text="Set Model Parameters",\
     font = ("Verdana", 8), fg = "blue2", bg="light steel blue", width=18,height=2,\
     command=default_parameter_panel).grid(row=5, column=0)
-
 
 Label(masterklick, text= "Include Observations",  font = ("Verdana", 8,\
 "bold"), fg ="red").grid(row=6, column=0)
@@ -3826,10 +3846,6 @@ Label(masterklick, text= "Include Observations",  font = ("Verdana", 8,\
 Button(masterklick, text="Add Plume Heights",\
     font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
     command=add_plhobs).grid(row=7, column=0)
-
-
-
-
 
 Button(masterklick, text="Add MER Estimate",\
 font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
