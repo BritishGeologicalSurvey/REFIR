@@ -50,61 +50,61 @@ if sys.version_info[0] < 3:
 else:
     from tkinter import *
 
-class mode_GUI:
-    def __init__(self,master):
-        self.master = master
-        master.title("REFIR Operation Mode")
+runtype_weather = Tk()
+weather = 1 #Default is automatic weather data retrieval
+run_type = 1 #Default is real_time mode
 
-        self.label1 = Label(master, text= "REFIR Operation Mode",  font = ("Verdana", 14,\
-            "bold"), fg = "navy")
-        self.label1.pack()
-        self.label2 = Label(master, text= "Mode Selection",  font = ("Verdana", 8,\
-            "bold"), fg = "navy")
-        self.label2.pack()
+def mode_reanalysis():
+    global run_type
+    run_type = 2
+    print(run_type)
 
-        self.button1 = Button(master,text="Reanalysis",\
+def mode_realtime():
+    print(run_type)
+
+def weather_auto():
+    print(weather)
+
+def weather_manual():
+    global weather
+    weather = 2
+    print(weather)
+
+
+runtype_weather.title("REFIR Operation Mode")
+
+label1 = Label(runtype_weather, text="REFIR Operation Mode", font=("Verdana", 14, \
+                                                               "bold"), fg="navy")
+label1.pack()
+label2 = Label(runtype_weather, text="Mode Selection", font=("Verdana", 8, \
+                                                        "bold"), fg="navy")
+label2.pack()
+
+button1 = Button(runtype_weather, text="Real Time", \
+                      font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
+                      command=mode_realtime())
+button1.pack()
+button2 = Button(runtype_weather,text="Reanalysis",\
             font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
-                command=self.mode_reanalysis())
-        self.button1.pack()
-        self.button2 = Button(master, text="Real Time",\
-            font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
-                command=self.mode_realtime())
-        self.button2.pack()
+                command=mode_reanalysis)
+button2.pack()
 
-        self.label3 = Label(master, text= "Weather data",  font = ("Verdana", 8,\
-            "bold"), fg = "navy")
-        self.label3.pack()
+label3 = Label(runtype_weather, text="Weather data", font=("Verdana", 8, \
+                                                       "bold"), fg="navy")
+label3.pack()
 
-        self.button3 = Button(master, text="Automatic Retrieve",\
-            font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
-                command=self.weather_auto())
-        self.button3.pack()
-        self.button4 = Button(master,text="Manual entry",\
-            font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
-                command=self.weather_manual())
-        self.button4.pack()
+button3 = Button(runtype_weather, text="Automatic Retrieve", \
+                      font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
+                      command=weather_auto)
+button3.pack()
+button4 = Button(runtype_weather, text="Manual entry", \
+                      font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
+                      command=weather_manual)
+button4.pack()
 
-    def mode_reanalysis(self):
-        global run_type
-        run_type=1
 
-    def mode_realtime(self):
-        global run_type
-        run_type=2
-
-    def weather_auto(self):
-        global weather
-        weather=1
-
-    def weather_manual(self):
-        global weather
-        weather=2
-
-root = Tk()
-prova_gui = mode_GUI()
-root.mainloop()
+runtype_weather.mainloop()
 print(run_type,weather)
-
 
 dir1 = os.path.dirname(__file__)
 PlumeRiseFile = "PlumeRise_Foxi"
@@ -113,11 +113,6 @@ root.title("select the volcano")
 vulkan = 0
 vulk = IntVar()
 vulk.set(0)  # initializing the choice
-
-mode = IntVar()
-mode.set(1)
-meteo = IntVar()
-meteo.set(1)
 
 try:
     label = ['n.a.','n.a.','n.a.','n.a.','n.a.','n.a.','n.a.','n.a.','n.a.','n.a.']

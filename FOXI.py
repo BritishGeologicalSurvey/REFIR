@@ -74,14 +74,13 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 dir1 = os.path.dirname(__file__)
+print(dir1)
 
 try:
     os.makedirs('foxi_log')
     filename = os.path.join(dir1+'/foxi_log', 'refir_%s.log' % time_stamp)
 except EnvironmentError:
     filename = os.path.join(dir1+'/foxi_log', 'refir_%s.log' % time_stamp)
-  
-
 
 if logger == None:
     logger = logging.getLogger()
@@ -343,9 +342,6 @@ try:
     time_ERU_h.insert(10,HourNUNAs)
     time_ERU_m.insert(10,MinuteNUNAs)
     
-    
-    
-    
     def on_button():
         global out_txt,lead_Time, time_tveir
         out_txt = str(out.get())
@@ -367,8 +363,6 @@ try:
     masterout.mainloop()
     
 #END GUI
-
-
 
 except EnvironmentError:
     out_txt = input ("Enter name of output file (without .txt): ")
@@ -427,7 +421,7 @@ while 1:
         timin = lead_Time
     else:
         timin = int((TimeNOW-time_tveir).total_seconds()/60)
-    
+    print(run,timin)
 
     try:
         

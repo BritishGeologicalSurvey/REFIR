@@ -49,7 +49,7 @@ import winsound
 import locale
 from future.standard_library import install_aliases
 install_aliases()
-
+import urllib.request
 from urllib.parse import urlparse, urlencode
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
@@ -155,13 +155,10 @@ for i in range(0,18):
     else:
         a[i]=1
 
-
-             
-             
 def create_volcheader():
     if volc_exist==0:
         FILE1 = open("volcano_list.ini", "w")
-        FILE1.write("ID" +"\t"+"Lat"+"\t"+"Lon"+"\t"+"hvent/m"+"\t"+"default"+"\t"+"full name"+"\n")
+        FILE1.write("ID" +"\t"+"Lat"+"\t"+"Lon"+"\t"+"hvent/m"+"\t"+"default"+"\t"+"full name""\n")
         FILE1.close()
     else:
         yu=0
@@ -170,33 +167,32 @@ def volcentry(volc):
     FILE1 = open("volcano_list.ini", "a")
     FILE1.write(str(volc[0]) +"\t"+str(volc[1]) +"\t"+str(volc[2]) +"\t"+str(volc[3]) +"\t"+str(volc[4]) +"\t"+str(volc[5]) +"\n")
     FILE1.close()
-    
-
 
 def icelandvolc_default():
     global volc_exist
     print("... setting up default Iceland volcanoes!")
     volc_exist=0
     create_volcheader()
-    volc = ["Eyja",63.6283,-19.625, 1651,1,"Eyjafjallajökull"]
+# ID is now the VESPA ID
+    volc = ["eyjaf",63.6283,-19.625, 1651,1,"Eyjafjallajökull"]
     volcentry(volc)
-    volc = ["Katla",63.633,-19.116, 1400,1,"Katla"]
+    volc = ["katla",63.633,-19.116, 1400,1,"Katla"]
     volcentry(volc)
-    volc = ["Hekla",63.992,-19.667, 1491,1,"Hekla"]
+    volc = ["hekla",63.992,-19.667, 1491,1,"Hekla"]
     volcentry(volc)
-    volc = ["Grims",64.417,-17.333, 1722,1,"Grímsvötn"]
+    volc = ["grims",64.417,-17.333, 1722,1,"Grímsvötn"]
     volcentry(volc)
-    volc = ["Vest",63.417,-20.35, 283,1,"Vestmannaeyjar"]
+    volc = ["vestm",63.417,-20.35, 283,1,"Vestmannaeyjar"]
     volcentry(volc)
-    volc = ["Barda",64.667,-17.5, 2009,1,"Bárðarbunga"]
+    volc = ["barda",64.667,-17.5, 2009,1,"Bárðarbunga"]
     volcentry(volc)
-    volc = ["Kverk",64.65,-16.667, 1933,1,"Kverkfjöll"]
+    volc = ["kverk",64.65,-16.667, 1933,1,"Kverkfjöll"]
     volcentry(volc)
-    volc = ["Oraefa",64.00,-16.65, 2110,1,"Öræfajökull"]
+    volc = ["oraefa",64.00,-16.65, 2110,1,"Öræfajökull"]
     volcentry(volc)
-    volc = ["Askja",65.05,-16.783, 1516,1,"Askja"]
+    volc = ["askja",65.05,-16.783, 1516,1,"Askja"]
     volcentry(volc)
-    volc = ["Ovaent",65.00,-17.00, 99,1,"Óvæntfjöll"]
+    volc = ["ovaent",65.00,-17.00, 99,1,"Óvæntfjöll"]
     volcentry(volc)
     N_volc = 10
     print("\nDefault Icelandic volcano list was generated!")
@@ -204,8 +200,6 @@ def icelandvolc_default():
     #raw_input("\n....confirm by any key! ")
     name = input('\n....confirm by any key! ')
     assert isinstance(name, str)    # native str on Py2 and Py3
-
-
 
 def newvolc_setup():
     print("... setting up volcanoes of interest!")
@@ -264,8 +258,6 @@ def newvolc_setup():
                 #raw_input("\n....confirm by any key! ")
                 name = input('\n....confirm by any key! ')
                 assert isinstance(name, str)    # native str on Py2 and Py3                     
-    
-
 
 def create_sensorheadersC():
     
@@ -298,23 +290,45 @@ def X_entry(sens):
     FILE1.write(str(sens[0]) +"\t"+str(sens[1]) +"\t"+str(sens[2]) +"\t"+str(sens[3]) +"\t"+str(sens[4]) +"\t"+str(sens[5])+"\t"+str(sens[6]) +"\t"+str(sens[7]) +"\t"+str(sens[8]) +"\t"+str(sens[9]) +"\n")
     FILE1.close()
 
-
 def Cam_entry(sens):
     FILE1 = open("Cam.ini", "a")
     FILE1.write(str(sens[0]) +"\t"+str(sens[1]) +"\t"+str(sens[2]) +"\t"+str(sens[3]) +"\t"+str(sens[4]) +"\t"+str(sens[5])+"\t"+str(sens[6]) +"\t"+str(sens[7]) +"\t"+str(sens[8]) +"\t"+str(sens[9])+"\n")
     FILE1.close()
 
+def latest_xradar_location():
+    global lat_isx1,lon_isx1,lat_isx2,lon_isx2
+    content = urllib.request.urlopen("http://brunnur.vedur.is/radar/status/")
+    nlines = 0
+    radars_status = []
+    readable_lines = []
+    for line in content:
+        nlines += 1
+        radars_status.append(line.decode("utf-8"))
+        readable_lines.append(radars_status[nlines - 1].split(" "))
+        try:
+            if readable_lines[nlines - 1][1] == "isx1":
+                lat_isx1 = float(readable_lines[nlines - 1][5])
+                lon_isx1 = float(readable_lines[nlines - 1][6])
+            elif readable_lines[nlines - 1][1] == "isx2":
+                lat_isx2 = float(readable_lines[nlines - 1][5])
+                lon_isx2 = float(readable_lines[nlines - 1][6])
+                break
+        except:
+            continue
+
+
 def icelandsensors_default():
     global N_sens
+    latest_xradar_location()
     print("... setting up default Iceland sensors!")
     create_sensorheaders()
     sens = ["ISKEF",64.026383,-22.635833,1,99,0.9,"radar_iskef","https://notendur.hi.is/~tobi/radar_stream/radar_iskef.txt","",""]
     C_entry(sens)
     sens = ["ISEGS",65.027944,-15.038186,1,99,1.0,"radar_isegs","https://notendur.hi.is/~tobi/radar_stream/radar_isegs.txt","",""]
     C_entry(sens)
-    sens = ["ISX1",63.774983,-17.965095,2,99,1.25,"radar_isx1","https://notendur.hi.is/~tobi/radar_stream/radar_isx1.txt","",""]
+    sens = ["ISX1",lat_isx1,lon_isx1,2,99,1.25,"radar_isx1","https://notendur.hi.is/~tobi/radar_stream/radar_isx1.txt","",""]
     X_entry(sens)
-    sens = ["ISX2",63.860353,-20.200475,2,99,1.25,"radar_isx2","https://notendur.hi.is/~tobi/radar_stream/radar_isx2.txt","",""]
+    sens = ["ISX2",lat_isx2,lon_isx2,2,99,1.25,"radar_isx2","https://notendur.hi.is/~tobi/radar_stream/radar_isx2.txt","",""]
     X_entry(sens)
     sens = ["CAM1",64.09,-19.83,3,2,99,"gfzcam1","","199.204.44.194","/pub/linux/kernel"]
     Cam_entry(sens)    
@@ -329,7 +343,6 @@ def icelandsensors_default():
     name = input('\n....confirm by any key! ')
     assert isinstance(name, str)    # native str on Py2 and Py3
     generate_volc_database()
-
 
 def Cband_new():
     crun = 0
@@ -503,7 +516,6 @@ def Xband_new():
                     print("Check in file \"Xband.ini\" if all data are correct and modify accordingly!")
                     name = input('\n....confirm by any key! ')
                     assert isinstance(name, str)    # native str on Py2 and Py3     
-    
 
 def Cam_new():
     crun = 0
@@ -605,8 +617,7 @@ def Cam_new():
                     print ("List completed!")
                     print("Check in file \"Cam.ini\" if all data are correct and modify accordingly!")
                     name = input('\n....confirm by any key! ')
-                    assert isinstance(name, str)    # native str on Py2 and Py3   
-
+                    assert isinstance(name, str)    # native str on Py2 and Py3
 
 def newsensors_setup_menu():
     global sm
@@ -658,16 +669,12 @@ def newsensors_setup_menu():
     else:
         sm = 9
 
-
-
 def newsensors_setup():
     global sm
     while sm != 9:
         newsensors_setup_menu()
     print("Sensor setup finished!\n")
     generate_volc_database()
-
-
 
 def sensors_setup():
     """Initiates setup procedures for sensors and creates sensors.ini files"""
@@ -689,7 +696,6 @@ def sensors_setup():
         print()
         sys.exit()
 
-    
 def init_setup():
     global za
     print("\n>>STEP1: Defining the VOLCANOES of interest\n")
