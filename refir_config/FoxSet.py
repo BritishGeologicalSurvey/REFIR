@@ -322,13 +322,13 @@ def icelandsensors_default():
     latest_xradar_location()
     print("... setting up default Iceland sensors!")
     create_sensorheaders()
-    sens = ["ISKEF",64.026383,-22.635833,1,99,0.9,"radar_iskef","https://notendur.hi.is/~tobi/radar_stream/radar_iskef.txt","",""]
+    sens = ["ISKEF",64.026383,-22.635833,1,99,0.9,"radar_iskef","http://brunnur.vedur.is/radar/vespa","",""]
     C_entry(sens)
-    sens = ["ISEGS",65.027944,-15.038186,1,99,1.0,"radar_isegs","https://notendur.hi.is/~tobi/radar_stream/radar_isegs.txt","",""]
+    sens = ["ISEGS",65.027944,-15.038186,1,99,1.0,"radar_isegs","http://brunnur.vedur.is/radar/vespa","",""]
     C_entry(sens)
-    sens = ["ISX1",lat_isx1,lon_isx1,2,99,1.25,"radar_isx1","https://notendur.hi.is/~tobi/radar_stream/radar_isx1.txt","",""]
+    sens = ["ISX1",lat_isx1,lon_isx1,2,99,1.25,"radar_isx1","http://brunnur.vedur.is/radar/vespa","",""]
     X_entry(sens)
-    sens = ["ISX2",lat_isx2,lon_isx2,2,99,1.25,"radar_isx2","https://notendur.hi.is/~tobi/radar_stream/radar_isx2.txt","",""]
+    sens = ["ISX2",lat_isx2,lon_isx2,2,99,1.25,"radar_isx2","http://brunnur.vedur.is/radar/vespa","",""]
     X_entry(sens)
     sens = ["CAM1",64.09,-19.83,3,2,99,"gfzcam1","","199.204.44.194","/pub/linux/kernel"]
     Cam_entry(sens)    

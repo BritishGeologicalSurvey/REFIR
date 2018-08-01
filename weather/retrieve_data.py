@@ -25,7 +25,6 @@ def gfs_forecast_retrieve(lon_source, lat_source):
         ianl = 12
     else:
         ianl = 18
-
     if ianl < 10:
         anl = '0' + str(ianl)
     else:
@@ -44,17 +43,15 @@ def gfs_forecast_retrieve(lon_source, lat_source):
         #   	checksLogger.error('URLError = ' + str(e.reason))
         ianl = ianl - 6
         print('Analysis file at ' + anl + 'z not yet available. Retrieving the latest available')
-
     if ianl < 0:  # this is in case the analysis at 00z is not available; in this case, ianl = -6 from above, hence must be corrected. Additionally, the variable ianl will be updated later otherwise it would affect ifcst
         year = year_yst
         month = month_yst
         day = day_yst
         anl = '18'
-    elif 0 < ianl < 10:
+    elif 0 <= ianl < 10:
         anl = '0' + str(ianl)
     else:
         anl = str(ianl)
-
     url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + anl
     print('Most up to date GFS analysis: ' + url)
 

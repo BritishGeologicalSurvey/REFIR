@@ -70,41 +70,45 @@ def weather_manual():
     weather = 2
     print(weather)
 
+def first_widget():
+    # Widget to let the user decide:
+    # - Mode: 1: Real time (default); 2: Reanalysis (to be set up completely)
+    # - Weather data: 1: Automatic weather data retrieval (default); 2: Manual entry (as it used to be)
+    runtype_weather.title("REFIR Operation Mode")
 
-runtype_weather.title("REFIR Operation Mode")
+    label1 = Label(runtype_weather, text="REFIR Operation Mode", font=("Verdana", 14, \
+                                                                   "bold"), fg="navy")
+    label1.pack()
+    label2 = Label(runtype_weather, text="Mode Selection", font=("Verdana", 8, \
+                                                            "bold"), fg="navy")
+    label2.pack()
 
-label1 = Label(runtype_weather, text="REFIR Operation Mode", font=("Verdana", 14, \
-                                                               "bold"), fg="navy")
-label1.pack()
-label2 = Label(runtype_weather, text="Mode Selection", font=("Verdana", 8, \
-                                                        "bold"), fg="navy")
-label2.pack()
+    button1 = Button(runtype_weather, text="Real Time", \
+                          font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
+                          command=mode_realtime())
+    button1.pack()
+    button2 = Button(runtype_weather,text="Reanalysis",\
+                font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
+                    command=mode_reanalysis)
+    button2.pack()
 
-button1 = Button(runtype_weather, text="Real Time", \
-                      font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
-                      command=mode_realtime())
-button1.pack()
-button2 = Button(runtype_weather,text="Reanalysis",\
-            font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
-                command=mode_reanalysis)
-button2.pack()
+    label3 = Label(runtype_weather, text="Weather data", font=("Verdana", 8, \
+                                                           "bold"), fg="navy")
+    label3.pack()
 
-label3 = Label(runtype_weather, text="Weather data", font=("Verdana", 8, \
-                                                       "bold"), fg="navy")
-label3.pack()
-
-button3 = Button(runtype_weather, text="Automatic Retrieve", \
-                      font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
-                      command=weather_auto)
-button3.pack()
-button4 = Button(runtype_weather, text="Manual entry", \
-                      font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
-                      command=weather_manual)
-button4.pack()
+    button3 = Button(runtype_weather, text="Automatic Retrieve", \
+                          font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
+                          command=weather_auto)
+    button3.pack()
+    button4 = Button(runtype_weather, text="Manual entry", \
+                          font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
+                          command=weather_manual)
+    button4.pack()
 
 
-runtype_weather.mainloop()
-print(run_type,weather)
+    runtype_weather.mainloop()
+
+first_widget()
 
 dir1 = os.path.dirname(__file__)
 PlumeRiseFile = "PlumeRise_Foxi"
@@ -205,6 +209,9 @@ except  IndexError:
     #only one entry
     huj=0
 
+# Note: if the automatic weather data option is chosen, some of these data will be overwritten at runtime (when using
+# Degruyter&Bonadonna or Woodhouse model. The automatic weather data retrieval package will be called from these
+# functions
 P0 = 101325
 P_0_in_default = P0*math.exp(-vent_h/7990)
 P_0 = P_0_in_default
@@ -939,12 +946,11 @@ str(unc_ISX1)+" \n"+str(unc_ISX2)+" \n"+str(vent_h)+" \n"+str(ISKEF_on)+" \n"\
 +"\n"+ str(loc_ISX1)+"\n"+ str(loc_ISX2)\
 +"\n"+ str(loc_Xband3)+"\n"+ str(loc_Xband4)+"\n"+ str(loc_Xband5)+"\n"+ str(loc_Xband6)\
 +"\n"+ str(loc_GFZ1)+"\n"+ str(loc_GFZ2)+"\n"+ str(loc_GFZ3)\
-+"\n"+ str(loc_Cam4)+"\n"+ str(loc_Cam5)+"\n"+ str(loc_Cam6)+"\n"+ str(defsetup)+"\n") 
-    default_FILE.close() 
-
++"\n"+ str(loc_Cam4)+"\n"+ str(loc_Cam5)+"\n"+ str(loc_Cam6)+"\n"+ str(defsetup)\
++"\n" + str(run_type) + "\n" + str(weather) +"\n") # New variables in the config files for the run type and weather
+    default_FILE.close()
  
 defaultvalues(vent_h)
-
 
 def GFZquality(distance):
     """assigns quality and uncertainties to data from GFZ camera sources"""
@@ -967,7 +973,6 @@ def GFZquality(distance):
         qf ="WITHIN RANGE"
         qf_fg = "lime green"
     return (qfak, qf, qf_fg,loc)
-
 
 def Xradarquality(distance,beamwidth):
     """assigns quality and uncertainties to data from X-band radar sources"""
@@ -1043,7 +1048,6 @@ def Cradarquality(distance,beamwidth):
         qf ="OUT OF RANGE"
         qf_fg = "red"
     return (qfak, qf, qf_fg,unc,loc)
-
 
 def Cradarerror(distance,beamwidth):
     """assigns plume height uncertainties to data from C-band radar sources"""
@@ -3774,83 +3778,85 @@ def fmer_modeF():
     
     fmer_mode.mainloop()
 
+def operation_control():
+    masterklick.title("Operation Control Board - REFIR FIX")
+    Label(masterklick, text= "Operation Control Board",  font = ("Verdana", 14,\
+    "bold"), fg = "navy").grid(row=0, column=0, columnspan=3)
+    Label(masterklick, text= "Last update of settings by operator:").grid(row=1, column=0)
+    Label(masterklick, text= "Last plume height input by operator:", fg="red").grid(row=2, column=0)
 
-masterklick.title("Operation Control Board - REFIR FIX")
-Label(masterklick, text= "Operation Control Board",  font = ("Verdana", 14,\
-"bold"), fg = "navy").grid(row=0, column=0, columnspan=3)
-Label(masterklick, text= "Last update of settings by operator:").grid(row=1, column=0)
-Label(masterklick, text= "Last plume height input by operator:", fg="red").grid(row=2, column=0)
-
-Label(masterklick, text= "FOXI Control Panels",  font = ("Verdana", 8,\
-"bold"), fg = "forest green").grid(row=4, column=1, columnspan=2)
-
-
-
-label1 = Label(masterklick, textvariable= sTimeUpdate1,bg="snow")
+    Label(masterklick, text= "FOXI Control Panels",  font = ("Verdana", 8,\
+    "bold"), fg = "forest green").grid(row=4, column=1, columnspan=2)
 
 
-label2 = Label(masterklick, textvariable= sTimeObs1,fg="red",bg="snow")
-label1.grid(row=1, column=1, sticky=W)
-label2.grid(row=2, column=1, sticky=W)
-Label(masterklick, text= "   ", font = ("Verdana", 8)).grid(row=3, column=0)
-Label(masterklick, text= "Initializing Parameters",  font = ("Verdana", 8,\
-"bold"), fg = "navy").grid(row=4, column=0)
+
+    label1 = Label(masterklick, textvariable= sTimeUpdate1,bg="snow")
 
 
-Button(masterklick, text="Plume Height Sensors",\
-font = ("Verdana", 8),fg = "green yellow",bg = "forest green", width=18,height=2, \
-command=sourcecontrol).grid(row=5, column=1)
-
-Button(masterklick, text="Conv MER Models",\
-    font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
-width=18,height=2,command=conv_fF).grid(row=5, column=2)
-
-Button(masterklick, text="Exp. MER Systems",\
-    font = ("Verdana", 8),fg = "green yellow",bg = "forest green",\
- width=18,height=2,command=expe_MERF).grid(row=6, column=2)
-
-Button(masterklick, text="FMER",\
-    font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
-width=18,height=2,command=fmer_modeF).grid(row=7, column=2)
+    label2 = Label(masterklick, textvariable= sTimeObs1,fg="red",bg="snow")
+    label1.grid(row=1, column=1, sticky=W)
+    label2.grid(row=2, column=1, sticky=W)
+    Label(masterklick, text= "   ", font = ("Verdana", 8)).grid(row=3, column=0)
+    Label(masterklick, text= "Initializing Parameters",  font = ("Verdana", 8,\
+    "bold"), fg = "navy").grid(row=4, column=0)
 
 
-Button(masterklick, text="Output Control",\
-    font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
-width=18,height=2,command=plot_mode).grid(row=8, column=2)
+    Button(masterklick, text="Plume Height Sensors",\
+    font = ("Verdana", 8),fg = "green yellow",bg = "forest green", width=18,height=2, \
+    command=sourcecontrol).grid(row=5, column=1)
 
-Button(masterklick, text="Set Time Base",\
-    font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
-width=18,height=2,command=tb_mode).grid(row=8, column=1)
+    Button(masterklick, text="Conv MER Models",\
+        font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
+    width=18,height=2,command=conv_fF).grid(row=5, column=2)
+
+    Button(masterklick, text="Exp. MER Systems",\
+        font = ("Verdana", 8),fg = "green yellow",bg = "forest green",\
+     width=18,height=2,command=expe_MERF).grid(row=6, column=2)
+
+    Button(masterklick, text="FMER",\
+        font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
+    width=18,height=2,command=fmer_modeF).grid(row=7, column=2)
 
 
-Button(masterklick, text="Analysis Mode",\
-    font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
-width=18,height=2,command=analysis_mode).grid(row=7, column=1)
+    Button(masterklick, text="Output Control",\
+        font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
+    width=18,height=2,command=plot_mode).grid(row=8, column=2)
 
-Button(masterklick, text="Calibration",\
-    font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
-width=18,height=2, command=calibF).grid(row=6, column=1)
+    Button(masterklick, text="Set Time Base",\
+        font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
+    width=18,height=2,command=tb_mode).grid(row=8, column=1)
 
-Button(masterklick, text="Set Model Parameters",\
-    font = ("Verdana", 8), fg = "blue2", bg="light steel blue", width=18,height=2,\
-    command=default_parameter_panel).grid(row=5, column=0)
 
-Label(masterklick, text= "Include Observations",  font = ("Verdana", 8,\
-"bold"), fg ="red").grid(row=6, column=0)
+    Button(masterklick, text="Analysis Mode",\
+        font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
+    width=18,height=2,command=analysis_mode).grid(row=7, column=1)
 
-Button(masterklick, text="Add Plume Heights",\
+    Button(masterklick, text="Calibration",\
+        font = ("Verdana", 8), fg = "green yellow",bg = "forest green",\
+    width=18,height=2, command=calibF).grid(row=6, column=1)
+
+    Button(masterklick, text="Set Model Parameters",\
+        font = ("Verdana", 8), fg = "blue2", bg="light steel blue", width=18,height=2,\
+        command=default_parameter_panel).grid(row=5, column=0)
+
+    Label(masterklick, text= "Include Observations",  font = ("Verdana", 8,\
+    "bold"), fg ="red").grid(row=6, column=0)
+
+    Button(masterklick, text="Add Plume Heights",\
+        font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
+        command=add_plhobs).grid(row=7, column=0)
+
+    Button(masterklick, text="Add MER Estimate",\
     font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
-    command=add_plhobs).grid(row=7, column=0)
+    command=man_MERF).grid(row=8, column=0)
+    Label(masterklick, text= "   ", font = ("Verdana", 8)).grid(row=9, column=0)
+    Label(masterklick, text= "Status Overview:", font = ("Verdana", 8)).grid(row=10, column=0)
+    label3 = Label(masterklick, textvariable=sdefault_txt, bg = bgcol.get())
+    label3.grid(row=11, column=0, columnspan=3)
+    Label(masterklick, text= "   ", font = ("Verdana", 8)).grid(row=12, column=0)
+    Label(masterklick, text= "For citation contact:", font = ("Verdana", 8)).grid(row=12, column=2,sticky=W,)
 
-Button(masterklick, text="Add MER Estimate",\
-font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
-command=man_MERF).grid(row=8, column=0)
-Label(masterklick, text= "   ", font = ("Verdana", 8)).grid(row=9, column=0)
-Label(masterklick, text= "Status Overview:", font = ("Verdana", 8)).grid(row=10, column=0)
-label3 = Label(masterklick, textvariable=sdefault_txt, bg = bgcol.get())
-label3.grid(row=11, column=0, columnspan=3)
-Label(masterklick, text= "   ", font = ("Verdana", 8)).grid(row=12, column=0)
-Label(masterklick, text= "For citation contact:", font = ("Verdana", 8)).grid(row=12, column=2,sticky=W,)
+    Label(masterklick, text= "Tobias Dürig, tobi@hi.is", font = ("Verdana", 8)).grid(row=13, column=2,sticky=W, columnspan=2)
+    masterklick.mainloop()
 
-Label(masterklick, text= "Tobias Dürig, tobi@hi.is", font = ("Verdana", 8)).grid(row=13, column=2,sticky=W, columnspan=2)
-masterklick.mainloop()
+operation_control()
