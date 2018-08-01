@@ -188,7 +188,7 @@ def icelandvolc_default():
     volcentry(volc)
     volc = ["kverk",64.65,-16.667, 1933,1,"Kverkfjöll"]
     volcentry(volc)
-    volc = ["oraefa",64.00,-16.65, 2110,1,"Öræfajökull"]
+    volc = ["oraef",64.00,-16.65, 2110,1,"Öræfajökull"]
     volcentry(volc)
     volc = ["askja",65.05,-16.783, 1516,1,"Askja"]
     volcentry(volc)

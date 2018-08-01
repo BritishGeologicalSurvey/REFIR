@@ -601,7 +601,9 @@ while 1:
     loc_Cam4= float(configlines[159])
     loc_Cam5= float(configlines[160])
     loc_Cam6= float(configlines[161])
-    defsetup= int(configlines[162])   
+    defsetup= int(configlines[162])
+    runtype = int(configlines[163])
+    weather = int(configlines[164])
     
     fndb= os.path.join(dir1+'/refir_config','volc_database.ini')
     volcLAT, volcLON=\
@@ -882,29 +884,36 @@ while 1:
     def import_autostreams(s_file,s_url,s_IP,s_dir,onoroff,idsrc):
         """retrieves autostream files and copies them to local drive"""
         global verz
-        s_filetxt = s_file +".txt"
-    
-        if s_url !="":
-            #www retrieval
-            try:
-                if sys.version_info[0] >= 3:
-                    from urllib.request import urlretrieve
-                else:
-                    # Not Python 3
-                    from urllib import urlretrieve
-                logger3.info("url >>> "+str(idsrc)+" >>> connected!")
-                urlretrieve(s_url, s_filetxt)
-                logger3.info("OK - file transferred!")
-            except  EnvironmentError:
-                print("Error - url "+str(s_url)+" could not be opened!\n")
-                #adjusting the waiting period to delays caused by offline sites
-                if verz > 239:
-                    verz = 240 #maximum 240s
-                else:
-                    verz = verz+20
+        from radar_converter import retrieve_icelandic_radar,process_radar_file
+        # radar_converter module download the radar data for the volcano of interest and create the radar files in the
+        # format that REFIR is used to. Any future user should create his own radar_converter module
+        print(s_file,s_url,s_IP,s_dir,onoroff,idsrc)
+        if idsrc == 'ISKEF' or idsrc == 'ISEGS' or idsrc == 'ISX1' or idsrc == 'ISX2':
+            retrieve_icelandic_radar(vulkan)
+            process_radar_file()
         else:
-            #FTP
-            ftp_import(onoroff,s_IP,idsrc,s_dir,s_file)
+            s_filetxt = s_file +".txt"
+            if s_url !="":
+                #www retrieval
+                try:
+                    if sys.version_info[0] >= 3:
+                        from urllib.request import urlretrieve
+                    else:
+                        # Not Python 3
+                        from urllib import urlretrieve
+                    logger3.info("url >>> "+str(idsrc)+" >>> connected!")
+                    urlretrieve(s_url, s_filetxt)
+                    logger3.info("OK - file transferred!")
+                except  EnvironmentError:
+                    print("Error - url "+str(s_url)+" could not be opened!\n")
+                    #adjusting the waiting period to delays caused by offline sites
+                    if verz > 239:
+                        verz = 240 #maximum 240s
+                    else:
+                        verz = verz+20
+            else:
+                #FTP
+                ftp_import(onoroff,s_IP,idsrc,s_dir,s_file)
             
     for x in range (0,18):
         if ID[x]=="n.a.":
@@ -2115,12 +2124,10 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
         with open(radarC_file+".txt", "r") as ins:
             for line in ins:
                 rlines.append(line)
-        ins.close()   
-        l=(len(rlines)-11)
-        
-        
-        
-        
+        ins.close()
+        l=len(rlines)-1
+#        l=(len(rlines)-11) #This was right with the previous configuration
+
         if rlines[-1] == "":
             for x in range (2,l+1):
                 zeile = rlines[-x]
