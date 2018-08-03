@@ -2710,11 +2710,7 @@ def default_parameter_panel():
     Vmax_in.grid(row=7, column=7)
     ki_in.grid(row=8, column=5)
     
-    
-    
-    
-    
-    
+
     def default_update():
        
         global theta_a0

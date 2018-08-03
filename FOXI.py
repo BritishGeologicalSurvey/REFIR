@@ -50,9 +50,6 @@ from urllib.request import urlopen
 import logging
 import os
 import gc
-sys.path.insert(0, './weather')
-from weather import calc_wt_par
-from calc_wt_par import weather_parameters
 #import matplotlib.image as image
 
 """ settings START """
@@ -366,7 +363,6 @@ try:
 #END GUI
 
 
-
 except EnvironmentError:
     out_txt = input ("Enter name of output file (without .txt): ")
     lead_Time_d = input ("Days since start of eruption: ")
@@ -375,23 +371,23 @@ except EnvironmentError:
     lead_Time =24*60*lead_Time_d + 60*lead_Time_h+lead_Time_m
 
 # Elaborate automatically retrieved weather data
-cwd=os.getcwd()
-folder_name=cwd+"\\raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
-print(folder_name)
-print(os.path.exists(folder_name))
-if os.path.exists(folder_name):
-#    os.system("cd "+folder_name)
-    abs_validity = YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs
-    profile_data_file = "profile_data_" + abs_validity + ".txt"
-    profile_data_file_full = folder_name+"\\"+profile_data_file
-    if os.path.exists(profile_data_file_full):
-        print("Elaborating "+profile_data_file)
-        weather_parameters(YearNUNAs,MonthNUNAs,DayNUNAs,abs_validity,profile_data_file_full)
+def elaborate_weather(plume_height):
+    sys.path.insert(0, './weather')
+    from weather import calc_wt_par
+    from calc_wt_par import weather_parameters
+    cwd=os.getcwd()
+    folder_name=cwd+"\\raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
+    if os.path.exists(folder_name):
+        abs_validity = YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs
+        profile_data_file = "profile_data_" + abs_validity + ".txt"
+        profile_data_file_full = folder_name+"\\"+profile_data_file
+        if os.path.exists(profile_data_file_full):
+            print("Elaborating "+profile_data_file)
+            weather_parameters(YearNUNAs,MonthNUNAs,DayNUNAs,abs_validity,profile_data_file_full,plume_height,vent_h)
+        else:
+            print("File "+profile_data_file+" not present")
     else:
-        print("File "+profile_data_file+" not present")
-else:
-    print("No weather data available. Please run FIX")
-
+        print("No weather data available. Please run FIX")
 
 Mwood = [0,0,0,0,0] 
 wemer_min=0
@@ -443,7 +439,6 @@ while 1:
         timin = lead_Time
     else:
         timin = int((TimeNOW-time_tveir).total_seconds()/60)
-    print(run,timin)
 
     try:
         
@@ -1624,12 +1619,12 @@ while 1:
                 #Western sector
                 ax1.plot(t_vor,pluh,color=secol, linewidth=1.5, linestyle="-",label=str(ide))
                 #1 Added
-                xlim(0,tmin)
+                #2 xlim(0,tmin)
             elif loc == 1:
                 #Eastern sector
                 ax2.plot(t_vor,pluh,color=secol, linewidth=1.5, linestyle="--",label=str(ide))
                 #1 Added
-                xlim(0, tmin)
+                #2 xlim(0, tmin)
             elif loc == 2:
                     #not specified
                 secol = "grey"
@@ -2491,28 +2486,15 @@ while 1:
         if N>2:
             logger4.debug("P.h. estimate based on N="+str(N)+"data")
             logger4.debug("For a "+str(twindow)+"min time base\n")
-            #print('stack',stack) #QUI stampo stack
             ar_stack = np.array(stack)
-            #print('ar_stack',ar_stack) # QUI stampo ar_stack
-#            ar_stack[:,1]=100
-#            ar_stack[:,2]=500
-#            ar_stack[:,3]=2000
             hmin_stack = ar_stack[:,1]
             havg_stack = ar_stack[:,2]
             hmax_stack = ar_stack[:,3]
-            print('hmin_stack',hmin_stack)
-#            print('havg_stack',havg_stack)
-#            print('hmax_stack',hmax_stack)
             hdiff_stack= ar_stack[:,3]-ar_stack[:,1]
             hdiff_2 = ar_stack[:,3]-ar_stack[:,2]
-#            print(hdiff_stack)
-#            print(hdiff_2)
             Avg_havg = np.average(havg_stack[np.nonzero(havg_stack)])
-            print(Avg_havg)
             Min_hmax = np.min(hmax_stack[np.nonzero(hmax_stack)])
-            print(Min_hmax)
             Max_hmin = np.max(hmin_stack[np.nonzero(hmin_stack)])
-            print(Max_hmin)
             Bavg= 0.5 * (Min_hmax+Max_hmin)
             wa = 0.01
             wu = 0.01
@@ -2553,7 +2535,6 @@ while 1:
             logger4.debug(str(Hmin)+"\t"+str(Havg)+"\t"+str(Hmax)+"\t"+str(code))
         return(Hmin,Havg,Hmax,code)
 
-#    print('stack3h',stack3h) # QUI stampo stack3h
     result3h_stack = PH_best(N3h,stack3h,180)#results plh 3h
     result1h_stack = PH_best(N1h,stack1h,60)
     result30_stack = PH_best(N30min,stack30,30) 
@@ -2695,7 +2676,6 @@ while 1:
 # section which has to be adjusted to put your data on a webpage of your choice           
             #ftp = FTP("130.209.165.1")
 
-        print('Results3h',result3h_stack)
         hbe_file(N3h,result3h_stack[0],result3h_stack[1],result3h_stack[2],180)
         hbe_file(N1h,result1h_stack[0],result1h_stack[1],result1h_stack[2],60)
         hbe_file(N30min,result30_stack[0],result30_stack[1],result30_stack[2],30)
@@ -2763,52 +2743,58 @@ while 1:
             return(M_mtg)
 
         def mer_degbon(H_in):
-
             g = 9.81 	#gravitational acceleration (m s^-2) 
             z_1 = 2.8 #maximum non-dimensional height (Morton et al.1956)
             R_d = 287. #specific gas constant of dry air (J kg^-1 K^- 1)
             C_d = 998.	#specific heat capacity at constant pressure of dry air (J kg^-1 K^-1) 
             C_s = 1250. #specific heat capacity at constant pressure of solids (J kg^-1 K^-1) 
-        
-            dummyH = [(x*10.) for x in range (0,int(int(H_in)/10+1))]	
-        
-            rho_a0 = P_0/(R_d*theta_a0) 
-            	
-            # reduced gravity (m s^-2)  
-            gprime = g*(C_s*theta_0-C_d*theta_a0)/(C_d*theta_a0)  
-            	
-            #average square buoyancy frequency Nbar^2 = Gbar across height of the plume (s^-2)  
-            G1 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_1)  
-            G2 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_2)  
-            G3 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_3)  
-            
-            gbar1=[G1 for hd in dummyH if hd <= H1]
-            gbar2=[(G1*H1 + G2*(hd-H1))/hd for hd in dummyH if hd > H1 and hd <= H2]
-            gbar3=[(G1*H1 + G2*(H2-H1) + G3*(hd-H2))/hd for hd in dummyH if hd > H2] 
-            
-            for f in gbar2:
-            	gbar1.append(f)
-            for g in gbar3:
-            	gbar1.append(g)
-            
-            Nbar=[g**.5 for g in gbar1]
-          
-            # atmosphere wind profile (Bonadonna and Phillips, 2003)  
-            
-            # average wind speed across height of the plume (m/s)  
-            Vbar=[Vmax*hd/H1/2. for hd in dummyH if hd <= H1]
-            vbar2=[1./hd*(Vmax*H1/2. + Vmax*(hd-H1)-.9*Vmax/(H2-H1)*(hd-H1)**2./2.) for hd in dummyH if hd > H1 and hd <= H2]
-            vbar3=[1./hd*(Vmax*H1/2. + .55*Vmax*(H2-H1)+.1*Vmax*(hd-H2)) for hd in dummyH if hd > H2]
-            
-            for w in vbar2:
-            	Vbar.append(w)
-            for x in vbar3:
-            	Vbar.append(x)
-          
-            # equation (6) in Degruyter and Bonadonna, 2012
-            Mdot = [math.pi*rho_a0/gprime*((2.**(5./2.)*alpha**2.*Nbar[i]**3./z_1**4.)*dummyH[i]**4. +(beta**2.*Nbar[i]**2.*Vbar[i]/6.)*dummyH[i]**3.) for i in range(0,len(Nbar))]
 
-            result_Mdot = int(Mdot[-1])
+            if weather == 1:
+                elaborate_weather(H_in)
+                rho_a0 = P_H_source / (R_d * T_H_source)
+                gprime = g * (C_s * T_h_source - C_d * theta_a0) / (C_d * theta_a0)
+                Mdot = math.pi*(rho_a0/gprime)*((((2.**(5./2.))*(alpha**2)*(N_avg**3))/(z_1**4.))*H_in**4.+(((beta**2)*(N_avg**2.)*(V_avg))/6.)*H_in**3.)
+                print('Mdot',Mdot)
+            else:
+                dummyH = [(x*10.) for x in range (0,int(int(H_in)/10+1))]
+
+                rho_a0 = P_0/(R_d*theta_a0)
+
+                # reduced gravity (m s^-2)
+                gprime = g*(C_s*theta_0-C_d*theta_a0)/(C_d*theta_a0)
+
+                #average square buoyancy frequency Nbar^2 = Gbar across height of the plume (s^-2)
+                G1 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_1)
+                G2 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_2)
+                G3 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_3)
+
+                gbar1=[G1 for hd in dummyH if hd <= H1]
+                gbar2=[(G1*H1 + G2*(hd-H1))/hd for hd in dummyH if hd > H1 and hd <= H2]
+                gbar3=[(G1*H1 + G2*(H2-H1) + G3*(hd-H2))/hd for hd in dummyH if hd > H2]
+
+                for f in gbar2:
+                    gbar1.append(f)
+                for g in gbar3:
+                    gbar1.append(g)
+
+                Nbar=[g**.5 for g in gbar1]
+
+                # atmosphere wind profile (Bonadonna and Phillips, 2003)
+
+                # average wind speed across height of the plume (m/s)
+                Vbar=[Vmax*hd/H1/2. for hd in dummyH if hd <= H1]
+                vbar2=[1./hd*(Vmax*H1/2. + Vmax*(hd-H1)-.9*Vmax/(H2-H1)*(hd-H1)**2./2.) for hd in dummyH if hd > H1 and hd <= H2]
+                vbar3=[1./hd*(Vmax*H1/2. + .55*Vmax*(H2-H1)+.1*Vmax*(hd-H2)) for hd in dummyH if hd > H2]
+
+                for w in vbar2:
+                    Vbar.append(w)
+                for x in vbar3:
+                    Vbar.append(x)
+
+                # equation (6) in Degruyter and Bonadonna, 2012
+                Mdot = [math.pi*rho_a0/gprime*((2.**(5./2.)*alpha**2.*Nbar[i]**3./z_1**4.)*dummyH[i]**4. +(beta**2.*Nbar[i]**2.*Vbar[i]/6.)*dummyH[i]**3.) for i in range(0,len(Nbar))]
+
+                result_Mdot = int(Mdot[-1])
 
             return(result_Mdot)
         
@@ -2818,42 +2804,49 @@ while 1:
             R_d = 287. #specific gas constant of dry air (J kg^-1 K^- 1)
             C_d = 998.	#specific heat capacity at constant pressure of dry air (J kg^-1 K^-1) 
             C_s = 1250. #specific heat capacity at constant pressure of solids (J kg^-1 K^-1) 
-        
-            dummyH = [(x*10.) for x in range (0,int(int(H_in)/10+1))]	
-        
-            rho_a0 = P_0/(R_d*theta_a0) 
-            	
-            # adjusted gravity (m s^-2)  
-            gprime = g*(C_s*theta_0-C_d*theta_a0)/(C_d*theta_a0)  
-            	
-            #average square buoyancy frequency Nbar^2 = Gbar across height of the plume (s^-2)  
-            G1 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_1)  
-            G2 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_2)  
-            G3 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_3)  
-            
-            gbar1=[G1 for hd in dummyH if hd <= H1]
-            gbar2=[(G1*H1 + G2*(hd-H1))/hd for hd in dummyH if hd > H1 and hd <= H2]
-            gbar3=[(G1*H1 + G2*(H2-H1) + G3*(hd-H2))/hd for hd in dummyH if hd > H2] 
-            
-            for f in gbar2:
-            	gbar1.append(f)
-            for g in gbar3:
-            	gbar1.append(g)
-            
-            Nbar=[g**.5 for g in gbar1]
-          
-            # atmosphere wind profile (Bonadonna and Phillips, 2003)  
-            
-            # average wind speed across height of the plume (m/s)  
-            Vbar=[Vmax*hd/H1/2. for hd in dummyH if hd <= H1]
-            vbar2=[1./hd*(Vmax*H1/2. + Vmax*(hd-H1)-.9*Vmax/(H2-H1)*(hd-H1)**2./2.) for hd in dummyH if hd > H1 and hd <= H2]
-            vbar3=[1./hd*(Vmax*H1/2. + .55*Vmax*(H2-H1)+.1*Vmax*(hd-H2)) for hd in dummyH if hd > H2]
-            
-            for w in vbar2:
-            	Vbar.append(w)
-            for x in vbar3:
-            	Vbar.append(x)
-            capitalGreekPi= (6*2**(5/2))/(z_1**4)*(Nbar[-1]*H_in/Vbar[-1])*(alpha/beta)**2
+
+            if weather == 1:
+                elaborate_weather(H_in)
+                rho_a0 = P_H_source / (R_d * T_H_source)
+                capitalGreekPi = 6.*((2.**(5./2.))/(z_1**4.))*((N_avg*H_in)/V_avg)*(alpha/beta)**2.
+
+            else:
+
+                dummyH = [(x*10.) for x in range (0,int(int(H_in)/10+1))]
+
+                rho_a0 = P_0/(R_d*theta_a0)
+
+                # adjusted gravity (m s^-2)
+                gprime = g*(C_s*theta_0-C_d*theta_a0)/(C_d*theta_a0)
+
+                #average square buoyancy frequency Nbar^2 = Gbar across height of the plume (s^-2)
+                G1 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_1)
+                G2 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_2)
+                G3 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_3)
+
+                gbar1=[G1 for hd in dummyH if hd <= H1]
+                gbar2=[(G1*H1 + G2*(hd-H1))/hd for hd in dummyH if hd > H1 and hd <= H2]
+                gbar3=[(G1*H1 + G2*(H2-H1) + G3*(hd-H2))/hd for hd in dummyH if hd > H2]
+
+                for f in gbar2:
+                    gbar1.append(f)
+                for g in gbar3:
+                    gbar1.append(g)
+
+                Nbar=[g**.5 for g in gbar1]
+
+                # atmosphere wind profile (Bonadonna and Phillips, 2003)
+
+                # average wind speed across height of the plume (m/s)
+                Vbar=[Vmax*hd/H1/2. for hd in dummyH if hd <= H1]
+                vbar2=[1./hd*(Vmax*H1/2. + Vmax*(hd-H1)-.9*Vmax/(H2-H1)*(hd-H1)**2./2.) for hd in dummyH if hd > H1 and hd <= H2]
+                vbar3=[1./hd*(Vmax*H1/2. + .55*Vmax*(H2-H1)+.1*Vmax*(hd-H2)) for hd in dummyH if hd > H2]
+
+                for w in vbar2:
+                    Vbar.append(w)
+                for x in vbar3:
+                    Vbar.append(x)
+                capitalGreekPi= (6*2**(5/2))/(z_1**4)*(Nbar[-1]*H_in/Vbar[-1])*(alpha/beta)**2
             return(capitalGreekPi)
 
         def Woodh ():
@@ -3100,7 +3093,6 @@ while 1:
         
         def stat_mer(stack_mer):
             """computes statistical MER numbers for REFIR-internal models (RMER)"""
-            print(stack_mer)
             mermtg = stack_mer[0]
             merdb = stack_mer[4][1]
             tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0]]
@@ -5225,4 +5217,4 @@ while 1:
     logger10.manager.loggerDict.clear()
     waitingProc()    
 
-print("\n --- programm aborted")
+("\n --- programm aborted")

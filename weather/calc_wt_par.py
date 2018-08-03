@@ -1,4 +1,11 @@
-def weather_parameters(year, month, day, validity, prof_file):
+def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
+    global P_H_source
+    global T_H_source
+    global N_avg
+    global V_avg
+    global N_avg
+    global V_H_top
+    global Ws
     u = []
     v = []
     wind = []
@@ -11,8 +18,6 @@ def weather_parameters(year, month, day, validity, prof_file):
     g = 9.81
     N = []
     dTdZ = []
-    H_plume = 20000  # This will be an input
-    H_source = 1000  # This will be an input
     H_top = H_source + H_plume
     print('Opening file ' + prof_file)
     with open(prof_file, 'r') as f1:
