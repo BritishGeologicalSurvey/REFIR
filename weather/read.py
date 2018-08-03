@@ -66,7 +66,7 @@ def extract_data_gfs(year, month, day, validity, wtfile_prof_step):
         hgt[i], p[i], tmp_k[i], tmp_c[i], u[i], v[i], wind[i]))
     wt_output.close()
     # Elaborate data and save relevant weather parameter
-    weather_parameters(year, month, day, validity, prof_file)
+    # weather_parameters(year, month, day, validity, prof_file) This call will be done by FOXI for each plume height value
 
 
 def extract_data_erain(year, month, day, validity, wtfile_prof_step):
@@ -125,4 +125,4 @@ def extract_data_erain(year, month, day, validity, wtfile_prof_step):
     wind_trp = 0
     hgt_trp = 0
     # Elaborate data and save relevant weather parameter
-    weather_parameters(year, month, day, validity, prof_file)
+     #weather_parameters(year, month, day, validity, prof_file)

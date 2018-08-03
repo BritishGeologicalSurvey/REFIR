@@ -50,6 +50,9 @@ from urllib.request import urlopen
 import logging
 import os
 import gc
+sys.path.insert(0, './weather')
+from weather import calc_wt_par
+from calc_wt_par import weather_parameters
 #import matplotlib.image as image
 
 """ settings START """
@@ -74,7 +77,6 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 dir1 = os.path.dirname(__file__)
-print(dir1)
 
 try:
     os.makedirs('foxi_log')
@@ -287,7 +289,6 @@ try:
     HourNUNAs =TimeNUNAs[11:13]
     MinuteNUNAs =TimeNUNAs[14:16]
     
-    
     masterout = Tk()
     out=StringVar()
     time_lead = IntVar()
@@ -361,8 +362,10 @@ try:
     width =24, height=2, command = on_button).grid(row=11, column=0, columnspan=5)
     
     masterout.mainloop()
-    
+
 #END GUI
+
+
 
 except EnvironmentError:
     out_txt = input ("Enter name of output file (without .txt): ")
@@ -370,6 +373,25 @@ except EnvironmentError:
     lead_Time_h = input ("Hours since start of eruption: ")
     lead_Time_m = input ("Minutes since start of eruption: ")
     lead_Time =24*60*lead_Time_d + 60*lead_Time_h+lead_Time_m
+
+# Elaborate automatically retrieved weather data
+cwd=os.getcwd()
+folder_name=cwd+"\\raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
+print(folder_name)
+print(os.path.exists(folder_name))
+if os.path.exists(folder_name):
+#    os.system("cd "+folder_name)
+    abs_validity = YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs
+    profile_data_file = "profile_data_" + abs_validity + ".txt"
+    profile_data_file_full = folder_name+"\\"+profile_data_file
+    if os.path.exists(profile_data_file_full):
+        print("Elaborating "+profile_data_file)
+        weather_parameters(YearNUNAs,MonthNUNAs,DayNUNAs,abs_validity,profile_data_file_full)
+    else:
+        print("File "+profile_data_file+" not present")
+else:
+    print("No weather data available. Please run FIX")
+
 
 Mwood = [0,0,0,0,0] 
 wemer_min=0
@@ -887,7 +909,6 @@ while 1:
         from radar_converter import retrieve_icelandic_radar,process_radar_file
         # radar_converter module download the radar data for the volcano of interest and create the radar files in the
         # format that REFIR is used to. Any future user should create his own radar_converter module
-        print(s_file,s_url,s_IP,s_dir,onoroff,idsrc)
         if idsrc == 'ISKEF' or idsrc == 'ISEGS' or idsrc == 'ISX1' or idsrc == 'ISX2':
             retrieve_icelandic_radar(vulkan)
             process_radar_file()
@@ -948,8 +969,7 @@ while 1:
     logger3.info("***********************************")
     logger3.info("")
     
-    
-    
+
     def input_allphfile(timediffH,hminH,plhH,hmaxH,qfH,sourceH,onoffH):
         """ logs all obtained plumeheights in a file"""
         try:
@@ -971,7 +991,6 @@ while 1:
         out  = open(out_txt+'_plh_log.txt', 'w')
         for line in lines_set:
             out.write(line)
-
 
     def plot_src_analysis(l_c,l_cm,l_x,l_xm,l_cam,l_air,l_gr,l_other):
         """plots the results of the statistical plume height input data analyses"""
@@ -1021,9 +1040,7 @@ while 1:
         del gc.garbage[:]
         plt.close(fig)
         plt.close()
-        
-        
-        
+
     def plot_src_totalcount(npl_c,npl_cm,npl_x,npl_xm,npl_cam,npl_air,npl_gr,npl_other):
         """plots the total amount of plume height input data by source"""
     
@@ -1070,6 +1087,7 @@ while 1:
         gc.collect()
         plt.close()
         del gc.garbage[:]
+
     def src_analysis1(stack_cat,source):
         """statistical analyzer for input plume height data"""
     #stack_cat: 1: older than 3h, 2: 3h, 3: 1h, 4: 30min, 5: 15min
@@ -1382,8 +1400,7 @@ while 1:
                     logger3.critical("Plume height data corrupted!")
                 else:
                     hmin = plh-unc
-                    hmax = plh+unc    
-                    
+                    hmax = plh+unc
                     if timediff<0:
                         logger3.warning("------------data set seems to be from future!\n")
                         logger3.warning(str(timediff)+"min")
@@ -1458,7 +1475,8 @@ while 1:
         
                         logger3.debug("*Stacked pl.h. data >> source: " + str(source)+"\t"+"time difference: "+str(timediff)+"\t"+"hmin: "+str(hmin)+"\t"+"hmax: "+str(hmax))
             del gc.garbage[:]
-            return (True)                                                                                                                           
+            return (True)
+
     def plot_indi_plh():
         """plots individual plume heights"""
         global Cband1_stack
@@ -1605,11 +1623,13 @@ while 1:
             if loc == -1:
                 #Western sector
                 ax1.plot(t_vor,pluh,color=secol, linewidth=1.5, linestyle="-",label=str(ide))
-                
+                #1 Added
+                xlim(0,tmin)
             elif loc == 1:
                 #Eastern sector
                 ax2.plot(t_vor,pluh,color=secol, linewidth=1.5, linestyle="--",label=str(ide))
-                    
+                #1 Added
+                xlim(0, tmin)
             elif loc == 2:
                     #not specified
                 secol = "grey"
@@ -1743,12 +1763,15 @@ while 1:
         plt.ylim(0)
 
 
-        max_x = max(max(Cband1_t_stack,Cband2_t_stack,Cband3_t_stack,Cband4_t_stack,Cband5_t_stack,Cband6_t_stack,\
-Xband1_t_stack,Xband2_t_stack,Xband3_t_stack,Xband4_t_stack,Xband5_t_stack,Xband6_t_stack,\
-Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
+#1        max_x = max(max(Cband1_t_stack,Cband2_t_stack,Cband3_t_stack,Cband4_t_stack,Cband5_t_stack,Cband6_t_stack,\
+#1Xband1_t_stack,Xband2_t_stack,Xband3_t_stack,Xband4_t_stack,Xband5_t_stack,Xband6_t_stack,\
+#1Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
+ #1
+        max_x = timin
         plt.text(0.5*max_x, 0.5*APHmax_y, 'REFIR',fontsize=80, color='gray',ha='center', va='center', alpha=0.09)
 
         try:
+            print('max_x',max_x)
             plt.xlim(0,max_x)
         except TypeError:
             plt.xlim(0,250)
@@ -1891,14 +1914,14 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
     
     def stacksort(timediff,plh,unc,qf,source,onoff):
         """sorts data according to up-to-dateness"""
-        
-        
+
         if plh <=0:
             logger3.critical("Plume height data corrupted!")
         else:
             hmin = plh-unc
             if hmin <0:
-                hmin = 0
+#                hmin = 0     #Here is a potential problem. If all readings in stacks are 0, then there is a problem later.
+                hmin = 1
             else:
                 juh = 0
             hmax = plh+unc    
@@ -1932,7 +1955,6 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
                 if timediff<181:
                     input_allphfile(timediff, hmin,plh,hmax,qf,source,onoff)
                     stack3h.append([timediff, hmin,plh,hmax,qf,source,onoff])
-
                 else:
                     huj =1
                 if timediff<61:
@@ -2077,7 +2099,6 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
                             return None
                     else:
                         logger3.info ("data set discarded")
-    
 
     if OBS_on == 1:
         try:
@@ -2124,6 +2145,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
         with open(radarC_file+".txt", "r") as ins:
             for line in ins:
                 rlines.append(line)
+
         ins.close()
         l=len(rlines)-1
 #        l=(len(rlines)-11) #This was right with the previous configuration
@@ -2141,7 +2163,6 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
                     h_C = 0
                 else:
                     h_C=KF_a+KF_b*(plumeh*1000-vent_h)
-       
                 stacksort(time_diffe_min,h_C,unc_C,qf_C,source_C,1)
                 
         else:
@@ -2220,7 +2241,8 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
             for line in ins:
                 rlines.append(line)
         ins.close()
-        l=(len(rlines)-11)
+        l = len(rlines) - 1
+        #        l=(len(rlines)-11) #This was right with the previous configuration
 
         if rlines[-1] == "":
             for x in range (2,l+1):
@@ -2251,6 +2273,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
                     h_X = 0
                 else:
                     h_X= KF_a+KF_b*(plumeh*1000-vent_h)
+
                 stacksort(time_diffe_min,h_X,unc_X,qf_X,source_X,1)
     
     for zy in range (0,6):
@@ -2403,7 +2426,6 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
     
     
     def PH_best(N,stack,twindow):
-        
         if N == 0:
             logger4.warning("No plume height data - no calculation possible!")
             logger4.info("For a "+str(twindow)+"min time base\n")
@@ -2417,7 +2439,9 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
             logger4.debug("For a "+str(twindow)+"min time base")
             Hmin = stack[-1][1]
             if Hmin<0:
-                Hmin = 0
+#1 Changed to avoid negative values
+                #Hmin = 0
+                Hmin = 1
             else:
                 juh=0
             Havg = stack [-1][2]
@@ -2461,18 +2485,34 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
                     Hmin = wtAvg - 0.5* Std_havg 
                     Hmax = wtAvg + 0.5* Std_havg      
                     code = 22
+#1 Added to avoid negative values
+            if Hmin < 0:
+                Hmin = 1
         if N>2:
             logger4.debug("P.h. estimate based on N="+str(N)+"data")
             logger4.debug("For a "+str(twindow)+"min time base\n")
+            #print('stack',stack) #QUI stampo stack
             ar_stack = np.array(stack)
+            #print('ar_stack',ar_stack) # QUI stampo ar_stack
+#            ar_stack[:,1]=100
+#            ar_stack[:,2]=500
+#            ar_stack[:,3]=2000
             hmin_stack = ar_stack[:,1]
             havg_stack = ar_stack[:,2]
             hmax_stack = ar_stack[:,3]
+            print('hmin_stack',hmin_stack)
+#            print('havg_stack',havg_stack)
+#            print('hmax_stack',hmax_stack)
             hdiff_stack= ar_stack[:,3]-ar_stack[:,1]
             hdiff_2 = ar_stack[:,3]-ar_stack[:,2]
+#            print(hdiff_stack)
+#            print(hdiff_2)
             Avg_havg = np.average(havg_stack[np.nonzero(havg_stack)])
+            print(Avg_havg)
             Min_hmax = np.min(hmax_stack[np.nonzero(hmax_stack)])
+            print(Min_hmax)
             Max_hmin = np.max(hmin_stack[np.nonzero(hmin_stack)])
+            print(Max_hmin)
             Bavg= 0.5 * (Min_hmax+Max_hmin)
             wa = 0.01
             wu = 0.01
@@ -2507,16 +2547,18 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
                 Hmin = Bavg-st_unc
                 Hmax = Bavg+st_unc
                 code = 32
+            if Hmin < 0:
+                Hmin = 1
             logger4.debug("Hmin"+"\t"+"Havg"+"\t"+"Hmax"+"\t"+"code")
             logger4.debug(str(Hmin)+"\t"+str(Havg)+"\t"+str(Hmax)+"\t"+str(code))
         return(Hmin,Havg,Hmax,code)
-    
+
+#    print('stack3h',stack3h) # QUI stampo stack3h
     result3h_stack = PH_best(N3h,stack3h,180)#results plh 3h
     result1h_stack = PH_best(N1h,stack1h,60)
     result30_stack = PH_best(N30min,stack30,30) 
     result15_stack = PH_best(N15min,stack15,15) 
-    
-    
+
     if timebase == -1:
         proTB = 15 
     else:
@@ -2596,7 +2638,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
         logger4.info("*")
         logger4.info("*")
         
-        
+
         def hbe_file(n,phmin,phbe,phmax,tiba):
             """ logs computed plumeheight summaries on time base tiba in a file"""
             global timin
@@ -2653,7 +2695,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
 # section which has to be adjusted to put your data on a webpage of your choice           
             #ftp = FTP("130.209.165.1")
 
-
+        print('Results3h',result3h_stack)
         hbe_file(N3h,result3h_stack[0],result3h_stack[1],result3h_stack[2],180)
         hbe_file(N1h,result1h_stack[0],result1h_stack[1],result1h_stack[2],60)
         hbe_file(N30min,result30_stack[0],result30_stack[1],result30_stack[2],30)
@@ -3058,6 +3100,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
         
         def stat_mer(stack_mer):
             """computes statistical MER numbers for REFIR-internal models (RMER)"""
+            print(stack_mer)
             mermtg = stack_mer[0]
             merdb = stack_mer[4][1]
             tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0]]
@@ -4314,9 +4357,6 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
 
 
             def plot_FMER():
-            
-                
-                
                 fig = figure.Figure()
                 
                 ax = plt.subplot(111)
@@ -4428,7 +4468,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
                     plt.xlim([tiN_start,tiPH_end])
                 ax.grid()
                 
-                plt.show() 
+                #plt.show()
                 fig.savefig(out_txt+"_N_plot.png",bbox_inches='tight', dpi=300) 
                 fig.savefig(out_txt+"_N_plot.svg", format='svg', dpi=1200) #highresolution
                 plt.close("all")
@@ -4651,7 +4691,7 @@ Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
                 else:
                     tiM_start = tiM_end-15
                     plt.xlim([tiM_start,tiM_end])
-                plt.show()
+                #plt.show()
                 fig.savefig(out_txt+"_Fmass_plot.png", bbox_extra_artists=(lgd,), bbox_inches='tight',dpi=300)
                 fig.savefig(out_txt+"_Fmass_plot.svg", format='svg', dpi=1200) #highresolution
                 plt.close("all")

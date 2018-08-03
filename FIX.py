@@ -229,6 +229,37 @@ rho_dre_default = 2600
 Vmax_default = 10
 ki_default = 1.6
 
+def automatic_weather():
+    sys.path.insert(0, './weather')
+    from weather import retrieve_data
+    from retrieve_data import era_interim_retrieve
+    from retrieve_data import gfs_forecast_retrieve
+    import os
+    from datetime import datetime, date, timedelta
+    eruption_start = '2010041700'
+    eruption_stop = '2010041918'
+    if run_type == 1:
+        gfs_forecast_retrieve(volc_lon[vulkan],volc_lat[vulkan])
+    elif run_type == 2:
+        era_interim_retrieve(volc_lon[vulkan],volc_lat[vulkan])
+    now = str(datetime.utcnow())
+    year = now[0:4]
+    month = now[5:7]
+    day = now[8:10]
+    hour = now[11:13]
+    minute = now[14:16]
+    folder = 'raw_weather_data_' + year + month + day
+    os.system('mkdir ' + folder)
+    if (os.name == 'posix'):
+        os.system('mv pressure_level.grib weather_* profile_* tropopause_* ' + folder)
+    elif (os.name == 'nt'):
+        os.system('move pressure_level.grib ' + folder)
+        os.system('move weather_* ' + folder)
+        os.system('move profile_* ' + folder)
+
+if weather == 1:
+    automatic_weather()
+
 qf_OBS = 4
 
 timebase =-1
@@ -1942,7 +1973,7 @@ def showmap():
     plt.gcf().set_size_inches(12,12)
     plt.savefig('map1.png',bbox_inches='tight')
     plt.savefig('map1.svg', format='svg', dpi=300)
-    plt.show()
+#1    plt.show()
 
 
 
@@ -2010,7 +2041,7 @@ def showmap():
     plt.tight_layout()
     plt.savefig('map2.png',bbox_inches='tight')
     plt.savefig('map2.svg', format='svg', dpi=300)
-    plt.show()
+#1    plt.show()
 
 # OUTPUT CONTROL PANEL
 def plot_mode():

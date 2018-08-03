@@ -38,12 +38,6 @@ def retrieve_icelandic_radar(volc_id):
     else:
         volc_name = 'ovaent'
 
-
-
-
-
-
-
     url_dir = 'http://brunnur.vedur.is/radar/vespa/' + volc_name + '/'
     try:
         urllib.request.urlopen(url_dir)
@@ -118,6 +112,7 @@ def process_radar_file():
     nrecords_isx1 = 0
     nrecords_isx2 = 0
     nrecords_isegs = 0
+
 
     # Function for extracting the two heights from the records
     def search_value(record):
