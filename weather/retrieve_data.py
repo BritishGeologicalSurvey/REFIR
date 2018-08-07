@@ -7,7 +7,6 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     import os
     if(lon_source < 0):
         lon_source = 360 + lon_source
-    print(lon_source,lat_source)
     now = str(datetime.utcnow())
     yesterday = str(date.today() - timedelta(1))
     year = now[0:4]
@@ -132,13 +131,12 @@ def gfs_forecast_retrieve(lon_source,lat_source):
 #	os.system('mkdir weather')
 #	os.system('mv profile_* weather_* tropopause_* weather/gfs')
 
-def era_interim_retrieve(lon_source,lat_source):
+def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     from ecmwfapi import ECMWFDataServer
     from read import extract_data_erain
     import os
-    global eruption_start,eruption_stop # This will be an input when the reanalysis mode will be finally implemented
-    lat_source = volc_lat
-    lon_source = volc_lon
+    if(lon_source < 0):
+        lon_source = 360 + lon_source
     year_start = eruption_start[0:4]
     month_start = eruption_start[4:6]
     day_start = eruption_start[6:8]

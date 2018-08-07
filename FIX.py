@@ -60,9 +60,11 @@ def mode_reanalysis():
     print(run_type)
 
 def mode_realtime():
+    global run_type
     print(run_type)
 
 def weather_auto():
+    global weather
     print(weather)
 
 def weather_manual():
@@ -238,17 +240,16 @@ def automatic_weather():
     from datetime import datetime, date, timedelta
     eruption_start = '2010041700'
     eruption_stop = '2010041918'
-    if run_type == 1:
-        gfs_forecast_retrieve(volc_lon[vulkan],volc_lat[vulkan])
-    elif run_type == 2:
-        era_interim_retrieve(volc_lon[vulkan],volc_lat[vulkan])
     now = str(datetime.utcnow())
     year = now[0:4]
     month = now[5:7]
     day = now[8:10]
-    hour = now[11:13]
-    minute = now[14:16]
-    folder = 'raw_weather_data_' + year + month + day
+    if run_type == 1:
+        gfs_forecast_retrieve(volc_lon[vulkan],volc_lat[vulkan])
+        folder = 'gfs_raw_weather_data_' + year + month + day
+    elif run_type == 2:
+        era_interim_retrieve(volc_lon[vulkan],volc_lat[vulkan],eruption_start,eruption_stop)
+        folder = 'era_interim_raw_weather_data_' + year + month + day
     os.system('mkdir ' + folder)
     if (os.name == 'posix'):
         os.system('mv pressure_level.grib weather_* profile_* tropopause_* ' + folder)
