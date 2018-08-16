@@ -226,7 +226,7 @@ H2_default = 20000
 tempGrad_1_default = -0.0065
 tempGrad_2_default = 0
 tempGrad_3_default = 0.002
-wfac_mod4_default = [1.0,1.0,1.0,1.0,1.0]
+wfac_mod4_default = [1.0,1.0,1.0,1.0,1.0,1.0]
 rho_dre_default = 2600
 Vmax_default = 10
 ki_default = 1.6
@@ -420,6 +420,7 @@ def defaultvalues(venth):
     global wtf_mas
     global wtf_mtg
     global wtf_deg
+    global wtf_wood0d
     
     global rho_dre
     global Vmax
@@ -501,12 +502,13 @@ cal_Xband5a,cal_Xband5b,cal_Xband6a,cal_Xband6b
     tempGrad_1 = -0.0065 #def. temp. grad. troposphere (K/m)
     tempGrad_2 = 0 #def. temp. grad. between tropo & stratosphere (K/m)
     tempGrad_3 = 0.002 #def. temp. grad. stratosphere (K/m)
-    wfac_mod4_default = [1.0,1.0,1.0,1.0,1.0] #def. model weight factors
+    wfac_mod4_default = [1.0,1.0,1.0,1.0,1.0,1.0] #def. model weight factors
     wtf_wil  = wfac_mod4_default[0]
     wtf_spa  = wfac_mod4_default[1]
     wtf_mas  = wfac_mod4_default[2]
     wtf_mtg  = wfac_mod4_default[3]
     wtf_deg  = wfac_mod4_default[4]
+    wtf_wood0d = wfac_mod4_default[5]
     ki = 1.6  #default scale factor
     
     rho_dre = 2600 #default rock density
@@ -775,6 +777,7 @@ Xband5m_on,Xband6m_on,Cam4m_on,Cam5m_on,Cam6m_on
     global cal_Cband3a,cal_Cband3b,cal_Cband4a,cal_Cband4b,cal_Cband5a,cal_Cband5b,\
 cal_Cband6a,cal_Cband6b,cal_Xband3a,cal_Xband3b,cal_Xband4a,cal_Xband4b,\
 cal_Xband5a,cal_Xband5b,cal_Xband6a,cal_Xband6b
+    global wtf_wood0d
 
     try:
         
@@ -798,12 +801,14 @@ cal_Xband5a,cal_Xband5b,cal_Xband6a,cal_Xband6b
         wfac_mod4_default[2]  = float(configlines3[15])
         wfac_mod4_default[3]  = float(configlines3[16])
         wfac_mod4_default[4]  = float(configlines3[17])
+        wfac_mod4_default[5]  = float(configlines3[165])
         
         wtf_wil  = wfac_mod4_default[0]
         wtf_spa  = wfac_mod4_default[1]
         wtf_mas  = wfac_mod4_default[2]
         wtf_mtg  = wfac_mod4_default[3]
         wtf_deg  = wfac_mod4_default[4]
+        wtf_wood0d = wfac_mod4_default[5]
             
         rho_dre  = float(configlines3[10])
         Vmax  = float(configlines3[23])
@@ -979,7 +984,7 @@ str(unc_ISX1)+" \n"+str(unc_ISX2)+" \n"+str(vent_h)+" \n"+str(ISKEF_on)+" \n"\
 +"\n"+ str(loc_Xband3)+"\n"+ str(loc_Xband4)+"\n"+ str(loc_Xband5)+"\n"+ str(loc_Xband6)\
 +"\n"+ str(loc_GFZ1)+"\n"+ str(loc_GFZ2)+"\n"+ str(loc_GFZ3)\
 +"\n"+ str(loc_Cam4)+"\n"+ str(loc_Cam5)+"\n"+ str(loc_Cam6)+"\n"+ str(defsetup)\
-+"\n" + str(run_type) + "\n" + str(weather) +"\n") # New variables in the config files for the run type and weather
++"\n" + str(run_type) + "\n" + str(weather) +"\n" + str(wtf_wood0d) + "\n") # New variables in the config files for the run type and weather
     default_FILE.close()
  
 defaultvalues(vent_h)
@@ -2624,10 +2629,11 @@ def default_parameter_panel():
     Label(master1, text="").grid(row=8, column=5, sticky=W)
     Label(master1, text="mod. Degruyter Bonadonna:").grid(row=9, column=3,sticky=E)
     Label(master1, text="").grid(row=9, column=5, sticky=W)
+    Label(master1, text="Woodhouse 0D:").grid(row=10, column=3,sticky=E)
+    Label(master1, text="").grid(row=10, column=5, sticky=W)
     
     Label(master1, text="scale f.", fg="red").grid(row=8, column=6,sticky=W)
-    
-    
+
     Label(master1, text="atmospheric conditions", font = ("Verdana", 10, "bold"), fg = "dark violet").grid(row=1, column=6,columnspan=3)
     
     Label(master1, text="Height tropopause a.s.l.:").grid(row=2, column=6,sticky=E)	
@@ -2641,10 +2647,9 @@ def default_parameter_panel():
     Label(master1, text="K/m").grid(row=5, column=8, sticky=W)	
     Label(master1, text="Temp. grad. stratosphere:").grid(row=6,column=6,sticky=E)
     Label(master1, text="K/m").grid(row=6, column=8, sticky=W)
-    Label(master1, text="Plume height-avg. windspeed").grid(row=7, column=6,sticky=E)
+    Label(master1, text="Wind speed tropopause:").grid(row=7, column=6,sticky=E)
     Label(master1, text="m/s").grid(row=7, column=8, sticky=W)
-    
-    
+
     theta_a0_in = Entry(master1, width=7)
     theta_a0_in.insert(10,theta_a0)
     theta_a0_in.grid(row=2, column=1)
@@ -2672,6 +2677,7 @@ def default_parameter_panel():
     wf_mas = Entry(master1, width=10)
     wf_mtg = Entry(master1, width=10)
     wf_deg = Entry(master1, width=10)
+    wf_wood0d = Entry(master1, width=10)
     
     
     wf_wil.insert(10,wfac_mod4_default[0])
@@ -2679,13 +2685,14 @@ def default_parameter_panel():
     wf_mas.insert(10,wfac_mod4_default[2])
     wf_mtg.insert(10,wfac_mod4_default[3])
     wf_deg.insert(10,wfac_mod4_default[4])
-    
+    wf_wood0d.insert(10,wfac_mod4_default[5])
     
     wf_wil.grid(row=5, column=4)
     wf_spa.grid(row=6, column=4)
     wf_mas.grid(row=7, column=4)
     wf_mtg.grid(row=8, column=4)
     wf_deg.grid(row=9, column=4)
+    wf_wood0d.grid(row=10, column=4)
     
     H1_in = Entry(master1, width=10)
     H2_in = Entry(master1, width=10)
@@ -2725,6 +2732,7 @@ def default_parameter_panel():
         global wtf_mas
         global wtf_mtg
         global wtf_deg
+        global wtf_wood0d
         global H1,H1asl
         global H2,H2asl
         global tempGrad_1
@@ -2743,6 +2751,7 @@ def default_parameter_panel():
         wtf_mas = float(wf_mas.get())
         wtf_mtg = float(wf_mtg.get())
         wtf_deg = float(wf_deg.get())
+        wtf_wood0d = float(wf_wood0d.get())
         H1asl = float(H1_in.get())
         H2asl = float(H2_in.get())
         tempGrad_1 = float(tempGrad_1_in.get())
@@ -2751,8 +2760,6 @@ def default_parameter_panel():
         Vmax = float(Vmax_in.get())
         ki = float(ki_in.get())
 
-        
-        
         H1 = H1asl 
         H2 = H2asl
         save_default_file()

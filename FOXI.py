@@ -601,6 +601,7 @@ while 1:
     wtf_mas = float(configlines[15])
     wtf_mtg = float(configlines[16])
     wtf_deg = float(configlines[17])
+    wtf_wood0d = float(configlines[165])
     H1 = float(configlines[18])
     H2 = float(configlines[19])
     tempGrad_1 = float(configlines[20])
@@ -792,7 +793,7 @@ while 1:
     logger2.debug("tempGrad_1"+"\t"+str(tempGrad_1))
     logger2.debug("tempGrad_2"+"\t"+str(tempGrad_2))
     logger2.debug("tempGrad_3"+"\t"+str(tempGrad_3))
-    logger2.debug("Vmax"+"\t"+str(Vmax))     
+    logger2.debug("Vmax"+"\t"+str(Vmax))
         
     logger2.debug("--------------stream data accuracy------------")
     logger2.debug("qfak_ISKEF"+"\t"+str(qfak_ISKEF))    
@@ -904,6 +905,7 @@ while 1:
     logger2.debug("wtf_mas"+"\t"+str(wtf_mas))
     logger2.debug("wtf_mtg"+"\t"+str(wtf_mtg))    
     logger2.debug("wtf_deg"+"\t"+str(wtf_deg))
+    logger2.debug("wtf_wood0d"+"\t"+str(wtf_wood0d))
     logger2.debug("ki"+"\t"+str(ki))  
     logger2.debug("timebase"+"\t"+str(timebase))    
     logger2.debug("oo_exp"+"\t"+str(oo_exp))
@@ -2867,6 +2869,57 @@ while 1:
             logger5.debug("MTG: " + str(H_med)+"m "+ str(H_max)+"m "+ str(M_mtg)+"m ")
             return(M_mtg)
 
+        def mer_woodhouse(H_in):
+        # Solves for the Woodhouse et al. 2013 0D plume model
+            g = 9.81  # gravitational acceleration (m s^-2)
+            C_d = 998.  # specific heat capacity at constant pressure of dry air (J kg^-1 K^-1)
+            Hplume_km = H_in/1000.
+            if weather == 1:
+                elaborate_weather(H_in)
+                par_ws = (1 + 1.373*Ws)/(1 + 4.266*Ws + 0.3527*Ws**2)
+                Mdot = 92.6171 * (Hplume_km/par_ws)**(1/0.253)
+                result_Mdot = Mdot
+            else:
+                dummyH = [(x*10.) for x in range (0,int(int(H_in)/10+1))]
+
+                # reduced gravity (m s^-2)
+                #gprime = g*(C_s*theta_0-C_d*theta_a0)/(C_d*theta_a0)
+
+                #average square buoyancy frequency Nbar^2 = Gbar across height of the plume (s^-2)
+                G1 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_1)
+                #G2 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_2)
+                #G3 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_3)
+
+                gbar1=[G1 for hd in dummyH if hd <= H1] #Since N_avg should be calculated up to the tropopause height
+                #gbar2=[(G1*H1 + G2*(hd-H1))/hd for hd in dummyH if hd > H1 and hd <= H2]
+                #gbar3=[(G1*H1 + G2*(H2-H1) + G3*(hd-H2))/hd for hd in dummyH if hd > H2]
+
+                #for f in gbar2:
+                #    gbar1.append(f)
+                #for g in gbar3:
+                #    gbar1.append(g)
+
+                Nbar=[g**.5 for g in gbar1]
+
+                # atmosphere wind profile (Bonadonna and Phillips, 2003)
+
+                # average wind speed across height of the plume (m/s)
+                #Vbar=[Vmax*hd/H1/2. for hd in dummyH if hd <= H1]
+                #vbar2=[1./hd*(Vmax*H1/2. + Vmax*(hd-H1)-.9*Vmax/(H2-H1)*(hd-H1)**2./2.) for hd in dummyH if hd > H1 and hd <= H2]
+                #vbar3=[1./hd*(Vmax*H1/2. + .55*Vmax*(H2-H1)+.1*Vmax*(hd-H2)) for hd in dummyH if hd > H2]
+
+                #for w in vbar2:
+                #    Vbar.append(w)
+                #for x in vbar3:
+                #    Vbar.append(x)
+
+                Ws_vec = [(1.44 * Vmax) / (Nbar[i] * H1) for i in range(0,len(Nbar))]
+                par_ws_vec = [(1 + 1.373*Ws_vec[i])/(1 + 4.266*Ws_vec[i] + 0.3527*Ws_vec[i]**2)for i in range(0,len(Ws_vec))]
+                Mdot = [92.6171 * (Hplume_km/par_ws_vec[i])**(1/0.253) for i in range(0,len(par_ws_vec))]
+
+                result_Mdot = int(Mdot[-1])
+            return(result_Mdot)
+
         def mer_degbon(H_in):
             g = 9.81 	#gravitational acceleration (m s^-2) 
             z_1 = 2.8 #maximum non-dimensional height (Morton et al.1956)
@@ -3044,12 +3097,14 @@ while 1:
         2:SP [hmin,hbe,hmax]
         3:MA [hmin,hbe,hmax]
         4:DB [hmin,hbe,hmax]
+        5:WD0D [hmin,hbe,hmax]
         """
         wtf_wil = float(configlines[13])
         wtf_spa = float(configlines[14])
         wtf_mas = float(configlines[15])
         wtf_mtg = float(configlines[16])
         wtf_deg = float(configlines[17])
+        wtf_wood0d = float(configlines[165])
         deg_off = 0
         def centlcorr(H_in,min_DiaOBS,max_DiaOBS):
             global minPlRadius
@@ -3130,7 +3185,8 @@ while 1:
             [mer_WilWal(H_min),mer_WilWal(H_be),mer_WilWal(H_max)],\
             [mer_Sparks(H_min),mer_Sparks(H_be),mer_Sparks(H_max)],\
             [mer_Mastin(H_min), mer_Mastin(H_be),mer_Mastin(H_max)],\
-            [mer_degbon(H_db_min),mer_degbon(H_db_be),mer_degbon(H_db_max)]]
+            [mer_degbon(H_db_min),mer_degbon(H_db_be),mer_degbon(H_db_max)],\
+            [mer_woodhouse(H_min),mer_woodhouse(H_db_be),mer_woodhouse(H_db_max)]]
             logger5.info ("::::::::::::::::::::::::::::::::::::::::::::::::")
             logger5.info("Computing plume height models")
             logger5.info (">>> time base: "+ str(tib) + " minutes <<<")
@@ -3173,24 +3229,28 @@ while 1:
             allmer_file(N3h,result3h_stack[1],2,mer_stack3h[2][0],mer_stack3h[2][1],mer_stack3h[2][2],180)
             allmer_file(N3h,result3h_stack[1],3,mer_stack3h[3][0],mer_stack3h[3][1],mer_stack3h[3][2],180)
             allmer_file(N3h,result3h_stack[1],4,mer_stack3h[4][0],mer_stack3h[4][1],mer_stack3h[4][2],180)
+            allmer_file(N3h,result3h_stack[1],5,mer_stack3h[5][0],mer_stack3h[5][1],mer_stack3h[5][2], 180)
         
             allmer_file(N1h,result1h_stack[1],0,0,mer_stack1h[0],0,60)
             allmer_file(N1h,result1h_stack[1],1,mer_stack1h[1][0],mer_stack1h[1][1],mer_stack1h[1][2],60)
             allmer_file(N1h,result1h_stack[1],2,mer_stack1h[2][0],mer_stack1h[2][1],mer_stack1h[2][2],60)
             allmer_file(N1h,result1h_stack[1],3,mer_stack1h[3][0],mer_stack1h[3][1],mer_stack1h[3][2],60)
             allmer_file(N1h,result1h_stack[1],4,mer_stack1h[4][0],mer_stack1h[4][1],mer_stack1h[4][2],60)
+            allmer_file(N1h,result1h_stack[1],5,mer_stack1h[5][0],mer_stack1h[5][1],mer_stack1h[5][2],60)
         
             allmer_file(N30min,result30_stack[1],0,0,mer_stack30[0],0,30)
             allmer_file(N30min,result30_stack[1],1,mer_stack30[1][0],mer_stack30[1][1],mer_stack30[1][2],30)
             allmer_file(N30min,result30_stack[1],2,mer_stack30[2][0],mer_stack30[2][1],mer_stack30[2][2],30)
             allmer_file(N30min,result30_stack[1],3,mer_stack30[3][0],mer_stack30[3][1],mer_stack30[3][2],30)
             allmer_file(N30min,result30_stack[1],4,mer_stack30[4][0],mer_stack30[4][1],mer_stack30[4][2],30)
+            allmer_file(N30min,result30_stack[1],5,mer_stack30[5][0],mer_stack30[5][1],mer_stack30[5][2],30)
             
             allmer_file(N15min,result15_stack[1],0,0,mer_stack15[0],0,15)
             allmer_file(N15min,result15_stack[1],1,mer_stack15[1][0],mer_stack15[1][1],mer_stack15[1][2],15)
             allmer_file(N15min,result15_stack[1],2,mer_stack15[2][0],mer_stack15[2][1],mer_stack15[2][2],15)
             allmer_file(N15min,result15_stack[1],3,mer_stack15[3][0],mer_stack15[3][1],mer_stack15[3][2],15)
             allmer_file(N15min,result15_stack[1],4,mer_stack15[4][0],mer_stack15[4][1],mer_stack15[4][2],15)
+            allmer_file(N15min,result15_stack[1],5,mer_stack15[5][0],mer_stack15[5][1],mer_stack15[5][2],15)
             logger5.info("\n Analysis mode: switched ON")
             logger5.warning("ALL individual MER values are logged \"in _allmer_\" files!")
             logger5.warning("Source Stats Plots are activated!")
@@ -3220,35 +3280,36 @@ while 1:
             """computes statistical MER numbers for REFIR-internal models (RMER)"""
             mermtg = stack_mer[0]
             merdb = stack_mer[4][1]
-            tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0]]
-            if tempstack != [0.0, 0.0, 0.0, 0]:
+            merwd0d = stack_mer[5][1]
+            tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0]]
+            if tempstack != [0.0, 0.0, 0.0,0.0,0.0]:
                 a = np.array(tempstack)
                 mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])   
             else:
                 mermin_hmin = 0
                 logger6.info("NO DATA!")
-            mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0])
+            mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0])
             
             QmaxNowiHmin = min(max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0]),min(stack_mer[1][1],stack_mer[2][1],stack_mer[3][1])) 
             
             
             merwe = (wtf_wil*stack_mer[1][1]+wtf_spa*stack_mer[2][1]+\
-            +wtf_mas*stack_mer[3][1]+wtf_deg*stack_mer[4][1]+wtf_mtg*stack_mer[0])/(wtf_wil+\
-            wtf_spa+wtf_mas+wtf_mtg+wtf_deg) 
+            +wtf_mas*stack_mer[3][1]+wtf_deg*stack_mer[4][1]+wtf_wood0d*stack_mer[5][1]+wtf_mtg*stack_mer[0])/(wtf_wil+\
+            wtf_spa+wtf_mas+wtf_mtg+wtf_deg+wtf_wood0d)
             logger6.info("MERWE >>> " + str(merwe)) 
             meravg = (1*stack_mer[1][1]+1*stack_mer[2][1]+\
-            +1*stack_mer[3][1]+1*stack_mer[4][1]+1*stack_mer[0])/5
+            +1*stack_mer[3][1]+1*stack_mer[4][1]+1*stack_mer[5][1]+1*stack_mer[0])/5
             
             mermaxplus = (wtf_wil*stack_mer[1][2]+wtf_spa*stack_mer[2][2]+\
-            +wtf_mas*stack_mer[3][2]+wtf_deg*stack_mer[4][2]+wtf_mtg*stack_mer[0])/(wtf_wil+\
-            wtf_spa+wtf_mas+wtf_mtg+wtf_deg) 
+            +wtf_mas*stack_mer[3][2]+wtf_deg*stack_mer[4][2]+wtf_wood0d*stack_mer[5][2]+wtf_mtg*stack_mer[0])/(wtf_wil+\
+            wtf_spa+wtf_mas+wtf_mtg+wtf_deg+wtf_wood0d)
             
-            mermax_hmax =max(stack_mer[0],stack_mer[1][2],stack_mer[2][2],stack_mer[3][2],stack_mer[4][2])
+            mermax_hmax =max(stack_mer[0],stack_mer[1][2],stack_mer[2][2],stack_mer[3][2],stack_mer[4][2],stack_mer[5][2])
             
             Rmer = (QmaxNowiHmin + mermaxplus + merwe)/3.0
             logger6.info("RMER >>> "+str(Rmer))
             
-            mer_stat= [0,0,0,0,0,0,0,0,0,0]
+            mer_stat= [0,0,0,0,0,0,0,0,0,0,0]
             mer_stat[0] = mermin_hmin
             mer_stat[1] = mermax_hmin
             mer_stat[2] = merwe
@@ -3259,6 +3320,7 @@ while 1:
             mer_stat[7] = Rmer
             mer_stat[8] = meravg
             mer_stat[9] = QmaxNowiHmin
+            mer_stat[10]= merwd0d
             return(mer_stat)
     
         
@@ -3266,8 +3328,9 @@ while 1:
             """computes statistical MER numbers for conventional models (CMER)"""
             mermtg = stack_mer[0]
             merdb = stack_mer[4][1]
-            tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0]]
-            if tempstack != [0.0, 0.0, 0.0, 0]:
+            merwd0d = stack_mer[5][1]
+            tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0]]
+            if tempstack != [0.0, 0.0, 0.0,0.0,0.0]:
                 a = np.array(tempstack)
                 mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])   
                 
@@ -3275,30 +3338,30 @@ while 1:
                 mermin_hmin = 0
                 logger6.info("NO DATA!")
             mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],\
-            stack_mer[4][0],float(Mwood[0]))
+            stack_mer[4][0],stack_mer[5][0],float(Mwood[0]))
             QmaxNowiHmin = min(max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0]),min(stack_mer[1][1],stack_mer[2][1],stack_mer[3][1])) 
             merwe1 = (wtf_wil*stack_mer[1][1]+wtf_spa*stack_mer[2][1]+\
-            +wtf_mas*stack_mer[3][1]+wtf_deg*stack_mer[4][1]+wtf_mtg*stack_mer[0])/(wtf_wil+\
-            wtf_spa+wtf_mas+wtf_mtg+wtf_deg)
+            +wtf_mas*stack_mer[3][1]+wtf_deg*stack_mer[4][1]+wtf_wood0d*stack_mer[5][1]+wtf_mtg*stack_mer[0])/(wtf_wil+\
+            wtf_spa+wtf_mas+wtf_mtg+wtf_deg+wtf_wood0d)
             
             merwe = (wtf_5MER*merwe1 + wtf_wood*float(Mwood[1]))/(wtf_5MER+wtf_wood)
             
             meravg = (1*stack_mer[1][1]+1*stack_mer[2][1]+\
-            +1*stack_mer[3][1]+1*stack_mer[4][1]+1*stack_mer[0]+float(Mwood[1]))/6
+            +1*stack_mer[3][1]+1*stack_mer[4][1]+1*stack_mer[5][1]+1*stack_mer[0]+float(Mwood[1]))/6
             
             mermaxplus1 = (wtf_wil*stack_mer[1][2]+wtf_spa*stack_mer[2][2]+\
-            +wtf_mas*stack_mer[3][2]+wtf_deg*stack_mer[4][2]+wtf_mtg*stack_mer[0])/(wtf_wil+\
-            wtf_spa+wtf_mas+wtf_mtg+wtf_deg) 
+            +wtf_mas*stack_mer[3][2]+wtf_deg*stack_mer[4][2]+wtf_wood0d*stack_mer[5][2]+wtf_mtg*stack_mer[0])/(wtf_wil+\
+            wtf_spa+wtf_mas+wtf_mtg+wtf_deg+wtf_wood0d)
             
             mermaxplus = (wtf_5MER*mermaxplus1 + wtf_wood*float(Mwood[2]))/(wtf_5MER+wtf_wood)
             
             mermax_hmax =max(stack_mer[0],stack_mer[1][2],stack_mer[2][2],stack_mer[3][2],\
-            stack_mer[4][2],float(Mwood[2]))
+            stack_mer[4][2],stack_mer[5][2],float(Mwood[2]))
             
             Rmer = (QmaxNowiHmin + mermaxplus + merwe)/3.0 #Note that this "Rmer" is now in fact Cmer
             logger6.info("CMER >>> "+str(Rmer))
             
-            mer_stat= [0,0,0,0,0,0,0,0,0,0]
+            mer_stat= [0,0,0,0,0,0,0,0,0,0,0]
             mer_stat[0] = mermin_hmin
             mer_stat[1] = mermax_hmin
             mer_stat[2] = merwe
@@ -3309,6 +3372,7 @@ while 1:
             mer_stat[7] = Rmer
             mer_stat[8] = meravg
             mer_stat[9] = QmaxNowiHmin
+            mer_stat[10]= merwd0d
             return(mer_stat)  
     
     
@@ -3382,7 +3446,7 @@ while 1:
             FILE1.close()
         
 
-        def save_mer_logfile(n,hbe,mer_stat,MERww,MERsp,MERma,tiba):
+        def save_mer_logfile(n,hbe,mer_stat,MERww,MERsp,MERma,MERwood0d,tiba):
             """ logs continously statistic summary of MER in a file"""
             global cur_hbe,cur_hbe_min,cur_hbe_max,cur_MERMIN_hmin,cur_MERMAX_hmin,\
     cur_MERWE,cur_MERMAX_PLUS,cur_MaxMERhmax,cur_MERww,cur_MERsp,cur_MERma,\
@@ -3401,6 +3465,7 @@ while 1:
             cur_MERww = MERww
             cur_MERsp = MERsp
             cur_MERma = MERma
+            cur_MERwood0d = MERwood0d
             cur_MERmtg = mer_stat[5]
             cur_MERdb = mer_stat[6]
             cur_RMER = mer_stat[7]
@@ -3469,7 +3534,7 @@ while 1:
 "\t"+str(unc_Xband3)+"\t"+str(unc_Xband4)+"\t"+str(unc_Xband5)+"\t"+str(unc_Xband6)+\
 "\t"+str(qfak_Cband3)+"\t"+str(qfak_Cband4)+"\t"+str(qfak_Cband5)+"\t"+str(qfak_Cband6)+\
 "\t"+str(qfak_Xband3)+"\t"+str(qfak_Xband4)+"\t"+str(qfak_Xband5)+"\t"+str(qfak_Xband6)+\
-"\t"+str(qfak_Cam4)+"\t"+str(qfak_Cam5)+"\t"+str(qfak_Cam6)+"\n")
+"\t"+str(qfak_Cam4)+"\t"+str(qfak_Cam5)+"\t"+str(qfak_Cam6)+"\t"+str(wtf_wood0d)+"\t"+str(MERwood0d)+"\n")
             FILE1.close()
             
         """
@@ -3657,6 +3722,8 @@ while 1:
         179 qfak_Cam4
         180 qfak_Cam5
         181 qfak_Cam6
+        182 wtf_wood0d
+        183 MERwood0d
         
         """
         #STARTING FROM HERE: FMER SECTION
@@ -3944,7 +4011,6 @@ while 1:
             """imports all manually added MER data"""
             oo_manMER,wf_manMER,manMER_min,manMER_max = np.loadtxt("fix_MERin.txt",\
         usecols=(1,2,3,4), unpack=True, delimiter='\t')
-        
             rlines = []
             with open("fix_MERin.txt", "r") as fp:
                 for line in fp:
@@ -3957,7 +4023,8 @@ while 1:
                 if rlines[-1] == "":
                     for x in range (0,l-1):
                         indate = rlines[x]
-                        TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
+                        #TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
+                        TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                         time_diffe = TimeNOW - TimeE
                         time_diffe_sec = time_diffe.total_seconds()
                         time_diffe_min = time_diffe_sec/60
@@ -3972,7 +4039,8 @@ while 1:
                 else:
                      for x in range (0,l):
                          indate = rlines[x]
-                         TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
+                         #TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
+                         TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                          time_diffe = TimeNOW - TimeE
                          time_diffe_sec = time_diffe.total_seconds()
                          time_diffe_min = time_diffe_sec/60
@@ -3988,7 +4056,8 @@ while 1:
                 if rlines[-1] == "":
                     for x in range (0,l-1):
                         indate = rlines[x]
-                        TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
+                        #TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
+                        TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                         time_diffe = TimeNOW - TimeE
                         time_diffe_sec = time_diffe.total_seconds()
                         time_diffe_min = time_diffe_sec/60
@@ -4003,7 +4072,8 @@ while 1:
                 else:
                      for x in range (0,l):
                          indate = rlines[x]
-                         TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
+                         #TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
+                         TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                          time_diffe = TimeNOW - TimeE
                          time_diffe_sec = time_diffe.total_seconds()
                          time_diffe_min = time_diffe_sec/60
@@ -4200,7 +4270,7 @@ while 1:
                 MERmaxNowiHmin = min(max(mer_stack15[1][0],mer_stack15[2][0],mer_stack15[3][0]),min(mer_stack15[1][1],mer_stack15[2][1],mer_stack15[3][1]))
                 hbe_min = result15_stack[0]
                 hbe_max = result15_stack[2] 
-                save_mer_logfile(N15min,result15_stack[1],MER_Stat15,mer_stack15[1][1],mer_stack15[2][1],mer_stack15[3][1],15)
+                save_mer_logfile(N15min,result15_stack[1],MER_Stat15,mer_stack15[1][1],mer_stack15[2][1],mer_stack15[3][1],mer_stack15[5][1],15)
                 save_current_mer(N15min,MER_Stat15,15)    
             
             elif TIMEBASE == 30:
@@ -4208,7 +4278,7 @@ while 1:
                 MERmaxNowiHmin = min(max(mer_stack30[1][0],mer_stack30[2][0],mer_stack30[3][0]),min(mer_stack30[1][1],mer_stack30[2][1],mer_stack30[3][1]))
                 hbe_min = result30_stack[0]
                 hbe_max = result30_stack[2] 
-                save_mer_logfile(N30min,result30_stack[1],MER_Stat30,mer_stack30[1][1],mer_stack30[2][1],mer_stack30[3][1],30)
+                save_mer_logfile(N30min,result30_stack[1],MER_Stat30,mer_stack30[1][1],mer_stack30[2][1],mer_stack30[3][1],mer_stack30[5][1],30)
                 save_current_mer(N30min,MER_Stat30,30)
 
                 
@@ -4217,7 +4287,7 @@ while 1:
                 MERmaxNowiHmin = min(max(mer_stack1h[1][0],mer_stack1h[2][0],mer_stack1h[3][0]),min(mer_stack1h[1][1],mer_stack1h[2][1],mer_stack1h[3][1]))
                 hbe_min = result1h_stack[0]
                 hbe_max = result1h_stack[2] 
-                save_mer_logfile(N1h,result1h_stack[1],MER_Stat1h,mer_stack1h[1][1],mer_stack1h[2][1],mer_stack1h[3][1],60)
+                save_mer_logfile(N1h,result1h_stack[1],MER_Stat1h,mer_stack1h[1][1],mer_stack1h[2][1],mer_stack1h[3][1],mer_stack1h[5][1],60)
                 save_current_mer(N1h,MER_Stat1h,60)
                 
             else:
@@ -4225,7 +4295,7 @@ while 1:
                 MERmaxNowiHmin = min(max(mer_stack3h[1][0],mer_stack3h[2][0],mer_stack3h[3][0]),min(mer_stack3h[1][1],mer_stack3h[2][1],mer_stack3h[3][1]))
                 hbe_min = result3h_stack[0]
                 hbe_max = result3h_stack[2] 
-                save_mer_logfile(N3h,result3h_stack[1],MER_Stat3h,mer_stack3h[1][1],mer_stack3h[2][1],mer_stack3h[3][1],180)  
+                save_mer_logfile(N3h,result3h_stack[1],MER_Stat3h,mer_stack3h[1][1],mer_stack3h[2][1],mer_stack3h[3][1],mer_stack3h[5][1],180)
                 save_current_mer(N3h,MER_Stat3h,180)   
             logger7.info(" Log files recorded. \n ")
             logger7.info("***** step 7 successful *****")
@@ -4308,8 +4378,8 @@ while 1:
             else:
                 plot_plh(tiPH,bePH+vent_h,tibalabel)
             
-            tiPH,MERWE,MERww,MERsp,MERma,MERmtg,MERdb,RMER,MIN,MAX,MERavg,MERwood = \
-            np.loadtxt(out_txt+"_mer_LOG.txt", usecols=(0,5,13,14,15,16,17,18,3,7,19,21), unpack=True, delimiter='\t')
+            tiPH,MERWE,MERww,MERsp,MERma,MERmtg,MERdb,RMER,MIN,MAX,MERavg,MERwood,MERwood0d = \
+            np.loadtxt(out_txt+"_mer_LOG.txt", usecols=(0,5,13,14,15,16,17,18,3,7,19,21,183), unpack=True, delimiter='\t')
     
             Qc_lower,Qc_upper = \
             np.loadtxt(out_txt+"_mer_LOG.txt", usecols=(110,6), unpack=True, delimiter='\t')
@@ -4320,10 +4390,7 @@ while 1:
 
             
             def plot_MER_wood():
-            
-                
-                
-                
+
                 fig = figure.Figure()
                 ax = plt.subplot(111)
                 mpl.rcParams['ytick.labelsize'] = 14 
@@ -4333,7 +4400,8 @@ while 1:
                 plt.plot(tiPH,MERww,color="green")
                 plt.plot(tiPH,MERsp,color='purple')
                 plt.plot(tiPH,MERma,color='dodgerblue')
-                plt.plot(tiPH,MERmtg,color='cyan')                
+                plt.plot(tiPH,MERmtg,color='cyan')
+                plt.plot(tiPH,MERwood0d,color="grey")
                 if deg_off == 1:
                     logger9.info("*** No centerline height available => Deg Bona model is not supported! ***" )
                 else:
@@ -4348,11 +4416,11 @@ while 1:
                 plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
                 if deg_off == 1:
                     lgd=plt.legend(['CMER_lower', 'CMER_upper', 'Wilson Walker', 'Sparks', 'Mastin', 'Gudmundsson',\
-                    'PlumeRise','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
+                    'Woodhouse0D','PlumeRise','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
                     =(1.6, 0), ncol=1, fancybox=True, shadow=True,title="current timebase: " + tibalabel)
                 else:
                     lgd=plt.legend(['CMER_lower', 'CMER_upper', 'Wilson Walker', 'Sparks', 'Mastin', 'Gudmundsson',\
-                    'mod. D & B','PlumeRise','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
+                    'Woodhouse0D','mod. D & B','PlumeRise','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
                     =(1.6, 0), ncol=1, fancybox=True, shadow=True,title="current timebase: " + tibalabel)
                 
                 
@@ -4412,6 +4480,8 @@ while 1:
                 plt.plot(tiPH,MERsp,color='purple')
                 plt.plot(tiPH,MERma,color='dodgerblue')
                 plt.plot(tiPH,MERmtg,color='cyan')
+                plt.plot(tiPH, MERwood0d, color="grey")
+
                 if deg_off == 1:
                     print("** No centerline height available => Deg Bona model is not supported! **" )
                 else:
@@ -4426,11 +4496,11 @@ while 1:
                 
                 if deg_off == 1:               
                     lgd=plt.legend(['CMER_lower', 'CMER_upper', 'Wilson Walker', 'Sparks', 'Mastin', 'Gudmundsson',\
-                    'CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
+                    'Woodhouse0D','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
                     =(1.6, 0), ncol=1, fancybox=True, shadow=True,title="current timebase: " + tibalabel)
                 else:               
                     lgd=plt.legend(['CMER_lower', 'CMER_upper', 'Wilson Walker', 'Sparks', 'Mastin', 'Gudmundsson',\
-                    'mod. D & B','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
+                    'Woodhouse0D','mod. D & B','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
                     =(1.6, 0), ncol=1, fancybox=True, shadow=True,title="current timebase: " + tibalabel)                
                 
                 plt.xlabel('time since eruption start [min]')
@@ -4640,6 +4710,7 @@ while 1:
                 M_MAXPLUS = np.trapz(MAXPLUS,x=t_s)
                 M_MERmtg = np.trapz(MERmtg,x=t_s)
                 M_MERdb = np.trapz(MERdb,x=t_s)
+                M_MERwood0d = np.trapz(MERwood0d,x=t_s)
                 
                 M_Qc_lower = np.trapz(Qc_lower,x=t_s)
 
@@ -4661,6 +4732,7 @@ while 1:
                 M_MAXPLUS = 0
                 M_MERmtg = 0
                 M_MERdb = 0
+                M_MERwood0d = 0
                 M_Qc_lower = 0
                 
                 M_FABSMIN = 0
@@ -4668,20 +4740,20 @@ while 1:
                 M_FMERMIN = 0
                 M_FMER = 0
                 M_FMERMAX = 0
-            def save_totalmass_logfile(M_MIN_hmin,M_MAXhmin,M_MERWE,M_RMER,M_MAXPLUS,M_MAX_hmax,M_MERmtg,M_MERdb,M_FABSMIN,M_FABSMAX,M_FMERMIN,M_FMER,M_FMERMAX):
+            def save_totalmass_logfile(M_MIN_hmin,M_MAXhmin,M_MERWE,M_RMER,M_MAXPLUS,M_MAX_hmax,M_MERmtg,M_MERdb,M_MERwood0d,M_FABSMIN,M_FABSMAX,M_FMERMIN,M_FMER,M_FMERMAX):
                 """ logs continously statistic summary of MER in a file"""
     
                 FILE1 = open(out_txt+"_mass_LOG.txt", "a")
                 
                 FILE1.write(str(timin) +"\t"+str(M_MIN_hmin)+"\t"+str(M_MAX_hmax)+"\t"+str(M_MAXhmin)+"\t"\
                 +str(M_MERWE)+"\t"+str(M_RMER)+"\t"+str(M_MAXPLUS)\
-                +"\t"+str(M_MERmtg)+"\t"+str(M_MERdb)+"\t"+str(M_Qc_lower)+\
+                +"\t"+str(M_MERmtg)+"\t"+str(M_MERdb)+"\t"+str(M_MERwood0d)+"\t"+str(M_Qc_lower)+\
 "\t"+str(M_FABSMIN)+"\t"+str(M_FABSMAX)+"\t"+str(M_FMERMIN)+\
 "\t"+str(M_FMER)+"\t"+str(M_FMERMAX)+"\n")
                 FILE1.close()
             
             
-            save_totalmass_logfile(M_MIN_hmin,M_MAXhmin,M_MERWE,M_RMER,M_MAXPLUS,M_MAX_hmax,M_MERmtg,M_MERdb,M_FABSMIN,M_FABSMAX,M_FMERMIN,M_FMER,M_FMERMAX)
+            save_totalmass_logfile(M_MIN_hmin,M_MAXhmin,M_MERWE,M_RMER,M_MAXPLUS,M_MAX_hmax,M_MERmtg,M_MERdb,M_MERwood0d,M_FABSMIN,M_FABSMAX,M_FMERMIN,M_FMER,M_FMERMAX)
          
             def plot_TotalMass():
                 
@@ -5110,7 +5182,8 @@ while 1:
                 "wtf_spa"+"\t"+str(wtf_spa)+"\n"+\
                 "wtf_mas"+"\t"+str(wtf_mas)+"\n"+\
                 "wtf_mtg"+"\t"+str(wtf_mtg)+"\n"+\
-                "wtf_deg"+"\t"+str(wtf_deg)+"\n"+\
+                "wtf_deg"+"\t"+str(wtf_deg)+"\n"+ \
+                "wtf_wood0d" + "\t" + str(wtf_wood0d) + "\n" + \
                 "ki"+"\t"+str(ki)+"\n"+\
                 "timebase"+"\t"+str(timebase)+"\n"+\
                 "oo_exp"+"\t"+str(oo_exp)+"\n"+\
@@ -5340,7 +5413,6 @@ while 1:
     logger8.manager.loggerDict.clear()
     logger9.manager.loggerDict.clear()
     logger10.manager.loggerDict.clear()
-    print(P_H_source)
     waitingProc()    
 
 ("\n --- programm aborted")
