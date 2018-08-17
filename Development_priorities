@@ -21,4 +21,7 @@ DONE
 	* Modify FoxScreen, in particular plot "Mass Eruption Rate" (D in fig. 61) to display a new line for this model
 DONE
 
-- Correct function manMER_import, which causes FOXI to crash when two manually input MER values are stored in the file fix_MERin.txt
+- Correct function manMER_import, which causes FOXI to crash when two manually input MER values are stored in the file fix_MERin.txt.
+  UPDATE: it seems that FOXI works only with manual MER data in the file (and probably the same happens with the
+  "experimental MER". To fix this, it will take long. So I will probably make FOXI read only the most up to date datum (first line of 
+fix_MERin.txt
