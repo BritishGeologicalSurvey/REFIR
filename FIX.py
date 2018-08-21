@@ -3717,7 +3717,7 @@ def man_MERF():
     Wtf_manual.grid(row=5, column=8)
     Wtf_manual.insert(10,"0")
     Oo_manual.set(1)
-    Checkbutton(man_MER, text = "use data", variable= Oo_manual).grid(row=9, column=7,columnspan=2)
+  #  Checkbutton(man_MER, text = "use data", variable= Oo_manual).grid(row=9, column=7,columnspan=2)
     
     def man_MER_update():
         global oo_manual, Oo_manual, Wtf_manual, wtf_manual #on/off manual MER input
@@ -3745,10 +3745,16 @@ def man_MERF():
         print("minimum: "+str(min_manMER))
         print("maximum: "+str(max_manMER))
         comment_merin = str(Com_manual.get())
-        manMER_FILE=open("fix_MERin.txt",'a')
-        manMER_FILE.write(str(time_MERin)+"\t"+str(oo_manual)+"\t"+\
-str(wtf_manual)+"\t"+str(min_manMER)+"\t"+str(max_manMER)+"\t"+str("7")+"\t"\
-+str("7")+"\t"+str("7")+"\t"+str("7")+"\t"+str(comment_merin)+"\n")
+        try:
+            with open("fix_MERin.txt",'r') as manMER_FILE_original: data = manMER_FILE_original.read()
+            with open("fix_MERin.txt",'w') as manMER_FILE: manMER_FILE.write(str(time_MERin)+"\t"+str(oo_manual)+"\t"+\
+                    str(wtf_manual)+"\t"+str(min_manMER)+"\t"+str(max_manMER)+"\t"+str("7")+"\t"+\
+                    str("7")+"\t"+str("7")+"\t"+str("7")+"\t"+str(comment_merin)+"\n" + data)
+        except:
+            manMER_FILE=open("fix_MERin.txt",'a')
+            manMER_FILE.write(str(time_MERin)+"\t"+str(oo_manual)+"\t"+\
+         str(wtf_manual)+"\t"+str(min_manMER)+"\t"+str(max_manMER)+"\t"+str("7")+"\t"\
+         +str("7")+"\t"+str("7")+"\t"+str("7")+"\t"+str(comment_merin)+"\n")
         manMER_FILE.close()
         save_default_file()
         print("*** settings updated! ***")

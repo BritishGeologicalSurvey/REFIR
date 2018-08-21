@@ -4009,83 +4009,35 @@ while 1:
 
         def manMER_import():
             """imports all manually added MER data"""
-            oo_manMER,wf_manMER,manMER_min,manMER_max = np.loadtxt("fix_MERin.txt",\
-        usecols=(1,2,3,4), unpack=True, delimiter='\t')
-            rlines = []
+#            oo_manMER,wf_manMER,manMER_min,manMER_max = np.loadtxt("fix_MERin.txt",\
+#        usecols=(1,2,3,4), unpack=True, delimiter='\t')
+#            rlines = []
             with open("fix_MERin.txt", "r") as fp:
-                for line in fp:
-                    rlines.append(line[:19])
-            fp.close() 
-          
-            l = len(rlines)
-            if l ==1:
-            
-                if rlines[-1] == "":
-                    for x in range (0,l-1):
-                        indate = rlines[x]
-                        #TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
-                        TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
-                        time_diffe = TimeNOW - TimeE
-                        time_diffe_sec = time_diffe.total_seconds()
-                        time_diffe_min = time_diffe_sec/60
-                        if oo_manMER == 0:
-                            print()
-                        else:
-                            if manMER_min == 0:
-                                print()
-                            else:
-                                Qman_stacksort(time_diffe_min,manMER_min,manMER_max,wf_manMER,900,oo_manMER)
-                        
-                else:
-                     for x in range (0,l):
-                         indate = rlines[x]
-                         #TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
-                         TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
-                         time_diffe = TimeNOW - TimeE
-                         time_diffe_sec = time_diffe.total_seconds()
-                         time_diffe_min = time_diffe_sec/60
-                         if oo_manMER == 0:
-                            print()
-                         else:
-                            if manMER_min == 0:
-                                print()
-                            else:
-                                Qman_stacksort(time_diffe_min,manMER_min,manMER_max,wf_manMER,900,oo_manMER)
+                first_line = fp.readline()
+                time_string = first_line[:19]
+#                for line in fp:
+#                    rlines.append(line[:19])
+            fp.close()
+            splits = first_line.split("\t")
+            oo_manMER = float(splits[1])
+            wf_manMER = float(splits[2])
+            manMER_min = float(splits[3])
+            manMER_max = float(splits[4])
+            #oo_manMER, wf_manMER, manMER_min, manMER_max = np.loadtxt(first_line,usecols=(1, 2, 3, 4), unpack=True, delimiter='\t')
+            indate = time_string
+            # TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
+            TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
+            time_diffe = TimeNOW - TimeE
+            time_diffe_sec = time_diffe.total_seconds()
+            time_diffe_min = time_diffe_sec / 60
+            if oo_manMER == 0:
+                print()
             else:
-                        
-                if rlines[-1] == "":
-                    for x in range (0,l-1):
-                        indate = rlines[x]
-                        #TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
-                        TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
-                        time_diffe = TimeNOW - TimeE
-                        time_diffe_sec = time_diffe.total_seconds()
-                        time_diffe_min = time_diffe_sec/60
-                        if oo_manMER == 0:
-                            print()
-                        else:
-                            if manMER_min == 0:
-                                print()
-                            else:
-                                Qman_stacksort(time_diffe_min,manMER_min,manMER_max,wf_manMER,900,oo_manMER)
-                        
+                if manMER_min == 0:
+                    print()
                 else:
-                     for x in range (0,l):
-                         indate = rlines[x]
-                         #TimeE = datetime.datetime.strptime(indate, "%d-%m-%Y %H:%M:%S")
-                         TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
-                         time_diffe = TimeNOW - TimeE
-                         time_diffe_sec = time_diffe.total_seconds()
-                         time_diffe_min = time_diffe_sec/60
-                         if oo_manMER == 0:
-                            print()
-                         else:
-                             if manMER_min == 0:
-                                 print()
-                             else:
-                                 Qman_stacksort(time_diffe_min,manMER_min,manMER_max,wf_manMER,900,oo_manMER)
-        
-        
+                    Qman_stacksort(time_diffe_min, manMER_min, manMER_max, wf_manMER, 900, oo_manMER)
+
         try:
             Pulsan = open("fix_MERin.txt", "r")
             Pulsan.close()
@@ -4093,7 +4045,6 @@ while 1:
             manMER_import()
         except EnvironmentError:
             logger7.info("No manually added MER data found.")
-        
         
         mN3h=0
         for x in range(0,len(Qman_stack3h)):
@@ -4463,9 +4414,7 @@ while 1:
                 plt.savefig(out_txt+"_CMER_plot.svg", format='svg', dpi=1200) #highresolution
                 plt.close(fig)
                 plt.close("all")
-        
-        
-        
+
             def plot_MER():
 
                 
@@ -4541,8 +4490,6 @@ while 1:
                 plt.close(fig)
                 del gc.garbage[:]
 
-
-
             def plot_FMER():
                 fig = figure.Figure()
                 
@@ -4602,6 +4549,7 @@ while 1:
                 plt.cla()
                 plt.close()
                 del gc.garbage[:]
+
             if file_wood == 0:
                 if PM_MERplot == 0:
                     logger9.info("CMER plot switched OFF!")
@@ -4670,10 +4618,7 @@ while 1:
             logger9.info("\n MER plots provided. \n ")
             logger9.info("***** step 9 successful *****")
             logger9.info("")
-            
-            
-            
-            
+
             
             logger8.info("*******************************")
             logger8.info("Now computing erupted mass....")
