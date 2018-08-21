@@ -174,23 +174,42 @@ def icelandvolc_default():
     volc_exist=0
     create_volcheader()
 # ID is now the VESPA ID
-    volc = ["eyjaf",63.6283,-19.625, 1651,1,"Eyjafjallajökull"]
+#     volc = ["eyjaf",63.6283,-19.625, 1651,1,"Eyjafjallajökull"]
+#     volcentry(volc)
+#     volc = ["katla",63.633,-19.116, 1400,1,"Katla"]
+#     volcentry(volc)
+#     volc = ["hekla",63.992,-19.667, 1491,1,"Hekla"]
+#     volcentry(volc)
+#     volc = ["grims",64.417,-17.333, 1722,1,"Grímsvötn"]
+#     volcentry(volc)
+#     volc = ["vestm",63.417,-20.35, 283,1,"Vestmannaeyjar"]
+#     volcentry(volc)
+#     volc = ["barda",64.667,-17.5, 2009,1,"Bárðarbunga"]
+#     volcentry(volc)
+#     volc = ["kverk",64.65,-16.667, 1933,1,"Kverkfjöll"]
+#     volcentry(volc)
+#     volc = ["oraef",64.00,-16.65, 2110,1,"Öræfajökull"]
+#     volcentry(volc)
+#     volc = ["askja",65.05,-16.783, 1516,1,"Askja"]
+#     volcentry(volc)
+# ID replaced with the Smithsonian Institute ones
+    volc = ["2328",63.6283,-19.625, 1651,1,"Eyjafjallajökull"]
     volcentry(volc)
-    volc = ["katla",63.633,-19.116, 1400,1,"Katla"]
+    volc = ["2329",63.633,-19.116, 1400,1,"Katla"]
     volcentry(volc)
-    volc = ["hekla",63.992,-19.667, 1491,1,"Hekla"]
+    volc = ["2334",63.992,-19.667, 1491,1,"Hekla"]
     volcentry(volc)
-    volc = ["grims",64.417,-17.333, 1722,1,"Grímsvötn"]
+    volc = ["2335",64.417,-17.333, 1722,1,"Grímsvötn"]
     volcentry(volc)
-    volc = ["vestm",63.417,-20.35, 283,1,"Vestmannaeyjar"]
+    volc = ["2327",63.417,-20.35, 283,1,"Vestmannaeyjar"]
     volcentry(volc)
-    volc = ["barda",64.667,-17.5, 2009,1,"Bárðarbunga"]
+    volc = ["2338",64.667,-17.5, 2009,1,"Bárðarbunga"]
     volcentry(volc)
-    volc = ["kverk",64.65,-16.667, 1933,1,"Kverkfjöll"]
+    volc = ["2341",64.65,-16.667, 1933,1,"Kverkfjöll"]
     volcentry(volc)
-    volc = ["oraef",64.00,-16.65, 2110,1,"Öræfajökull"]
+    volc = ["2355",64.00,-16.65, 2110,1,"Öræfajökull"]
     volcentry(volc)
-    volc = ["askja",65.05,-16.783, 1516,1,"Askja"]
+    volc = ["2343",65.05,-16.783, 1516,1,"Askja"]
     volcentry(volc)
     volc = ["ovaent",65.00,-17.00, 99,1,"Óvæntfjöll"]
     volcentry(volc)
@@ -202,12 +221,17 @@ def icelandvolc_default():
     assert isinstance(name, str)    # native str on Py2 and Py3
 
 def newvolc_setup():
+    import pandas as pd
+    import numpy as np
+    from pandas import ExcelFile
     print("... setting up volcanoes of interest!")
     print("Up to 10 volcanoes can be added to the list")
+    df = pd.read_excel('volcanoExport.xlsx', sheetname='volcanoes')
+    nrow = df.shape[0]
     i = 0
     z = 0
     global volc, N_volc
-    volc=["",0,0,0,0,""]
+    volc=[0,0,0,0,0,""]
     vrun = 0
     create_volcheader()
     while z!=2 :
@@ -215,24 +239,43 @@ def newvolc_setup():
         vrun = vrun + 1
         print("----------------")
         print("Volcano No. "+ str(vrun)+": \n")
-        volc[5] = input("Name of volcano .. ")
-        assert isinstance(volc[5], str)
-        while lencheck!=1:
-            volc[0]= input("Specify code for volcano (6 characters max!): ")
-            assert isinstance(volc[0], str)
-            if len(volc[0]) <7:
-                lencheck = 1
+        # volc[5] = input("Name of volcano .. ")
+        # assert isinstance(volc[5], str)
+        volc[0] = input("Specify Smithsonian Institute ID for the volcano: ")
+        row=0
+        while True:
+            volc[4] = 0
+            if df['VOLCANO_ID'][row] == np.int64(volc[0]):
+            #if df['VOLCANO_ID'][row] == volc[0]:
+                volc[1] = df['LATITUDE'][row]
+                volc[2] = df['LONGITUDE'][row]
+                volc[3] = df['ELEVATION_m'][row]
+                volc[5] = df['VOLCANO_NAME'][row]
+                volcentry(volc)
+                break
             else:
-                print("Maximum of 6 characters, please!") 
-                lencheck = 0
-        lat = input("Specify Latitude (e.g. 63.3) .. ")
-        volc[1] = float(lat)
-        lon = input("Specify Longitude (e.g. -17.5) .. ")
-        volc[2] = float(lon)
-        veh = input("Specify vent height a.s.l. (m) .. ")
-        volc[3] = float(veh)
-        volc[4] = 0
-        volcentry(volc)
+                row += 1
+                if row >= nrow:
+                    print('ID not found')
+                    break
+
+
+        # while lencheck!=1:
+        #     volc[0]= input("Specify code for volcano (6 characters max!): ")
+        #     assert isinstance(volc[0], str)
+        #     if len(volc[0]) <7:
+        #         lencheck = 1
+        #     else:
+        #         print("Maximum of 6 characters, please!")
+        #         lencheck = 0
+        # lat = input("Specify Latitude (e.g. 63.3) .. ")
+        # volc[1] = float(lat)
+        # lon = input("Specify Longitude (e.g. -17.5) .. ")
+        # volc[2] = float(lon)
+        # veh = input("Specify vent height a.s.l. (m) .. ")
+        # volc[3] = float(veh)
+        # volc[4] = 0
+        # volcentry(volc)
         print("Data saved!")
         print("-------------")
         if vrun == 10:
@@ -315,7 +358,6 @@ def latest_xradar_location():
                 break
         except:
             continue
-
 
 def icelandsensors_default():
     global N_sens
@@ -437,7 +479,7 @@ def Xband_new():
     print("Up to 6 sensors can be added")
     z = 0
     slots_full = 0
-    globalN_sens
+    global N_sens
     sens=["",0,0,0,0,0,"","","",""]
     if a[6]==0:
         create_sensorheadersX()
@@ -750,7 +792,6 @@ def read_volcanoes():
     except  EnvironmentError:
         print("Error - File \"volcano_list.ini\" not found!\n")
         sys.exit()
-        
 
 def read_sensors():
     """reads IDs and GPS coordinates from *.ini files"""
@@ -811,7 +852,6 @@ def read_sensors():
         print("Error - \".ini\" sensor file not found!\n")
         sys.exit()
 
-
 def create_vdbheader():
     """generates header of volc_database.ini file"""
     FILE1 = open("volc_database.ini", "w")
@@ -844,7 +884,6 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * asin(sqrt(a)) 
     r = 6371 # Radius of earth in kilometers.
     return c * r
-
 
 def dist_attribution():
     global DBline
