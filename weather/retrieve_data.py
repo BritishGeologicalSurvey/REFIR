@@ -135,6 +135,7 @@ def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     from ecmwfapi import ECMWFDataServer
     from read import extract_data_erain
     import os
+    print('from retrieve',eruption_start,eruption_stop)
     if(lon_source < 0):
         lon_source = 360 + lon_source
     year_start = eruption_start[0:4]

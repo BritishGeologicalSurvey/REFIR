@@ -112,6 +112,106 @@ def first_widget():
 
 first_widget()
 
+if run_type == 2:
+    past_eruption = Tk()
+    out = StringVar()
+
+    def second_widget():
+        past_eruption.title("Reanalysis mode control")
+        Label(past_eruption, text="Specify start and end of eruption",\
+         font = "Helvetica 12", fg="blue").grid(row=0, column=0, columnspan=6)
+        Label(past_eruption, text="Start of eruption: ", \
+        font = "Helvetica 11", fg="green").grid(row=5, column=0, columnspan =2, sticky=W)
+        Label(past_eruption, text="Year: ", font = "Helvetica 10").grid(row=5, column=2)
+        Label(past_eruption, text="Month: ", font = "Helvetica 10").grid(row=6, column=2)
+        Label(past_eruption, text="Day: ", font = "Helvetica 10").grid(row=6, column=0)
+        Label(past_eruption, text="Hour: ", font = "Helvetica 10").grid(row=7, column=0)
+        Label(past_eruption, text="Minute: ", font = "Helvetica 10").grid(row=7, column=2)
+        Label(past_eruption, text="End of eruption: ", \
+        font = "Helvetica 11", fg="green").grid(row=9, column=0, columnspan =2, sticky=W)
+        Label(past_eruption, text="Year: ", font = "Helvetica 10").grid(row=9, column=2)
+        Label(past_eruption, text="Month: ", font = "Helvetica 10").grid(row=10, column=2)
+        Label(past_eruption, text="Day: ", font = "Helvetica 10").grid(row=10, column=0)
+        Label(past_eruption, text="Hour: ", font = "Helvetica 10").grid(row=11, column=0)
+        Label(past_eruption, text="Minute: ", font = "Helvetica 10").grid(row=11, column=2)
+
+        time_ERU_start_y = Entry(past_eruption, width=4)
+        time_ERU_start_y.grid(row=5, column=3, sticky=W)
+        time_ERU_start_mo = Entry(past_eruption, width=2)
+        time_ERU_start_mo.grid(row=6, column=3, sticky=W)
+        time_ERU_start_d = Entry(past_eruption, width=2)
+        time_ERU_start_d.grid(row=6, column=1, sticky=W)
+        time_ERU_start_h = Entry(past_eruption, width=2)
+        time_ERU_start_h.grid(row=7, column=1, sticky=W)
+        time_ERU_start_m = Entry(past_eruption, width=2)
+        time_ERU_start_m.grid(row=7, column=3, sticky=W)
+        time_ERU_stop_y = Entry(past_eruption, width=4)
+        time_ERU_stop_y.grid(row=9, column=3, sticky=W)
+        time_ERU_stop_mo = Entry(past_eruption, width=2)
+        time_ERU_stop_mo.grid(row=10, column=3, sticky=W)
+        time_ERU_stop_d = Entry(past_eruption, width=2)
+        time_ERU_stop_d.grid(row=10, column=1, sticky=W)
+        time_ERU_stop_h = Entry(past_eruption, width=2)
+        time_ERU_stop_h.grid(row=11, column=1, sticky=W)
+        time_ERU_stop_m = Entry(past_eruption, width=2)
+        time_ERU_stop_m.grid(row=11, column=3, sticky=W)
+
+        def on_button():
+            global time_start,time_stop,eruption_start,eruption_stop,Y_eru_start_s,MO_eru_start_s,D_eru_start_s
+            Y_eru_start = int(time_ERU_start_y.get())
+            MO_eru_start = int(time_ERU_start_mo.get())
+            D_eru_start = int(time_ERU_start_d.get())
+            H_eru_start = int(time_ERU_start_h.get())
+            M_eru_start = int(time_ERU_start_m.get())
+            Y_eru_stop = int(time_ERU_stop_y.get())
+            MO_eru_stop = int(time_ERU_stop_mo.get())
+            D_eru_stop = int(time_ERU_stop_d.get())
+            H_eru_stop = int(time_ERU_stop_h.get())
+            M_eru_stop = int(time_ERU_stop_m.get())
+            Y_eru_start_s = str(Y_eru_start)
+            if MO_eru_start < 10:
+                MO_eru_start_s = '0'+str(MO_eru_start)
+            else:
+                MO_eru_start_s = str(MO_eru_start)
+            print(D_eru_start)
+            if D_eru_start < 10:
+                D_eru_start_s = '0'+str(D_eru_start)
+            else:
+                D_eru_start_s = str(D_eru_start)
+            if H_eru_start < 10:
+                H_eru_start_s = '0'+str(H_eru_start)
+            else:
+                H_eru_start_s = str(H_eru_start)
+            Y_eru_stop_s = str(Y_eru_stop)
+            if MO_eru_stop < 10:
+                MO_eru_stop_s = '0'+str(MO_eru_stop)
+            else:
+                MO_eru_stop_s = str(MO_eru_stop)
+            if D_eru_stop < 10:
+                D_eru_stop_s = '0'+str(D_eru_stop)
+            else:
+                D_eru_stop_s = str(D_eru_stop)
+            if H_eru_stop < 10:
+                H_eru_stop_s = '0'+str(H_eru_stop)
+            else:
+                H_eru_stop_s = str(H_eru_stop)
+            eruption_start = Y_eru_start_s+MO_eru_start_s+D_eru_start_s+H_eru_start_s
+            eruption_stop = Y_eru_stop_s+MO_eru_stop_s+D_eru_stop_s+H_eru_stop_s
+            time_start = datetime.datetime(Y_eru_start, MO_eru_start, D_eru_start, H_eru_start, M_eru_start)
+            time_stop = datetime.datetime(Y_eru_stop, MO_eru_stop, D_eru_stop, H_eru_stop, M_eru_stop)
+
+
+        Button(past_eruption, text="Confirm times", font="Helvetica 11", fg="yellow", bg="red", \
+               width=24, height=2, command=on_button).grid(row=14, column=0, columnspan=5)
+
+        past_eruption.mainloop()
+
+    second_widget()
+else:
+    time_start = '00-00-00 00:00:00'
+    time_stop = '00-00-00 00:00:00'
+
+
 dir1 = os.path.dirname(__file__)
 PlumeRiseFile = "PlumeRise_Foxi"
 root = Tk()
@@ -238,18 +338,16 @@ def automatic_weather():
     from retrieve_data import gfs_forecast_retrieve
     import os
     from datetime import datetime, date, timedelta
-    eruption_start = '2010041700'
-    eruption_stop = '2010041918'
-    now = str(datetime.utcnow())
-    year = now[0:4]
-    month = now[5:7]
-    day = now[8:10]
     if run_type == 1:
+        now = str(datetime.utcnow())
+        year = now[0:4]
+        month = now[5:7]
+        day = now[8:10]
         gfs_forecast_retrieve(volc_lon[vulkan],volc_lat[vulkan])
         folder = 'gfs_raw_weather_data_' + year + month + day
     elif run_type == 2:
         era_interim_retrieve(volc_lon[vulkan],volc_lat[vulkan],eruption_start,eruption_stop)
-        folder = 'era_interim_raw_weather_data_' + year + month + day
+        folder = 'era_interim_raw_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
     os.system('mkdir ' + folder)
     if (os.name == 'posix'):
         os.system('mv pressure_level.grib weather_* profile_* tropopause_* ' + folder)
@@ -984,7 +1082,8 @@ str(unc_ISX1)+" \n"+str(unc_ISX2)+" \n"+str(vent_h)+" \n"+str(ISKEF_on)+" \n"\
 +"\n"+ str(loc_Xband3)+"\n"+ str(loc_Xband4)+"\n"+ str(loc_Xband5)+"\n"+ str(loc_Xband6)\
 +"\n"+ str(loc_GFZ1)+"\n"+ str(loc_GFZ2)+"\n"+ str(loc_GFZ3)\
 +"\n"+ str(loc_Cam4)+"\n"+ str(loc_Cam5)+"\n"+ str(loc_Cam6)+"\n"+ str(defsetup)\
-+"\n" + str(run_type) + "\n" + str(weather) +"\n" + str(wtf_wood0d) + "\n") # New variables in the config files for the run type and weather
++"\n" + str(run_type) + "\n" + str(weather) +"\n" + str(wtf_wood0d) + "\n" + str(time_start)\
++"\n" + str(time_stop)) # New variables in the config files for the run type and weather
     default_FILE.close()
  
 defaultvalues(vent_h)

@@ -64,11 +64,8 @@ time_axis = 1 #0: inverted for pl.h. sector plots; 1: always same
 
 """ settings END """
 
-
-
 time_st = datetime.datetime.utcnow()         
 time_stamp = time_st.strftime("%Y%m%d_%H%M") 
-
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -302,14 +299,10 @@ try:
     Label(masterout, text="Year: ", font = "Helvetica 10").grid(row=5, column=2)
     Label(masterout, text="Month: ", font = "Helvetica 10").grid(row=6, column=2)
     Label(masterout, text="Day: ", font = "Helvetica 10").grid(row=6, column=0)
-    
     Label(masterout, text="Hour: ", font = "Helvetica 10").grid(row=7, column=0)
     Label(masterout, text="Minute: ", font = "Helvetica 10").grid(row=7, column=2)
-    
-    
+
     Label(masterout, text=".txt", font = "Helvetica 10").grid(row=3,column=4, sticky=W)
-    
-    
     Label(masterout, text=" ", font = "Helvetica 10").grid(row=4, column=0)
     Label(masterout, text=" ", font = "Helvetica 10").grid(row=8, column=0)
     Label(masterout, text="IMPORTANT! Program starts not before window is closed!",\
@@ -321,14 +314,10 @@ try:
     
     time_ERU_y = Entry(masterout,width=4)
     time_ERU_y.grid(row=5, column=3, sticky=W)
-    
     time_ERU_mo = Entry(masterout,width=2)
     time_ERU_mo.grid(row=6, column=3, sticky=W)
-    
     time_ERU_d = Entry(masterout,width=2)
     time_ERU_d.grid(row=6, column=1, sticky=W)
-    
-    
     time_ERU_h = Entry(masterout,width=2)
     time_ERU_h.grid(row=7, column=1, sticky=W)
     time_ERU_m = Entry(masterout,width=2)
@@ -348,8 +337,8 @@ try:
         D_eru = int(time_ERU_d.get())
         H_eru = int(time_ERU_h.get())
         M_eru = int(time_ERU_m.get())
-        time_einn = datetime.datetime(int(YearNUNAs),int(MonthNUNAs),int(DayNUNAs),int(HourNUNAs),int(MinuteNUNAs)) 
-        time_tveir = datetime.datetime(Y_eru,MO_eru,D_eru,H_eru,M_eru)  
+        time_tveir = datetime.datetime(Y_eru,MO_eru,D_eru,H_eru,M_eru)
+        time_einn = datetime.datetime(int(YearNUNAs), int(MonthNUNAs), int(DayNUNAs), int(HourNUNAs),int(MinuteNUNAs))
         lead_Time = int((time_einn-time_tveir).total_seconds()/60)
         logging.info("Time since eruption start: " + str(lead_Time)+"min")
         logging.info("Configuration completed!")
@@ -361,7 +350,6 @@ try:
     masterout.mainloop()
 
 #END GUI
-
 
 except EnvironmentError:
     out_txt = input ("Enter name of output file (without .txt): ")
@@ -385,15 +373,44 @@ def elaborate_weather(plume_height):
     cwd=os.getcwd()
     if run_type == 1:
         folder_name=cwd+"\\gfs_raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
-    else:
-        folder_name = cwd + "\\erainterim_raw_weather_data_" + YearNUNAs + MonthNUNAs + DayNUNAs
-    if os.path.exists(folder_name):
         abs_validity = YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs
+        year_val = YearNUNAs
+        month_val = MonthNUNAs
+        day_val = DayNUNAs
+        hour_val = HourNUNAs
+    else:
+        folder_name = cwd + "\\era_interim_raw_weather_data_" + YearNOWs + MonthNOWs + DayNOWs
+        hour = int(HourNOWs)
+        if hour >= 21:
+            TimeNOW_mod = TimeNOW + datetime.timedelta(day=1)
+            year_val = TimeNOW_mod[:4]
+            month_val = TimeNOW_mod[5:7]
+            day_val = TimeNOW_mod[8:10]
+            hour_val = '00'
+            folder_name = cwd + "\\era_interim_raw_weather_data_" + year_val + month_val + day_val
+        else:
+            year_val = YearNOWs
+            month_val = MonthNOWs
+            day_val = DayNOWs
+
+        if hour < 3:
+            hour_val = '00'
+        elif 3 <= hour < 9:
+            hour_val = '06'
+        elif 9 <= hour < 15:
+            hour_val = '12'
+        elif 15 <= hour < 21:
+            hour_val = '18'
+
+        abs_validity = year_val + month_val + day_val + hour_val
+
+    print(folder_name)
+    if os.path.exists(folder_name):
         profile_data_file = "profile_data_" + abs_validity + ".txt"
         profile_data_file_full = folder_name+"\\"+profile_data_file
         if os.path.exists(profile_data_file_full):
             print("Elaborating "+profile_data_file)
-            [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(YearNUNAs,MonthNUNAs,DayNUNAs,abs_validity,profile_data_file_full,plume_height,vent_h)
+            [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_val,month_val,day_val,abs_validity,profile_data_file_full,plume_height,vent_h)
         else:
             print("File "+profile_data_file+" not present")
     else:
@@ -436,19 +453,20 @@ MQcode = 0
 Min_DiaOBSold = 0
 Max_DiaOBSold = 0
 
+TStartSim = datetime.datetime.utcnow()
 #HERE BEGIN of while loop!
-
+mins = 0
 while 1:
 
     run = run +1
     
     verz = 0
 
-    TimeNOW = datetime.datetime.utcnow()
-    if run == 1:
-        timin = lead_Time
-    else:
-        timin = int((TimeNOW-time_tveir).total_seconds()/60)
+    # TimeNOW = datetime.datetime.utcnow()
+    # if run == 1:
+    #     timin = lead_Time
+    # else:
+    #     timin = int((TimeNOW-time_tveir).total_seconds()/60)
 
     try:
         
@@ -632,7 +650,38 @@ while 1:
     defsetup= int(configlines[162])
     run_type = int(configlines[163])
     weather = int(configlines[164])
-    
+    wtf_wood0d = float(configlines[165])
+    time_start = configlines[166]
+    time_stop = configlines[167]
+
+    mins = mins + steptime
+    if run_type ==1:
+        TimeNOW = datetime.datetime.utcnow()
+        TimeNOWs = str(TimeNOW)
+        HourNOWs = TimeNOWs[11:13]
+        HourNOW = int(HourNOWs)
+    else:
+        eruption_start = datetime.datetime.strptime(time_start, "%Y-%m-%d %H:%M:%S\n")
+        eruption_stop = datetime.datetime.strptime(time_stop, "%Y-%m-%d %H:%M:%S")
+        TimeNOW = eruption_start + datetime.timedelta(minutes=mins)
+        TimeNOWs = str(TimeNOW)
+        YearNOWs = TimeNOWs[:4]
+        MonthNOWs = TimeNOWs[5:7]
+        DayNOWs = TimeNOWs[8:10]
+        HourNOWs = TimeNOWs[11:13]
+        MinuteNOWs = TimeNOWs[14:16]
+        HourNOW = int(HourNOWs)
+        if TimeNOW > eruption_stop:
+            print("Eruption ended")
+            print("REFIR is going to stop")
+            exit()
+        lead_Time = 0
+
+    if run == 1:
+        timin = lead_Time
+    else:
+        timin = int((TimeNOW-eruption_start).total_seconds()/60)
+
     fndb= os.path.join(dir1+'/refir_config','volc_database.ini')
     volcLAT, volcLON=\
     np.loadtxt(fndb, skiprows=2, usecols=(1,2), unpack=True, delimiter='\t')
@@ -947,8 +996,8 @@ while 1:
         if ID[x]=="n.a.":
             print("...")#sensor slot not assigned
         else:
-          
-            import_autostreams(sens_file[x],sens_url[x],sens_IP[x],sens_dir[x],SensOO[x],ID[x])
+            if run_type == 1:
+                import_autostreams(sens_file[x],sens_url[x],sens_IP[x],sens_dir[x],SensOO[x],ID[x])
    
 
 
@@ -956,7 +1005,6 @@ while 1:
     time_OBS = time_OBS[:19]
     TimeConfig = datetime.datetime.strptime(time_update, "%Y-%m-%d %H:%M:%S")
     TimeOBS = datetime.datetime.strptime(time_OBS, "%Y-%m-%d %H:%M:%S")
-    
     time_diff = TimeNOW - TimeOBS
     time_diff_sec = time_diff.total_seconds()
     logger3.info ("Time since last plume height input by operator:")
@@ -1918,10 +1966,8 @@ while 1:
         plt.close(fig)
         del gc.garbage[:]
 
-    
     def stacksort(timediff,plh,unc,qf,source,onoff):
         """sorts data according to up-to-dateness"""
-
         if plh <=0:
             logger3.critical("Plume height data corrupted!")
         else:
@@ -2044,6 +2090,8 @@ while 1:
                     TimeO = datetime.datetime.strptime(obsindate, "%m %d %Y %H:%M:%S")
                     time_diffo = TimeNOW - TimeO
                     time_diffo_sec = time_diffo.total_seconds()
+                    if time_diffo_sec:
+                        continue
                     time_diffo_min = time_diffo_sec/60
                     if obsin_doo == 1:
                         if OBSsourceOnOff(obsin_src):
@@ -2061,6 +2109,8 @@ while 1:
                     TimeO = datetime.datetime.strptime(obsindate, "%m %d %Y %H:%M:%S")
                     time_diffo = TimeNOW - TimeO
                     time_diffo_sec = time_diffo.total_seconds()
+                    if time_diffo_sec:
+                        continue
                     time_diffo_min = time_diffo_sec/60
                     if obsin_doo == 1:
                         if OBSsourceOnOff(obsin_src):
@@ -2079,6 +2129,8 @@ while 1:
                     TimeO = datetime.datetime.strptime(obsindate, "%m %d %Y %H:%M:%S")
                     time_diffo = TimeNOW - TimeO
                     time_diffo_sec = time_diffo.total_seconds()
+                    if time_diffo_sec:
+                        continue
                     time_diffo_min = time_diffo_sec/60
                     if obsin_doo[x] == 1:#checks if individual data set should be considered
                         if OBSsourceOnOff(obsin_src[x]): #checks if manual data sets in general should be considered
@@ -2096,6 +2148,8 @@ while 1:
                     TimeO = datetime.datetime.strptime(obsindate, "%m %d %Y %H:%M:%S")
                     time_diffo = TimeNOW - TimeO
                     time_diffo_sec = time_diffo.total_seconds()
+                    if time_diffo_sec:
+                        continue
                     time_diffo_min = time_diffo_sec/60
                     if obsin_doo[x] == 1:
                         if OBSsourceOnOff(obsin_src[x]):
@@ -2147,7 +2201,9 @@ while 1:
             KF_b = cal_Cband6b
 
         global TimeNOW
-        TimeNOW = datetime.datetime.utcnow()
+
+        if run_type == 1:
+            TimeNOW = datetime.datetime.utcnow()
         rlines =[]
         with open(radarC_file+".txt", "r") as ins:
             for line in ins:
@@ -2164,6 +2220,8 @@ while 1:
                 TimeC = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                 time_diffe = TimeNOW - TimeC
                 time_diffe_sec = time_diffe.total_seconds()
+                if time_diffe_sec < 0:
+                    continue
                 time_diffe_min = time_diffe_sec/60
                 plumeh = float(zeile[-6:])
                 if plumeh>99:
@@ -2179,6 +2237,8 @@ while 1:
                 TimeC = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                 time_diffe = TimeNOW - TimeC
                 time_diffe_sec = time_diffe.total_seconds()
+                if time_diffe_sec < 0:
+                    continue
                 time_diffe_min = time_diffe_sec/60
                 plumeh = float(zeile[-6:])
                 if plumeh>99:
@@ -2242,7 +2302,8 @@ while 1:
 
 
         global TimeNOW
-        TimeNOW = datetime.datetime.utcnow()
+        if run_type == 1:
+            TimeNOW = datetime.datetime.utcnow()
         rlines = []
         with open(radarX_file+".txt", "r") as ins:
             for line in ins:
@@ -2258,6 +2319,8 @@ while 1:
                 TimeX = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                 time_diffe = TimeNOW - TimeX
                 time_diffe_sec = time_diffe.total_seconds()
+                if time_diffe_sec < 0:
+                    continue
                 time_diffe_min = time_diffe_sec/60
                 plumeh = float(zeile[-6:])
                 if plumeh>99:
@@ -2274,6 +2337,8 @@ while 1:
                 TimeX = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                 time_diffe = TimeNOW - TimeX
                 time_diffe_sec = time_diffe.total_seconds()
+                if time_diffe_sec < 0:
+                    continue
                 time_diffe_min = time_diffe_sec/60
                 plumeh = float(zeile[-6:])
                 if plumeh>99:
@@ -2305,7 +2370,8 @@ while 1:
     def GFZcam (GFZ_file, source_G):
         """reads GFZ Camera data"""
         global TimeNOW,gfz_vis,gfz_havg,gfz_hstd,l
-        TimeNOW = datetime.datetime.utcnow()
+        if run_type == 1:
+            TimeNOW = datetime.datetime.utcnow()
         rlines = []
         gfz_vis,gfz_havg,gfz_hstd = np.loadtxt(GFZ_file+".txt",\
      usecols=(3,4,5), unpack=True, delimiter='\t')  
@@ -2323,6 +2389,8 @@ while 1:
                     TimeG = datetime.datetime.strptime(indate, "%d-%b-%Y %H:%M:%S")
                     time_diffe = TimeNOW - TimeG
                     time_diffe_sec = time_diffe.total_seconds()
+                    if time_diffe_sec < 0:
+                        continue
                     time_diffe_min = time_diffe_sec/60
                     h_G = gfz_havg*1000
                     unc_G = gfz_hstd*1000
@@ -2336,6 +2404,8 @@ while 1:
                      TimeG = datetime.datetime.strptime(indate, "%d-%b-%Y %H:%M:%S")
                      time_diffe = TimeNOW - TimeG
                      time_diffe_sec = time_diffe.total_seconds()
+                     if time_diffe_sec < 0:
+                         continue
                      time_diffe_min = time_diffe_sec/60
                      h_G = gfz_havg*1000
                      unc_G = gfz_hstd*1000
@@ -2350,6 +2420,8 @@ while 1:
                     TimeG = datetime.datetime.strptime(indate, "%d-%b-%Y %H:%M:%S")
                     time_diffe = TimeNOW - TimeG
                     time_diffe_sec = time_diffe.total_seconds()
+                    if time_diffe_sec < 0:
+                        continue
                     time_diffe_min = time_diffe_sec/60
                     h_G = gfz_havg[x]*1000
                     unc_G = gfz_hstd[x]*1000
@@ -2363,6 +2435,8 @@ while 1:
                      TimeG = datetime.datetime.strptime(indate, "%d-%b-%Y %H:%M:%S")
                      time_diffe = TimeNOW - TimeG
                      time_diffe_sec = time_diffe.total_seconds()
+                     if time_diffe_sec < 0:
+                         continue
                      time_diffe_min = time_diffe_sec/60
                      h_G = gfz_havg[x]*1000
                      unc_G = gfz_hstd[x]*1000
@@ -2816,7 +2890,7 @@ while 1:
                 elaborate_weather(H_in)
                 rho_a0 = P_H_source / (R_d * T_H_source)
                 gprime = g * (C_s * T_H_source - C_d * theta_a0) / (C_d * theta_a0)
-                Mdot = math.pi*(rho_a0/gprime)*((((2.**(5./2.))*(alpha**2)*(N_avg**3))/(z_1**4.))*H_in**4.+(((beta**2)*(N_avg**2.)*(V_avg))/6.)*H_in**3.)
+                Mdot = math.pi*(rho_a0/gprime)*((((2.**(5./2.))*(alpha**2)*(N_avg**3))/(z_1**4.))*(H_in**4.)+(((beta**2)*(N_avg**2.)*(V_avg))/6.)*(H_in**3.))
                 result_Mdot = Mdot
             else:
                 dummyH = [(x*10.) for x in range (0,int(int(H_in)/10+1))]
@@ -2856,7 +2930,6 @@ while 1:
 
                 # equation (6) in Degruyter and Bonadonna, 2012
                 Mdot = [math.pi*rho_a0/gprime*((2.**(5./2.)*alpha**2.*Nbar[i]**3./z_1**4.)*dummyH[i]**4. +(beta**2.*Nbar[i]**2.*Vbar[i]/6.)*dummyH[i]**3.) for i in range(0,len(Nbar))]
-
                 result_Mdot = int(Mdot[-1])
 
             return(result_Mdot)
@@ -3641,8 +3714,7 @@ while 1:
             else:
                 print("") #...data set older than 180 minutes...
             logger7.debug("*Stacked MER data >> source: " + str(exp_src)+"\t"+"time difference: "+timdiff+"\t"+"exp.Qmin: "+emer_min+"\t"+"exp.Q: "+emer+"\t"+"exp.Qmin: "+emer_max)
-    
-        
+
         def saveEMER(tiba_in):
             global Qcode
             qfrt = open(out_txt+"_EMER_LOG.txt","a")
@@ -3671,6 +3743,8 @@ while 1:
                         TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                         time_diffe = TimeNOW - TimeE
                         time_diffe_sec = time_diffe.total_seconds()
+                        if time_diffe_sec < 0:
+                            continue
                         time_diffe_min = time_diffe_sec/60
                         if expMER_flag == 0:
                             print()
@@ -3686,6 +3760,8 @@ while 1:
                          TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                          time_diffe = TimeNOW - TimeE
                          time_diffe_sec = time_diffe.total_seconds()
+                         if time_diffe_sec < 0:
+                             continue
                          time_diffe_min = time_diffe_sec/60
                          if expMER_flag == 0:
                             print()
@@ -3702,6 +3778,8 @@ while 1:
                         TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                         time_diffe = TimeNOW - TimeE
                         time_diffe_sec = time_diffe.total_seconds()
+                        if time_diffe_sec < 0:
+                            continue
                         time_diffe_min = time_diffe_sec/60
                         if expMER_flag == 0:
                             print()
@@ -3717,6 +3795,8 @@ while 1:
                          TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
                          time_diffe = TimeNOW - TimeE
                          time_diffe_sec = time_diffe.total_seconds()
+                         if time_diffe_sec < 0:
+                             continue
                          time_diffe_min = time_diffe_sec/60
                          if expMER_flag == 0:
                             print()
@@ -3914,6 +3994,8 @@ while 1:
             TimeE = datetime.datetime.strptime(indate, "%Y-%m-%d %H:%M:%S")
             time_diffe = TimeNOW - TimeE
             time_diffe_sec = time_diffe.total_seconds()
+            if time_diffe_sec < 0:
+                oo_manMER = 0
             time_diffe_min = time_diffe_sec / 60
             if oo_manMER == 0:
                 print()
@@ -5243,6 +5325,9 @@ while 1:
     logger8.manager.loggerDict.clear()
     logger9.manager.loggerDict.clear()
     logger10.manager.loggerDict.clear()
-    waitingProc()    
+    if run_type == 1:
+        waitingProc()
+    else:
+        continue
 
 ("\n --- programm aborted")

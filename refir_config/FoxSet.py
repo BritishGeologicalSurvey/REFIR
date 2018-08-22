@@ -53,6 +53,7 @@ import urllib.request
 from urllib.parse import urlparse, urlencode
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
+import os,glob
 
 
 sm = 0
@@ -173,26 +174,6 @@ def icelandvolc_default():
     print("... setting up default Iceland volcanoes!")
     volc_exist=0
     create_volcheader()
-# ID is now the VESPA ID
-#     volc = ["eyjaf",63.6283,-19.625, 1651,1,"Eyjafjallajökull"]
-#     volcentry(volc)
-#     volc = ["katla",63.633,-19.116, 1400,1,"Katla"]
-#     volcentry(volc)
-#     volc = ["hekla",63.992,-19.667, 1491,1,"Hekla"]
-#     volcentry(volc)
-#     volc = ["grims",64.417,-17.333, 1722,1,"Grímsvötn"]
-#     volcentry(volc)
-#     volc = ["vestm",63.417,-20.35, 283,1,"Vestmannaeyjar"]
-#     volcentry(volc)
-#     volc = ["barda",64.667,-17.5, 2009,1,"Bárðarbunga"]
-#     volcentry(volc)
-#     volc = ["kverk",64.65,-16.667, 1933,1,"Kverkfjöll"]
-#     volcentry(volc)
-#     volc = ["oraef",64.00,-16.65, 2110,1,"Öræfajökull"]
-#     volcentry(volc)
-#     volc = ["askja",65.05,-16.783, 1516,1,"Askja"]
-#     volcentry(volc)
-# ID replaced with the Smithsonian Institute ones
     volc = ["2328",63.6283,-19.625, 1651,1,"Eyjafjallajökull"]
     volcentry(volc)
     volc = ["2329",63.633,-19.116, 1400,1,"Katla"]
@@ -259,23 +240,6 @@ def newvolc_setup():
                     print('ID not found')
                     break
 
-
-        # while lencheck!=1:
-        #     volc[0]= input("Specify code for volcano (6 characters max!): ")
-        #     assert isinstance(volc[0], str)
-        #     if len(volc[0]) <7:
-        #         lencheck = 1
-        #     else:
-        #         print("Maximum of 6 characters, please!")
-        #         lencheck = 0
-        # lat = input("Specify Latitude (e.g. 63.3) .. ")
-        # volc[1] = float(lat)
-        # lon = input("Specify Longitude (e.g. -17.5) .. ")
-        # volc[2] = float(lon)
-        # veh = input("Specify vent height a.s.l. (m) .. ")
-        # volc[3] = float(veh)
-        # volc[4] = 0
-        # volcentry(volc)
         print("Data saved!")
         print("-------------")
         if vrun == 10:
@@ -929,9 +893,6 @@ def generate_volc_database():
     print("\n*** Setup operation successful! ***")
 
 
-   
-print("*** SETTING UP REFIR!  ***")
-print("... using FoxSet v.1.0")
 
 while za != 1:
     init_setup()
