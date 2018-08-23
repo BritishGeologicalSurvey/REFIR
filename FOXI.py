@@ -2080,7 +2080,7 @@ while 1:
         obsin_hmin = obsin_hmin - vent_h
         obsin_havg = obsin_havg - vent_h
         obsin_hmax = obsin_hmax - vent_h
-        
+
         l = len(rlines)
         if l ==1:
             #catch one-liners
@@ -2090,7 +2090,7 @@ while 1:
                     TimeO = datetime.datetime.strptime(obsindate, "%m %d %Y %H:%M:%S")
                     time_diffo = TimeNOW - TimeO
                     time_diffo_sec = time_diffo.total_seconds()
-                    if time_diffo_sec:
+                    if time_diffo_sec < 0:
                         continue
                     time_diffo_min = time_diffo_sec/60
                     if obsin_doo == 1:
@@ -2109,7 +2109,7 @@ while 1:
                     TimeO = datetime.datetime.strptime(obsindate, "%m %d %Y %H:%M:%S")
                     time_diffo = TimeNOW - TimeO
                     time_diffo_sec = time_diffo.total_seconds()
-                    if time_diffo_sec:
+                    if time_diffo_sec < 0:
                         continue
                     time_diffo_min = time_diffo_sec/60
                     if obsin_doo == 1:
@@ -2129,7 +2129,7 @@ while 1:
                     TimeO = datetime.datetime.strptime(obsindate, "%m %d %Y %H:%M:%S")
                     time_diffo = TimeNOW - TimeO
                     time_diffo_sec = time_diffo.total_seconds()
-                    if time_diffo_sec:
+                    if time_diffo_sec < 0:
                         continue
                     time_diffo_min = time_diffo_sec/60
                     if obsin_doo[x] == 1:#checks if individual data set should be considered
@@ -2148,7 +2148,7 @@ while 1:
                     TimeO = datetime.datetime.strptime(obsindate, "%m %d %Y %H:%M:%S")
                     time_diffo = TimeNOW - TimeO
                     time_diffo_sec = time_diffo.total_seconds()
-                    if time_diffo_sec:
+                    if time_diffo_sec < 0:
                         continue
                     time_diffo_min = time_diffo_sec/60
                     if obsin_doo[x] == 1:
@@ -2889,9 +2889,8 @@ while 1:
             if weather == 1:
                 elaborate_weather(H_in)
                 rho_a0 = P_H_source / (R_d * T_H_source)
-                gprime = g * (C_s * T_H_source - C_d * theta_a0) / (C_d * theta_a0)
+                gprime = g * (C_s * theta_0 - C_d * T_H_source) / (C_d * T_H_source)
                 Mdot = math.pi*(rho_a0/gprime)*((((2.**(5./2.))*(alpha**2)*(N_avg**3))/(z_1**4.))*(H_in**4.)+(((beta**2)*(N_avg**2.)*(V_avg))/6.)*(H_in**3.))
-                print(rho_a0,gprime,N_avg,H_in,V_avg,Mdot)
                 result_Mdot = Mdot
             else:
                 dummyH = [(x*10.) for x in range (0,int(int(H_in)/10+1))]
@@ -2931,7 +2930,6 @@ while 1:
 
                 # equation (6) in Degruyter and Bonadonna, 2012
                 Mdot = [math.pi*rho_a0/gprime*((2.**(5./2.)*alpha**2.*Nbar[i]**3./z_1**4.)*dummyH[i]**4. +(beta**2.*Nbar[i]**2.*Vbar[i]/6.)*dummyH[i]**3.) for i in range(0,len(Nbar))]
-                print(rho_a0,gprime,Nbar[-1],dummyH[-1],Vbar[-1])
                 result_Mdot = int(Mdot[-1])
 
             return(result_Mdot)

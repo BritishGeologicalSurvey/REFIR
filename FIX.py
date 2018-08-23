@@ -54,63 +54,32 @@ runtype_weather = Tk()
 weather = 1 #Default is automatic weather data retrieval
 run_type = 1 #Default is real_time mode
 
-def mode_reanalysis():
-    global run_type
-    run_type = 2
-    print(run_type)
-
-def mode_realtime():
-    global run_type
-    print(run_type)
-
-def weather_auto():
-    global weather
-    print(weather)
-
-def weather_manual():
-    global weather
-    weather = 2
-    print(weather)
-
 def first_widget():
-    # Widget to let the user decide:
-    # - Mode: 1: Real time (default); 2: Reanalysis (to be set up completely)
-    # - Weather data: 1: Automatic weather data retrieval (default); 2: Manual entry (as it used to be)
+    global run_type_in,weather_in
+    run_type_in = IntVar()
+    weather_in = IntVar()
+    run_type_in.set(1)
+    weather_in.set(1)
     runtype_weather.title("REFIR Operation Mode")
 
-    label1 = Label(runtype_weather, text="REFIR Operation Mode", font=("Verdana", 14, \
-                                                                   "bold"), fg="navy")
-    label1.pack()
-    label2 = Label(runtype_weather, text="Mode Selection", font=("Verdana", 8, \
-                                                            "bold"), fg="navy")
-    label2.pack()
+    Label(runtype_weather, text="REFIR Operation Mode", font=("Verdana", 14,"bold"), fg="navy").grid(row=1, column=1,columnspan=4,sticky=W)
+    Label(runtype_weather, text="Mode Selection", font=("Verdana", 10,"bold"), fg="navy").grid(row=2, column=1,columnspan=2,sticky=W)
 
-    button1 = Button(runtype_weather, text="Real Time", \
-                          font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
-                          command=mode_realtime())
-    button1.pack()
-    button2 = Button(runtype_weather,text="Reanalysis",\
-                font = ("Verdana", 8), fg = "red", bg="light steel blue", width=18,height=2,\
-                    command=mode_reanalysis)
-    button2.pack()
+    Radiobutton(runtype_weather, text="Real Time", variable = run_type_in, value=1).grid(row=4, column=1,columnspan=2,sticky=W)
+    Radiobutton(runtype_weather,text="Reanalysis",variable = run_type_in, value=2).grid(row=5, column=1,columnspan=2,sticky=W)
 
-    label3 = Label(runtype_weather, text="Weather data", font=("Verdana", 8, \
-                                                           "bold"), fg="navy")
-    label3.pack()
+    Label(runtype_weather, text="Weather data", font=("Verdana", 10,"bold"), fg="navy").grid(row=2, column=4,columnspan=2,sticky=W)
 
-    button3 = Button(runtype_weather, text="Automatic Retrieve", \
-                          font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
-                          command=weather_auto)
-    button3.pack()
-    button4 = Button(runtype_weather, text="Manual entry", \
-                          font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
-                          command=weather_manual)
-    button4.pack()
+    Radiobutton(runtype_weather, text="Automatic Retrieve",variable = weather_in, value=1).grid(row=4, column=4,columnspan=2,sticky=W)
+    Radiobutton(runtype_weather, text="Manual entry",variable = weather_in, value=2).grid(row=5, column=4,columnspan=2,sticky=W)
 
 
     runtype_weather.mainloop()
 
+
 first_widget()
+run_type = run_type_in.get()
+weather = weather_in.get()
 
 if run_type == 2:
     past_eruption = Tk()
