@@ -1200,7 +1200,8 @@ def Cradarerror(distance,beamwidth):
     """
     distance  = abs(distance)
     fbeamwidth = float(beamwidth)
-    err_plh = 0.5*distance*np.tan(fbeamwidth*math.pi/180)
+    #err_plh = 0.5*distance*np.tan(fbeamwidth*math.pi/180)
+    err_plh = 0.5 * distance * np.tan(fbeamwidth * math.pi / 180)*1000 # Corrected to meters
     
     return (err_plh)
 
@@ -1219,7 +1220,8 @@ def Xradarerror(distance,beamwidth):
     """
     distance  = abs(distance)
     fbeamwidth = float(beamwidth)
-    err_plh = 0.5*distance*np.tan(fbeamwidth*math.pi/180)
+    #err_plh = 0.5*distance*np.tan(fbeamwidth*math.pi/180)
+    err_plh = 0.5 * distance * np.tan(fbeamwidth * math.pi / 180) * 1000 #Corrected to meters
     print("distance is: "+ str(distance))
     print("beamwidth is: "+ str(beamwidth))
     print("UNCERTAINTY iS: " +str(err_plh))
