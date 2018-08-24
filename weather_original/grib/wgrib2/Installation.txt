@@ -1,0 +1,46 @@
+
+                 Wgrib2 for Windows    8/2006 revised 7/2017
+
+This is a version of wgrib2 for windows.  It is compiled from the original 
+wgrib2 source code using the cygwin_64 system.  Wgrib2 has been compiled
+on Windows using other compilers such as Intel and MingGW. However Cygwin's
+compilers are recommended because it supports files greater than 2GB
+without adding Windows-only C functions.
+
+One should compile wgrib2 from the latest source code.  However, some people
+have difficulting compiling, so some executables have been made.  The
+main disadvantage of using precompiled code is that it may be much older
+than the current version.  
+
+I compiled the source codes on on a Windows 10 box using the cygwin system.
+It seems to work BUT my testing has been very limited.  I don't routinely 
+run this code under Windows, so think of yourself as a beta tester.  
+
+Installation:
+
+  Non-Cygwin sytem:
+
+     Version 1:
+	Copy the *.dll and wgrib2.exe files to a directory on your $path. 
+        Then you can use wgrib2 without giving the directory name.
+
+     Version 1:
+	Copy the *.dll and wgrib2.exe files to a directory.
+        Then you can run wgrib2 by giving full name of wgrib2.
+
+
+  Cygwin system:
+
+	copy wgrib2.exe files to a directory on your $PATH.
+        Try running wgrib2.  If your .dll files are too old/new,
+          download it from your favorite cygwin mirror site.  If the .dll
+          you will need to recompile wgrib2.  I used the stock makefile
+          to compile wgrib2.
+
+
+Compilation instructions under Cygwin.
+
+    Same compiling steps as in linux using gcc/gfortran.
+    See http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/compile_questions.html
+
+WNE

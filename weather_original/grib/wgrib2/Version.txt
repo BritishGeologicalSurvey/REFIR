@@ -1,0 +1,39 @@
+wgrib2 v2.0.6c7/2017
+   cygwin 2.8.2(0.313/5/3)
+   compiled on Windows 10 (64 bit)   AMD E-350 Processor
+
+wgrib2 v0.2.0.6c 2/2017  Wesley Ebisuzaki, Reinoud Bokhorst, John Howard, Jaakko Hyvätti, Dusan Jovic, Daniel Lee, Kristian Nilssen, Karl Pfeiffer, Pablo Romero, Manfred Schwarb, Gregor Schee, Arlindo da Silva, Niklas Sondell, Sam Trahan, Sergey Varlamov
+    stock build
+
+Compiled on 11:15:33 Jul 19 2017
+
+Netcdf package: "3.6.3" of Jul 19 2017 11:07:40 $ is installed
+libaec-1.0.0.tar.gz is installed
+Jasper 1.900.1 is installed
+mysql package is not installed
+regex package is installed
+tigge package is installed
+IPOLATES iplib.2012 is installed, default vectors:
+    UGRD/VGRD VUCSH/VVCSH UFLX/VFLX UGUST/VGUST USTM/VSTM VDFUA/VDFVA MAXUW/MAXVW
+    UOGRD/VOGRD UICE/VICE U-GWD/V-GWD
+Geolocation library status (by search order)
+  gctpc geolocation is enabled
+  spherical geolocation is enabled
+UDF package is not installed
+maximum number of arguments on command line: 10000
+maximum number of -match,-not,-if, and -not_if options: 2000
+maximum number of -match_fs,-not_fs,-if_fs, and -not_if_fs options: 2000
+maximum number of -fgrep, -egrep, -fgrep_v, -egrep_v options: 200
+RPN registers: 0..19
+memory files: @mem:0, @mem:1 .. @mem:19
+stdout buffer length: 30000
+default decoding: g2clib emulation
+g2clib decoders are not installed
+Supported decoding: simple, complex, rle, ieee, png, jpeg2000, CCSDS AEC
+user gribtable: (none)
+C compiler: gcc (GCC) 5.4.0
+Fortran compiler: gfortran
+OpenMP: control number of threads with environment variable OMP_NUM_THREADS
+INT_MAX:   2147483647
+ULONG_MAX: 18446744073709551615
+
