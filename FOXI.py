@@ -677,8 +677,12 @@ while 1:
             exit()
         lead_Time = 0
 
+
     if run_type == 1:
-        timin = lead_Time
+        if run == 1:
+            timin = lead_Time
+        else:
+            timin = int((TimeNOW-time_tveir).total_seconds()/60)
     else:
         timin = int((TimeNOW-eruption_start).total_seconds()/60)
 
@@ -1595,7 +1599,7 @@ while 1:
         global ground_t_stack
         global other_t_stack
         global APHmax_y
-        
+
         def as_src(loc,pluh,tim,ide,secol):
             """assignes source to sector"""
             global APHmax_y
@@ -1693,7 +1697,7 @@ while 1:
             del gc.garbage[:]    
         fig=figure.Figure()
         ax = plt.gca()
-        
+
         try:
             as_src(loc_ISKEF,Cband1_stack,Cband1_t_stack,ID[0],"red")
         except EnvironmentError:
@@ -1818,10 +1822,11 @@ while 1:
         plt.ylim(0)
 
 
-#1        max_x = max(max(Cband1_t_stack,Cband2_t_stack,Cband3_t_stack,Cband4_t_stack,Cband5_t_stack,Cband6_t_stack,\
-#1Xband1_t_stack,Xband2_t_stack,Xband3_t_stack,Xband4_t_stack,Xband5_t_stack,Xband6_t_stack,\
-#1Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
- #1
+        # if(run_type) == 1:
+        #     max_x = max(max(Cband1_t_stack, Cband2_t_stack, Cband3_t_stack, Cband4_t_stack, Cband5_t_stack, Cband6_t_stack, \
+        #     Xband1_t_stack,Xband2_t_stack,Xband3_t_stack,Xband4_t_stack,Xband5_t_stack,Xband6_t_stack,\
+        #     Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack))
+        # else:
         max_x = timin
         plt.text(0.5*max_x, 0.5*APHmax_y, 'REFIR',fontsize=80, color='gray',ha='center', va='center', alpha=0.09)
 
@@ -2931,7 +2936,6 @@ while 1:
                 # equation (6) in Degruyter and Bonadonna, 2012
                 Mdot = [math.pi*rho_a0/gprime*((2.**(5./2.)*alpha**2.*Nbar[i]**3./z_1**4.)*dummyH[i]**4. +(beta**2.*Nbar[i]**2.*Vbar[i]/6.)*dummyH[i]**3.) for i in range(0,len(Nbar))]
                 result_Mdot = int(Mdot[-1])
-
             return(result_Mdot)
         
         def GreekPi(H_in):
@@ -3139,12 +3143,20 @@ while 1:
             logger5.debug ("H_db_be: "+ str(H_db_be)+" m ")
             logger5.debug ("H_db_max: "+str(H_db_max)+" m ")
 
-            mer_restack=[mer_adjMastin(H_be,H_max),\
-            [mer_WilWal(H_min),mer_WilWal(H_be),mer_WilWal(H_max)],\
-            [mer_Sparks(H_min),mer_Sparks(H_be),mer_Sparks(H_max)],\
-            [mer_Mastin(H_min), mer_Mastin(H_be),mer_Mastin(H_max)],\
-            [mer_degbon(H_db_min),mer_degbon(H_db_be),mer_degbon(H_db_max)],\
-            [mer_woodhouse(H_min),mer_woodhouse(H_db_be),mer_woodhouse(H_db_max)]]
+            if deg_off == 0:
+                mer_restack=[mer_adjMastin(H_be,H_max),\
+                [mer_WilWal(H_min),mer_WilWal(H_be),mer_WilWal(H_max)],\
+                [mer_Sparks(H_min),mer_Sparks(H_be),mer_Sparks(H_max)],\
+                [mer_Mastin(H_min), mer_Mastin(H_be),mer_Mastin(H_max)],\
+                [mer_degbon(H_db_min),mer_degbon(H_db_be),mer_degbon(H_db_max)],\
+                [mer_woodhouse(H_min),mer_woodhouse(H_db_be),mer_woodhouse(H_db_max)]]
+            else:
+                mer_restack=[mer_adjMastin(H_be,H_max),\
+                [mer_WilWal(H_min),mer_WilWal(H_be),mer_WilWal(H_max)],\
+                [mer_Sparks(H_min),mer_Sparks(H_be),mer_Sparks(H_max)],\
+                [mer_Mastin(H_min), mer_Mastin(H_be),mer_Mastin(H_max)],\
+                [0.0,0.0,0.0],\
+                [mer_woodhouse(H_min),mer_woodhouse(H_db_be),mer_woodhouse(H_db_max)]]
             logger5.info ("::::::::::::::::::::::::::::::::::::::::::::::::")
             logger5.info("Computing plume height models")
             logger5.info (">>> time base: "+ str(tib) + " minutes <<<")
@@ -3239,13 +3251,23 @@ while 1:
             mermtg = stack_mer[0]
             merdb = stack_mer[4][1]
             merwd0d = stack_mer[5][1]
-            tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0]]
-            if tempstack != [0.0, 0.0, 0.0,0.0,0.0]:
-                a = np.array(tempstack)
-                mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])   
+            if deg_off == 0:
+                tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0]]
+                if tempstack != [0.0, 0.0, 0.0,0.0,0.0]:
+                    a = np.array(tempstack)
+                    mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
+                else:
+                    mermin_hmin = 0
+                    logger6.info("NO DATA!")
             else:
-                mermin_hmin = 0
-                logger6.info("NO DATA!")
+                tempstack = [stack_mer[1][0], stack_mer[2][0], stack_mer[3][0], stack_mer[5][0]]
+                if tempstack != [0.0, 0.0, 0.0,0.0]:
+                    a = np.array(tempstack)
+                    mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
+                else:
+                    mermin_hmin = 0
+                    logger6.info("NO DATA!")
+
             mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0])
             
             QmaxNowiHmin = min(max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0]),min(stack_mer[1][1],stack_mer[2][1],stack_mer[3][1])) 
@@ -3287,14 +3309,22 @@ while 1:
             mermtg = stack_mer[0]
             merdb = stack_mer[4][1]
             merwd0d = stack_mer[5][1]
-            tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0]]
-            if tempstack != [0.0, 0.0, 0.0,0.0,0.0]:
-                a = np.array(tempstack)
-                mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])   
-                
+            if deg_off == 0:
+                tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0]]
+                if tempstack != [0.0, 0.0, 0.0,0.0,0.0]:
+                    a = np.array(tempstack)
+                    mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
+                else:
+                    mermin_hmin = 0
+                    logger6.info("NO DATA!")
             else:
-                mermin_hmin = 0
-                logger6.info("NO DATA!")
+                tempstack = [stack_mer[1][0], stack_mer[2][0], stack_mer[3][0], stack_mer[5][0]]
+                if tempstack != [0.0, 0.0, 0.0,0.0]:
+                    a = np.array(tempstack)
+                    mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
+                else:
+                    mermin_hmin = 0
+                    logger6.info("NO DATA!")
             mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],\
             stack_mer[4][0],stack_mer[5][0],float(Mwood[0]))
             QmaxNowiHmin = min(max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0]),min(stack_mer[1][1],stack_mer[2][1],stack_mer[3][1])) 

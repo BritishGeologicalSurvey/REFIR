@@ -259,15 +259,15 @@ def update_image():
 
 
 root = tk.Tk()
-root.geometry("1480x1080")
+root.geometry("1280x1024")
 root.title("Output FoxShow")
 root.configure(background='black')
 
 
-frame0 = tk.LabelFrame(root, text="Map",font = "Helvetica 12", width=480, height=320,fg="lime",bg="black", bd=5)
+frame0 = tk.LabelFrame(root, text="Map",font = "Helvetica 12", width=400, height=320,fg="lime",bg="black", bd=5)
 try:
     im0 = Image.open(path_map1)
-    im0 = im0.resize((480, 320), Image.ANTIALIAS)
+    im0 = im0.resize((400, 320), Image.ANTIALIAS)
     tkimage0 = ImageTk.PhotoImage(im0)
     label0 =  tk.Label(frame0, image=tkimage0)
     label0.pack()
@@ -285,7 +285,7 @@ except EnvironmentError:
 try:    
     frame2 = tk.LabelFrame(root, text="Source stats monitor",font = "Helvetica 12", width=400, height=320,fg="lime",bg="black", bd=5)
     im2 = Image.open(Npath)
-    im2 = im2.resize((440, 320), Image.ANTIALIAS)
+    im2 = im2.resize((400, 320), Image.ANTIALIAS)
     tkimage2 = ImageTk.PhotoImage(im2)
     label2 =  tk.Label(frame2, image=tkimage2)
     label2.pack()
@@ -299,7 +299,7 @@ except EnvironmentError:
 try:    
     frame3 = tk.LabelFrame(root, text="Mass Eruption Rate",font = "Helvetica 12", width=400, height=320,fg="lime",bg="black", bd=5)
     im3 = Image.open(merpath)
-    im3 = im3.resize((480, 320), Image.ANTIALIAS)
+    im3 = im3.resize((400, 320), Image.ANTIALIAS)
     tkimage3 = ImageTk.PhotoImage(im3)
     label3 =  tk.Label(frame3, image=tkimage3)
     label3.pack()
@@ -322,7 +322,7 @@ except EnvironmentError:
 try:    
     frame5 = tk.LabelFrame(root, text="Erupted Mass",font = "Helvetica 12", width=480, height=320,fg="lime",bg="black", bd=5)
     im5 = Image.open(masspath)
-    im5 = im5.resize((480, 320), Image.ANTIALIAS)
+    im5 = im5.resize((400, 320), Image.ANTIALIAS)
     tkimage5 = ImageTk.PhotoImage(im5)
     label5 =  tk.Label(frame5, image=tkimage5)
     label5.pack()

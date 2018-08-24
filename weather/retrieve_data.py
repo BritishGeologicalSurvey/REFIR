@@ -8,7 +8,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     if(lon_source < 0):
         lon_source = 360 + lon_source
     now = str(datetime.utcnow())
-    yesterday = str(date.today() - timedelta(1))
+    yesterday = str(datetime.utcnow().today() - timedelta(1))
     year = now[0:4]
     month = now[5:7]
     day = now[8:10]

@@ -47,7 +47,7 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
             dTdZ[i] = (tmp_c[i + 1] - tmp_c[i]) / (hgt[i + 1] - hgt[i])
         else:
             dTdZ[i] = (tmp_c[i + 1] - tmp_c[i - 1]) / (hgt[i + 1] - hgt[i - 1])
-        N[i] = (g ** 2 / (ca0 * tmp_c[nlines - 1])) * (1 + (ca0 / g) * dTdZ[i])
+        N[i] = (g ** 2 / (ca0 * tmp_k[nlines - 1])) * (1 + (ca0 / g) * dTdZ[i])
         if hgt[i] < H_source:
             i_H_source = i
     if hgt[0] < H_top:
@@ -95,7 +95,6 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
 
             N_avg = N_avg + 0.5 * (N[i - 1] + N_H_source) * abs(hgt[i - 1] - H_source)
             V_avg = V_avg + 0.5 * (wind[i - 1] + V_H_source) * abs(hgt[i - 1] - H_source)
-
     N_avg = N_avg / (H_top - H_source)
     N_avg = N_avg ** 0.5
     V_avg = V_avg / (H_top - H_source)
