@@ -674,7 +674,7 @@ while 1:
         if TimeNOW > eruption_stop:
             print("Eruption ended")
             print("REFIR is going to stop")
-            exit()
+            sys.exit()
         lead_Time = 0
 
 
@@ -1949,7 +1949,15 @@ while 1:
         ax1.set_title('Western sector',color='b')
         ax2.set_title('Eastern sector',color='r')
         plt.ylim(0)
-        plt.xlim(0)
+#        plt.xlim(0)
+### Tobi suggested fix
+        try:
+            ax1.set_xlim(0,max_x)
+            ax2.set_xlim(0,max_x)
+        except TypeError:
+            ax1.set_xlim(0,250)
+            ax2.set_xlim(0,250)
+
         ax1.legend(loc='lower left')
         ax2.legend(loc='lower right')
         if time_axis == 0:
