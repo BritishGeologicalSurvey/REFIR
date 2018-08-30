@@ -368,51 +368,94 @@ def elaborate_weather(plume_height):
     global V_H_top
     global Ws
     sys.path.insert(0, './weather')
-    from weather import calc_wt_par
+    from weather import calc_wt_par, retrieve_data
     from calc_wt_par import weather_parameters
+    from retrieve_data import gfs_forecast_retrieve
+    from shutil import move
+
+    print('Plume height',plume_height)
     cwd=os.getcwd()
     if run_type == 1:
-        folder_name=cwd+"\\gfs_raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
-        abs_validity = YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs
-        year_val = YearNUNAs
-        month_val = MonthNUNAs
-        day_val = DayNUNAs
-        hour_val = HourNUNAs
+        folder_name=cwd+"\\raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
+        #abs_validity = YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs
+        year_vals = YearNUNAs
+        month_vals = MonthNUNAs
+        day_vals = DayNUNAs
+        hour_vals = HourNUNAs
     else:
-        folder_name = cwd + "\\era_interim_raw_weather_data_" + YearNOWs + MonthNOWs + DayNOWs
-        hour = int(HourNOWs)
-        if hour >= 21:
-            TimeNOW_mod = TimeNOW + datetime.timedelta(day=1)
-            year_val = TimeNOW_mod[:4]
-            month_val = TimeNOW_mod[5:7]
-            day_val = TimeNOW_mod[8:10]
-            hour_val = '00'
-            folder_name = cwd + "\\era_interim_raw_weather_data_" + year_val + month_val + day_val
-        else:
-            year_val = YearNOWs
-            month_val = MonthNOWs
-            day_val = DayNOWs
+        folder_name = cwd + "\\raw_weather_data_" + eruption_start_year + eruption_start_month + eruption_start_day
+        year_vals = YearNOWs
+        month_vals = MonthNOWs
+        day_vals = DayNOWs
+        hour_vals = HourNOWs
 
-        if hour < 3:
-            hour_val = '00'
-        elif 3 <= hour < 9:
-            hour_val = '06'
-        elif 9 <= hour < 15:
-            hour_val = '12'
-        elif 15 <= hour < 21:
-            hour_val = '18'
+    abs_validity = year_vals + month_vals + day_vals + hour_vals
 
-        abs_validity = year_val + month_val + day_val + hour_val
-
-    print(folder_name)
     if os.path.exists(folder_name):
         profile_data_file = "profile_data_" + abs_validity + ".txt"
         profile_data_file_full = folder_name+"\\"+profile_data_file
         if os.path.exists(profile_data_file_full):
             print("Elaborating "+profile_data_file)
-            [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_val,month_val,day_val,abs_validity,profile_data_file_full,plume_height,vent_h)
+            [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals,month_vals,day_vals,abs_validity,profile_data_file_full,plume_height,vent_h)
         else:
-            print("File "+profile_data_file+" not present")
+            print("File " + profile_data_file + " not present")
+            if run_type == 1:
+                print('Retrieving new GFS forecast data')
+                gfs_forecast_retrieve(volcLON, volcLAT,1)
+                current = os.getcwd()
+                files = os.listdir(current)
+                for file in files:
+                    if file.startswith('weather_') or file.startswith('profile_'):
+                        move(os.path.join(current, file), os.path.join(folder_name, file))
+                print("Elaborating " + profile_data_file)
+                [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals, month_vals,
+                                                                                                day_vals, abs_validity,
+                                                                                                profile_data_file_full,
+                                                                                                plume_height, vent_h)
+            else:
+                # Do something for searching for data from previous hours
+                Time_updated = TimeNOW - datetime.timedelta(hours=1)
+                year_vals = str(Time_updated.year)
+                month_vals = str(Time_updated.month)
+                if len(month_vals) == 1:
+                    month_vals = '0' + month_vals
+                day_vals = str(Time_updated.day)
+                if len(day_vals) == 1:
+                    day_vals = '0' + day_vals
+                hour_vals = str(Time_updated.hour)
+                if len(hour_vals) == 1:
+                    hour_vals = '0' + hour_vals
+                abs_validity = year_vals + month_vals + day_vals + hour_vals
+                profile_data_file = "profile_data_" + abs_validity + ".txt"
+                profile_data_file_full = folder_name + "\\" + profile_data_file
+                if not os.path.exists(profile_data_file_full):
+                    print("File " + profile_data_file + " not present")
+                    Time_updated = TimeNOW - datetime.timedelta(hours=1)
+                    year_vals = str(Time_updated.year)
+                    month_vals = str(Time_updated.month)
+                    if len(month_vals) == 1:
+                        month_vals = '0' + month_vals
+                    day_vals = str(Time_updated.day)
+                    if len(day_vals) == 1:
+                        day_vals = '0' + day_vals
+                    hour_vals = str(Time_updated.hour)
+                    if len(hour_vals) == 1:
+                        hour_vals = '0' + hour_vals
+                    abs_validity = year_vals + month_vals + day_vals + hour_vals
+                    profile_data_file = "profile_data_" + abs_validity + ".txt"
+                    print("Searching for " + profile_data_file)
+                    profile_data_file_full = folder_name + "\\" + profile_data_file
+                    if os.path.exists(profile_data_file_full):
+                        print("Elaborating " + profile_data_file)
+                        [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals,
+                                                                                                    month_vals,
+                                                                                                    day_vals,
+                                                                                                    abs_validity,
+                                                                                                    profile_data_file_full,
+                                                                                                    plume_height,
+                                                                                                    vent_h)
+                    else:
+                        print("No weather data available. Please run FIX")
     else:
         print("No weather data available. Please run FIX")
 
@@ -662,6 +705,13 @@ while 1:
         HourNOW = int(HourNOWs)
     else:
         eruption_start = datetime.datetime.strptime(time_start, "%Y-%m-%d %H:%M:%S\n")
+        eruption_start_year = str(eruption_start.year)
+        eruption_start_month = str(eruption_start.month)
+        if len(eruption_start_month) == 1:
+            eruption_start_month = '0' + eruption_start_month
+        eruption_start_day = str(eruption_start.day)
+        if len(eruption_start_day) == 1:
+            eruption_start_day = '0' + eruption_start_day
         eruption_stop = datetime.datetime.strptime(time_stop, "%Y-%m-%d %H:%M:%S")
         TimeNOW = eruption_start + datetime.timedelta(minutes=mins)
         TimeNOWs = str(TimeNOW)
@@ -1949,15 +1999,12 @@ while 1:
         ax1.set_title('Western sector',color='b')
         ax2.set_title('Eastern sector',color='r')
         plt.ylim(0)
-#        plt.xlim(0)
-### Tobi suggested fix
         try:
             ax1.set_xlim(0,max_x)
             ax2.set_xlim(0,max_x)
         except TypeError:
             ax1.set_xlim(0,250)
             ax2.set_xlim(0,250)
-
         ax1.legend(loc='lower left')
         ax2.legend(loc='lower right')
         if time_axis == 0:
@@ -3157,14 +3204,14 @@ while 1:
                 [mer_Sparks(H_min),mer_Sparks(H_be),mer_Sparks(H_max)],\
                 [mer_Mastin(H_min), mer_Mastin(H_be),mer_Mastin(H_max)],\
                 [mer_degbon(H_db_min),mer_degbon(H_db_be),mer_degbon(H_db_max)],\
-                [mer_woodhouse(H_min),mer_woodhouse(H_db_be),mer_woodhouse(H_db_max)]]
+                [mer_woodhouse(H_min),mer_woodhouse(H_be),mer_woodhouse(H_max)]]
             else:
                 mer_restack=[mer_adjMastin(H_be,H_max),\
                 [mer_WilWal(H_min),mer_WilWal(H_be),mer_WilWal(H_max)],\
                 [mer_Sparks(H_min),mer_Sparks(H_be),mer_Sparks(H_max)],\
                 [mer_Mastin(H_min), mer_Mastin(H_be),mer_Mastin(H_max)],\
                 [0.0,0.0,0.0],\
-                [mer_woodhouse(H_min),mer_woodhouse(H_db_be),mer_woodhouse(H_db_max)]]
+                [mer_woodhouse(H_min),mer_woodhouse(H_be),mer_woodhouse(H_max)]]
             logger5.info ("::::::::::::::::::::::::::::::::::::::::::::::::")
             logger5.info("Computing plume height models")
             logger5.info (">>> time base: "+ str(tib) + " minutes <<<")
