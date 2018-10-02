@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 *** FIX v18.1 ***   
-- component of REFIR 18.1 -
+- component of REFIR 19.0 -
 -control software and GUI for operating REFIR -
  
-Copyright (C) 2018 Tobias Dürig
+Copyright (C) 2018 Tobias Dürig, Fabio Dioguardi
 ================================
 
 This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 If you wish to contribute to the development of REFIR or to reports bugs or other problems with
 the software, please write an email to me.
 
-Contact: tobi@hi.is
+Contact: tobi@hi.is, fabiod@bgs.ac.uk
 
 RNZ22323I
 

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-*** FOXI v18.1c ***   
-- component of REFIR 18.1 -
+*** FOXI v19.0 ***
+- component of REFIR 19.0 -
 -Near-real time estimates of mass eruption rates and plume heights -
  
-Copyright (C) 2018 Tobias Dürig
+Copyright (C) 2018 Tobias Dürig, Fabio Dioguardi
 ================================
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 If you wish to contribute to the development of REFIR or to reports bugs or other problems with
 the software, please write an email to me.
 
-Contact: tobi@hi.is
+Contact: tobi@hi.is, fabiod@bgs.ac.uk
 
 
 RNZ180615C 
@@ -2901,36 +2901,21 @@ while 1:
             else:
                 dummyH = [(x*10.) for x in range (0,int(int(H_in)/10+1))]
 
-                # reduced gravity (m s^-2)
-                #gprime = g*(C_s*theta_0-C_d*theta_a0)/(C_d*theta_a0)
-
                 #average square buoyancy frequency Nbar^2 = Gbar across height of the plume (s^-2)
                 G1 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_1)
-                #G2 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_2)
-                #G3 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_3)
+                G2 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_2)
+                G3 = g**2./(C_d*theta_a0)*(1+C_d/g*tempGrad_3)
 
-                gbar1=[G1 for hd in dummyH if hd <= H1] #Since N_avg should be calculated up to the tropopause height
-                #gbar2=[(G1*H1 + G2*(hd-H1))/hd for hd in dummyH if hd > H1 and hd <= H2]
-                #gbar3=[(G1*H1 + G2*(H2-H1) + G3*(hd-H2))/hd for hd in dummyH if hd > H2]
+                gbar1=[G1 for hd in dummyH if hd <= H1]
+                gbar2=[(G1*H1 + G2*(hd-H1))/hd for hd in dummyH if hd > H1 and hd <= H2]
+                gbar3=[(G1*H1 + G2*(H2-H1) + G3*(hd-H2))/hd for hd in dummyH if hd > H2]
 
-                #for f in gbar2:
-                #    gbar1.append(f)
-                #for g in gbar3:
-                #    gbar1.append(g)
+                for f in gbar2:
+                    gbar1.append(f)
+                for g in gbar3:
+                    gbar1.append(g)
 
                 Nbar=[g**.5 for g in gbar1]
-
-                # atmosphere wind profile (Bonadonna and Phillips, 2003)
-
-                # average wind speed across height of the plume (m/s)
-                #Vbar=[Vmax*hd/H1/2. for hd in dummyH if hd <= H1]
-                #vbar2=[1./hd*(Vmax*H1/2. + Vmax*(hd-H1)-.9*Vmax/(H2-H1)*(hd-H1)**2./2.) for hd in dummyH if hd > H1 and hd <= H2]
-                #vbar3=[1./hd*(Vmax*H1/2. + .55*Vmax*(H2-H1)+.1*Vmax*(hd-H2)) for hd in dummyH if hd > H2]
-
-                #for w in vbar2:
-                #    Vbar.append(w)
-                #for x in vbar3:
-                #    Vbar.append(x)
 
                 Ws_vec = [(1.44 * Vmax) / (Nbar[i] * H1) for i in range(0,len(Nbar))]
                 par_ws_vec = [(1 + 1.373*Ws_vec[i])/(1 + 4.266*Ws_vec[i] + 0.3527*Ws_vec[i]**2)for i in range(0,len(Ws_vec))]

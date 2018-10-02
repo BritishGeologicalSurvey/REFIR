@@ -1,10 +1,10 @@
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       # -*- coding: utf-8 -*-
 """
-*** FoxSet v18.   1 ***                                                                          
-- component of REFIR 18.1 -
+*** FoxSet v19.0 ***                                                                          
+- component of REFIR 19.0 -
 -Program to                                         set up the instruments for REFIR -
  
-Copyright (C) 2018 Tobias Dürig
+Copyright (C) 2018 Tobias Dürig, Fabio Dioguardi
 ==============                     ===================
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ along with this program.                                   If not, see <https://
 If you wish to contribute to the development of REFIR or to reports bugs or other problems with
 the software, please write an email to me.
 
-Contact: tobi@hi.is
+Contact: tobi@hi.is, fabiod@bgs.ac.uk
 
 
 RNZ170318FS                                                                                      

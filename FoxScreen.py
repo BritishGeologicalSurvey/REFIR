@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-*** FoxScreen v18.1 ***   
-- component of REFIR 18.1 -
+*** FoxScreen v18.1 ***
+- component of REFIR 19.0 -
 -program which displays the output of REFIR on the screen -
  
 Copyright (C) 2018 Tobias Dürig
@@ -23,7 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 If you wish to contribute to the development of REFIR or to reports bugs or other problems with
 the software, please write an email to me.
 
-Contact: tobi@hi.is
+Contact: tobi@hi.is, fabiod@bgs.ac.uk
 
 RLZ170318M
 """

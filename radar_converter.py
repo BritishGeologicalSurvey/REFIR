@@ -1,4 +1,33 @@
-# Script to convert IMO radar files into REFIR-readable files
+# -*- coding: utf-8 -*-
+"""
+*** radar_converter v1.0 ***
+- component of REFIR 19.0 -
+- Script to convert IMO radar files into REFIR-readable files -
+
+Copyright (C) 2018 Tobias Dürig, Fabio Dioguardi
+==============                     ===================
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option               any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.                                   If not, see <https://www.gnu.org/licenses/>.
+
+If you wish to contribute to the development of REFIR or to reports bugs or other problems with
+the software, please write an email to me.
+
+Contact: tobi@hi.is, fabiod@bgs.ac.uk
+
+
+RNZ170318FS
+"""
+
 def retrieve_icelandic_radar(volc_id):
     from datetime import datetime,date,timedelta
     import urllib.request
