@@ -413,24 +413,8 @@ def elaborate_weather(plume_height):
                                                                                                 profile_data_file_full,
                                                                                                 plume_height, vent_h)
             else:
-                # Do something for searching for data from previous hours
-                Time_updated = TimeNOW - datetime.timedelta(hours=1)
-                year_vals = str(Time_updated.year)
-                month_vals = str(Time_updated.month)
-                if len(month_vals) == 1:
-                    month_vals = '0' + month_vals
-                day_vals = str(Time_updated.day)
-                if len(day_vals) == 1:
-                    day_vals = '0' + day_vals
-                hour_vals = str(Time_updated.hour)
-                if len(hour_vals) == 1:
-                    hour_vals = '0' + hour_vals
-                abs_validity = year_vals + month_vals + day_vals + hour_vals
-                profile_data_file = "profile_data_" + abs_validity + ".txt"
-                profile_data_file_full = folder_name + "\\" + profile_data_file
-                if not os.path.exists(profile_data_file_full):
-                    print("File " + profile_data_file + " not present")
-                    Time_updated = TimeNOW - datetime.timedelta(hours=1)
+                for itstep in range(1,5):
+                    Time_updated = TimeNOW - datetime.timedelta(hours=itstep)
                     year_vals = str(Time_updated.year)
                     month_vals = str(Time_updated.month)
                     if len(month_vals) == 1:
@@ -454,8 +438,12 @@ def elaborate_weather(plume_height):
                                                                                                     profile_data_file_full,
                                                                                                     plume_height,
                                                                                                     vent_h)
+                        break
                     else:
-                        print("No weather data available. Please run FIX")
+                        print("File " + profile_data_file + " not present")
+                        continue
+                else:
+                    print("No weather data available. Please run FIX")
     else:
         print("No weather data available. Please run FIX")
 
@@ -1881,7 +1869,6 @@ while 1:
         plt.text(0.5*max_x, 0.5*APHmax_y, 'REFIR',fontsize=80, color='gray',ha='center', va='center', alpha=0.09)
 
         try:
-            print('max_x',max_x)
             plt.xlim(0,max_x)
         except TypeError:
             plt.xlim(0,250)
