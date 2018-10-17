@@ -205,6 +205,8 @@ def newvolc_setup():
     import pandas as pd
     import numpy as np
     from pandas import ExcelFile
+    global volc_exist
+    volc_exist = 0
     print("... setting up volcanoes of interest!")
     print("Up to 10 volcanoes can be added to the list")
     df = pd.read_excel('volcanoExport.xlsx', sheetname='volcanoes')
@@ -718,6 +720,13 @@ def init_setup():
         sensors_setup()
         za = 1
     elif ia ==3:
+        try:
+            ini_files = os.listdir('.')
+            for item in ini_files:
+                if item.endswith('.ini'):
+                    os.remove(item)
+        except:
+            print('No .ini files from a previous configuration found')
         newvolc_setup()
         sensors_setup()
         za = 1

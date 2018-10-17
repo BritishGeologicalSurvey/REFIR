@@ -1967,7 +1967,8 @@ def showmap():
 
     lat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     lon = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    for i in range(0, 10):
+    #for i in range(0, 10):
+    for i in range(0, len(volc_lon)):
         lon[i], lat[i] = m(volc_lon[i], volc_lat[i])
 
     def volc_active(A, B, V):
@@ -2043,7 +2044,8 @@ def showmap():
 
     def volc_plot(V):
         global A1, B1
-        for q in range(0, 10):
+        #for q in range(0, 10):
+        for q in range(0, len(lon)):
             if V == q + 1:
                 volc_active(lon[q], lat[q], V)
 
@@ -2054,7 +2056,8 @@ def showmap():
                     volc_inactive(lon[q], lat[q], V)
 
     def Cband_plot(cs_oo):
-        for h in range(0, 6):
+        #for h in range(0, 6):
+        for h in range(0, len(LonC)):
             if cs_oo[h] == 1:
                 lonC[h], latC[h] = m(LonC[h], LatC[h])
                 CSens_active(lonC[h], latC[h], IDC[h])
@@ -2065,7 +2068,8 @@ def showmap():
                 None
 
     def Xband_plot(xs_oo):
-        for h in range(0, 6):
+        #for h in range(0, 6):
+        for h in range(0, len(LonX)):
             if xs_oo[h] == 1:
                 lonX[h], latX[h] = m(LonX[h], LatX[h])
                 XSens_active(lonX[h], latX[h], IDX[h])
@@ -2076,7 +2080,8 @@ def showmap():
                 None
 
     def Cam_plot(cam_oo):
-        for h in range(0, 6):
+        #for h in range(0, 6):
+        for h in range(0, len(LonCam)):
             if cam_oo[h] == 1:
                 lonCam[h], latCam[h] = m(LonCam[h], LatCam[h])
                 CamSens_active(lonCam[h], latCam[h], IDCam[h])
@@ -2112,7 +2117,8 @@ def showmap():
     # ma.drawcoastlines(color='blue')
 
     def volc_plot2(V):
-        for q in range(0, 10):
+        #for q in range(0, 10):
+        for q in range(0, len(lon2)):
             if V == q + 1:
                 volc_active(lon2[q], lat2[q], V)
             else:
@@ -2122,7 +2128,8 @@ def showmap():
                     volc_inactive(lon2[q], lat2[q], V)
 
     def Cband_plot2(cs_oo):
-        for h in range(0, 6):
+        #for h in range(0, 6):
+        for h in range(0, len(LonC)):
             if cs_oo[h] == 1:
                 lonC[h], latC[h] = ma(LonC[h], LatC[h])
                 CSens_active(lonC[h], latC[h], IDC[h])
@@ -2133,7 +2140,8 @@ def showmap():
                 None
 
     def Xband_plot2(xs_oo):
-        for h in range(0, 6):
+        #for h in range(0, 6):
+        for h in range(0, len(LonX)):
             if xs_oo[h] == 1:
                 lonX[h], latX[h] = ma(LonX[h], LatX[h])
                 XSens_active(lonX[h], latX[h], IDX[h])
@@ -2144,7 +2152,8 @@ def showmap():
                 None
 
     def Cam_plot2(cam_oo):
-        for h in range(0, 6):
+        #for h in range(0, 6):
+        for h in range(0, len(LonCam)):
             if cam_oo[h] == 1:
                 lonCam[h], latCam[h] = ma(LonCam[h], LatCam[h])
                 CamSens_active(lonCam[h], latCam[h], IDCam[h])
