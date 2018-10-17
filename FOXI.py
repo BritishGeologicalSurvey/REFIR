@@ -3094,11 +3094,11 @@ while 1:
         wtf_mtg = float(configlines[16])
         wtf_deg = float(configlines[17])
         wtf_wood0d = float(configlines[165])
-        deg_off = 0
+        plh_correction = 1
         def centlcorr(H_in,min_DiaOBS,max_DiaOBS):
             global minPlRadius
             global maxPlRadius
-            global wtf_deg, deg_off
+            global plh_correction
             if GreekPi(H_in) > PI_THRESH: #vertically rising plume 
                 minPlRadius = 0
                 maxPlRadius = 0
@@ -3108,15 +3108,13 @@ while 1:
                     minPlRadius = float(Mwood[3])
                     maxPlRadius = float(Mwood[4])
                     if Mwood[4]==0:
-                        wtf_deg = 0
-                        deg_off = 1
+                        plh_correction = 0
                         logger5.warning("*** Height of centerline cannot be estimated ***\n*** => modified Degruyter-Bonadonna model can't be considered! ***")
                         minPlRadius = 0
                         maxPlRadius = 0
                 else:
                     minPlRadius = float(min_DiaOBS/2)
                     maxPlRadius = float(max_DiaOBS/2)
-                    deg_off = 0
             return(minPlRadius,maxPlRadius)
 
         global PlumeRadiusMin, PlumeRadiusMax
@@ -3153,36 +3151,34 @@ while 1:
             H_max = res_stack[2]
             logger5.debug ("H_max: "+ str(H_max)+" m ")
             if res_stack[0]<PlumeRadiusMin:
-                wtf_deg = 0
-                logger5.warning ("Supposed plume radius too large - Deg. Bonad. suppressed!")
-                H_db_min = abs(res_stack[0])
+                logger5.warning ("Supposed plume radius too large - Centreline height not considered")
+                H_centrel_min = abs(res_stack[0])
             else:
-                H_db_min = abs(res_stack[0] - PlumeRadiusMin) 
+                H_centrel_min = abs(res_stack[0] - PlumeRadiusMin)
             if res_stack[2]<PlumeRadiusMax:
-                wtf_deg = 0
-                logger5.warning ("Supposed plume radius too large - Deg. Bonad. suppressed!")
-                H_db_max = abs(res_stack[2])
+                logger5.warning ("Supposed plume radius too large - Centreline height not considered")
+                H_centrel_max = abs(res_stack[2])
             else:
-                H_db_max = abs(res_stack[2] - PlumeRadiusMax) 
+                H_centrel_max = abs(res_stack[2] - PlumeRadiusMax)
 
-            H_db_be = (H_db_max + H_db_min)/2                  
-            logger5.debug ("H_db_min: "+ str(H_db_min)+" m ")
-            logger5.debug ("H_db_be: "+ str(H_db_be)+" m ")
-            logger5.debug ("H_db_max: "+str(H_db_max)+" m ")
+            H_centrel_be = (H_centrel_max + H_centrel_min)/2
+            logger5.debug ("H_centrel_min: "+ str(H_centrel_min)+" m ")
+            logger5.debug ("H_centrel_be: "+ str(H_centrel_be)+" m ")
+            logger5.debug ("H_centrel_max: "+str(H_centrel_max)+" m ")
 
-            if deg_off == 0:
+            if plh_correction == 1:
                 mer_restack=[mer_adjMastin(H_be,H_max),\
                 [mer_WilWal(H_min),mer_WilWal(H_be),mer_WilWal(H_max)],\
                 [mer_Sparks(H_min),mer_Sparks(H_be),mer_Sparks(H_max)],\
                 [mer_Mastin(H_min), mer_Mastin(H_be),mer_Mastin(H_max)],\
-                [mer_degbon(H_db_min),mer_degbon(H_db_be),mer_degbon(H_db_max)],\
-                [mer_woodhouse(H_min),mer_woodhouse(H_be),mer_woodhouse(H_max)]]
+                [mer_degbon(H_centrel_min),mer_degbon(H_centrel_be),mer_degbon(H_centrel_max)],\
+                [mer_woodhouse(H_centrel_min),mer_woodhouse(H_centrel_min),mer_woodhouse(H_centrel_min)]]
             else:
                 mer_restack=[mer_adjMastin(H_be,H_max),\
                 [mer_WilWal(H_min),mer_WilWal(H_be),mer_WilWal(H_max)],\
                 [mer_Sparks(H_min),mer_Sparks(H_be),mer_Sparks(H_max)],\
                 [mer_Mastin(H_min), mer_Mastin(H_be),mer_Mastin(H_max)],\
-                [0.0,0.0,0.0],\
+                [mer_degbon(H_min),mer_degbon(H_be),mer_degbon(H_max)],\
                 [mer_woodhouse(H_min),mer_woodhouse(H_be),mer_woodhouse(H_max)]]
             logger5.info ("::::::::::::::::::::::::::::::::::::::::::::::::")
             logger5.info("Computing plume height models")
@@ -3278,22 +3274,13 @@ while 1:
             mermtg = stack_mer[0]
             merdb = stack_mer[4][1]
             merwd0d = stack_mer[5][1]
-            if deg_off == 0:
-                tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0]]
-                if tempstack != [0.0, 0.0, 0.0,0.0,0.0]:
-                    a = np.array(tempstack)
-                    mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
-                else:
-                    mermin_hmin = 0
-                    logger6.info("NO DATA!")
+            tempstack = [stack_mer[1][0], stack_mer[2][0], stack_mer[3][0], stack_mer[4][0], stack_mer[5][0]]
+            if tempstack != [0.0, 0.0, 0.0, 0.0, 0.0]:
+                a = np.array(tempstack)
+                mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
             else:
-                tempstack = [stack_mer[1][0], stack_mer[2][0], stack_mer[3][0], stack_mer[5][0]]
-                if tempstack != [0.0, 0.0, 0.0,0.0]:
-                    a = np.array(tempstack)
-                    mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
-                else:
-                    mermin_hmin = 0
-                    logger6.info("NO DATA!")
+                mermin_hmin = 0
+                logger6.info("NO DATA!")
 
             mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0])
             
@@ -3336,22 +3323,14 @@ while 1:
             mermtg = stack_mer[0]
             merdb = stack_mer[4][1]
             merwd0d = stack_mer[5][1]
-            if deg_off == 0:
-                tempstack =[stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0]]
-                if tempstack != [0.0, 0.0, 0.0,0.0,0.0]:
-                    a = np.array(tempstack)
-                    mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
-                else:
-                    mermin_hmin = 0
-                    logger6.info("NO DATA!")
+            tempstack = [stack_mer[1][0], stack_mer[2][0], stack_mer[3][0], stack_mer[4][0], stack_mer[5][0]]
+            if tempstack != [0.0, 0.0, 0.0, 0.0, 0.0]:
+                a = np.array(tempstack)
+                mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
             else:
-                tempstack = [stack_mer[1][0], stack_mer[2][0], stack_mer[3][0], stack_mer[5][0]]
-                if tempstack != [0.0, 0.0, 0.0,0.0]:
-                    a = np.array(tempstack)
-                    mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
-                else:
-                    mermin_hmin = 0
-                    logger6.info("NO DATA!")
+                mermin_hmin = 0
+                logger6.info("NO DATA!")
+
             mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],\
             stack_mer[4][0],stack_mer[5][0],float(Mwood[0]))
             QmaxNowiHmin = min(max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0]),min(stack_mer[1][1],stack_mer[2][1],stack_mer[3][1])) 
@@ -4377,10 +4356,9 @@ while 1:
                 plt.plot(tiPH,MERma,color='dodgerblue')
                 plt.plot(tiPH,MERmtg,color='cyan')
                 plt.plot(tiPH,MERwood0d,color="grey")
-                if deg_off == 1:
-                    logger9.info("*** No centerline height available => Deg Bona model is not supported! ***" )
-                else:
-                    plt.plot(tiPH,MERdb,color='orange')
+                if plh_correction == 1:
+                    logger9.info("*** Deg Bon and Wood0D models are using centerline height ***")
+                plt.plot(tiPH,MERdb,color='orange')
                 plt.plot(tiPH,MERwood,color='deeppink')
                 plt.plot(tiPH,RMER,":",color='blue',linewidth =5.0)
                 
@@ -4389,16 +4367,11 @@ while 1:
                 
                 
                 plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-                if deg_off == 1:
-                    lgd=plt.legend(['CMER_lower', 'CMER_upper', 'Wilson Walker', 'Sparks', 'Mastin', 'Gudmundsson',\
-                    'Woodhouse0D','PlumeRise','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
-                    =(1.6, 0), ncol=1, fancybox=True, shadow=True,title="current timebase: " + tibalabel)
-                else:
-                    lgd=plt.legend(['CMER_lower', 'CMER_upper', 'Wilson Walker', 'Sparks', 'Mastin', 'Gudmundsson',\
-                    'Woodhouse0D','mod. D & B','PlumeRise','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
-                    =(1.6, 0), ncol=1, fancybox=True, shadow=True,title="current timebase: " + tibalabel)
-                
-                
+                lgd = plt.legend(['CMER_lower', 'CMER_upper', 'Wilson Walker', 'Sparks', 'Mastin', 'Gudmundsson', \
+                                  'Woodhouse0D', 'Deg & Bon', 'PlumeRise', 'CMER', "abs.min/max"], loc='lower right',
+                                 bbox_to_anchor \
+                                     =(1.6, 0), ncol=1, fancybox=True, shadow=True,
+                                 title="current timebase: " + tibalabel)
                 
                 plt.xlabel('time since eruption start [min]')
                 plt.ylabel('mass eruption rate [kg/s]')
@@ -4455,10 +4428,9 @@ while 1:
                 plt.plot(tiPH,MERmtg,color='cyan')
                 plt.plot(tiPH, MERwood0d, color="grey")
 
-                if deg_off == 1:
-                    print("** No centerline height available => Deg Bona model is not supported! **" )
-                else:
-                    plt.plot(tiPH,MERdb,color='orange')
+                if plh_correction == 1:
+                    print("** DegBon and Wood0D models are using centreline height **" )
+                plt.plot(tiPH,MERdb,color='orange')
                 plt.plot(tiPH,RMER,":",color='blue',linewidth =5.0)
                 
                 plt.plot(tiPH,MAX,"--",color='grey')
@@ -4466,16 +4438,12 @@ while 1:
                 
                 
                 plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-                
-                if deg_off == 1:               
-                    lgd=plt.legend(['CMER_lower', 'CMER_upper', 'Wilson Walker', 'Sparks', 'Mastin', 'Gudmundsson',\
-                    'Woodhouse0D','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
-                    =(1.6, 0), ncol=1, fancybox=True, shadow=True,title="current timebase: " + tibalabel)
-                else:               
-                    lgd=plt.legend(['CMER_lower', 'CMER_upper', 'Wilson Walker', 'Sparks', 'Mastin', 'Gudmundsson',\
-                    'Woodhouse0D','mod. D & B','CMER', "abs.min/max"], loc='lower right', bbox_to_anchor\
-                    =(1.6, 0), ncol=1, fancybox=True, shadow=True,title="current timebase: " + tibalabel)                
-                
+
+                lgd = plt.legend(['CMER_lower', 'CMER_upper', 'Wilson Walker', 'Sparks', 'Mastin', 'Gudmundsson', \
+                                  'Woodhouse0D', 'Deg & Bon', 'CMER', "abs.min/max"], loc='lower right', bbox_to_anchor \
+                                     =(1.6, 0), ncol=1, fancybox=True, shadow=True,
+                                 title="current timebase: " + tibalabel)
+
                 plt.xlabel('time since eruption start [min]')
                 plt.ylabel('mass eruption rate [kg/s]')
                 plt.title("First estimate of MER (CMER)")
