@@ -2441,7 +2441,7 @@ def sourcecontrol():
 
     overviewPHS.title("Overview and Control Panel - Plume height sensors:")
 
-    Label(overviewPHS, text=kurzvulk[vulkan], font="Verdana 12", fg="red", bg="yellow").grid(row=0, column=0)
+    Label(overviewPHS, text='Volcano: ' + label[vulkan] + '    Smithsonian ID: ' + kurzvulk[vulkan], font="Verdana 12", fg="red", bg="yellow").grid(row=0, column=0)
     Label(overviewPHS, text="Select plume height channels", font="Verdana 9", fg="purple").grid(row=1, column=0,
                                                                                                 columnspan=3)
     Label(overviewPHS, text="C-band radar:", font="Verdana 11").grid(row=2, column=0)
@@ -2757,7 +2757,7 @@ def default_parameter_panel():
     Label(master1, text="").grid(row=7, column=5, sticky=W)
     Label(master1, text="Gudmundsson:").grid(row=8, column=3, sticky=E)
     Label(master1, text="").grid(row=8, column=5, sticky=W)
-    Label(master1, text="mod. Degruyter Bonadonna:").grid(row=9, column=3, sticky=E)
+    Label(master1, text="Degruyter Bonadonna:").grid(row=9, column=3, sticky=E)
     Label(master1, text="").grid(row=9, column=5, sticky=W)
     Label(master1, text="Woodhouse 0D:").grid(row=10, column=3, sticky=E)
     Label(master1, text="").grid(row=10, column=5, sticky=W)

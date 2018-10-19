@@ -358,6 +358,14 @@ except EnvironmentError:
     lead_Time_m = input ("Minutes since start of eruption: ")
     lead_Time =24*60*lead_Time_d + 60*lead_Time_h+lead_Time_m
 
+fMER_file = open(out_txt + "_FMER.txt", "a")
+fMER_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'FMER min'+"\t"+'FMER avg'+"\t"+'FMER max'+"\n")
+fMER_file.close()
+PLH_file = open(out_txt + "_PLH.txt", "a")
+PLH_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'PLH min'+"\t"+'PLH avg'+"\t"+'PLH max'+"\n")
+PLH_file.close()
+
+
 # Elaborate automatically retrieved weather data
 def elaborate_weather(plume_height):
     global P_H_source
@@ -3172,7 +3180,7 @@ while 1:
                 [mer_Sparks(H_min),mer_Sparks(H_be),mer_Sparks(H_max)],\
                 [mer_Mastin(H_min), mer_Mastin(H_be),mer_Mastin(H_max)],\
                 [mer_degbon(H_centrel_min),mer_degbon(H_centrel_be),mer_degbon(H_centrel_max)],\
-                [mer_woodhouse(H_centrel_min),mer_woodhouse(H_centrel_min),mer_woodhouse(H_centrel_min)]]
+                [mer_woodhouse(H_centrel_min),mer_woodhouse(H_centrel_be),mer_woodhouse(H_centrel_max)]]
             else:
                 mer_restack=[mer_adjMastin(H_be,H_max),\
                 [mer_WilWal(H_min),mer_WilWal(H_be),mer_WilWal(H_max)],\
@@ -3483,7 +3491,6 @@ while 1:
 
 
             FILE1 = open(out_txt+"_mer_LOG.txt", "a")
-            
             FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(hbe)+"\t"\
             +str(mer_stat[0])+"\t"+str(mer_stat[1])\
             +"\t"+str(mer_stat[2])+"\t"+str(mer_stat[3])+"\t"+str(mer_stat[4])+\
@@ -3530,7 +3537,16 @@ while 1:
 "\t"+str(qfak_Xband3)+"\t"+str(qfak_Xband4)+"\t"+str(qfak_Xband5)+"\t"+str(qfak_Xband6)+\
 "\t"+str(qfak_Cam4)+"\t"+str(qfak_Cam5)+"\t"+str(qfak_Cam6)+"\t"+str(wtf_wood0d)+"\t"+str(MERwood0d)+"\n")
             FILE1.close()
-            
+            FILE2 = open(out_txt + "_FMER.txt", "a")
+            FILE2.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min) + "\t" + str(Qfmer) + "\t" + str(
+                Qfmer_max) + "\n")
+            FILE2.close()
+            FILE3 = open(out_txt + "_PLH.txt", "a")
+            FILE3.write(
+                str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(hbe) + "\t" + str(hbe_max) + "\n")
+            FILE3.close()
+
+
         """
         _mer_log.txt file contains overview of all parameter used for MER plus results:
         
