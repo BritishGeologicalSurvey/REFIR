@@ -629,9 +629,9 @@ def defaultvalues(venth):
     ISEGSm_on = 1
     ISX1m_on = 1
     ISX2m_on = 1
-    GFZ1_on = 1
-    GFZ2_on = 1
-    GFZ3_on = 1
+    GFZ1_on = 0
+    GFZ2_on = 0
+    GFZ3_on = 0
     OBS_on = 1
 
     oo_exp = 0

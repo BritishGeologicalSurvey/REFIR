@@ -694,7 +694,7 @@ while 1:
     time_stop = configlines[167]
 
     mins = mins + steptime
-    if run_type ==1:
+    if run_type == 1:
         TimeNOW = datetime.datetime.utcnow()
         TimeNOWs = str(TimeNOW)
         HourNOWs = TimeNOWs[11:13]
@@ -4716,7 +4716,10 @@ while 1:
                 if run == 1:
                     tiM_end = tiM
                 else:
-                     tiM_end = tiM[-1]
+                    if isinstance(tiM, list):
+                        tiM_end = tiM[-1]
+                    else:
+                        tiM_end = tiM
                 
                 fig = plt.figure()
                 ax = plt.subplot(111)
@@ -4788,7 +4791,10 @@ while 1:
                 if run == 1:
                     tiM_end = tiM
                 else:
-                    tiM_end = tiM[-1]
+                    if isinstance(tiM, list):
+                        tiM_end = tiM[-1]
+                    else:
+                        tiM_end = tiM
                 fig = plt.figure()
                 
                 ax = plt.subplot(111)
