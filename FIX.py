@@ -193,7 +193,8 @@ else:
     time_start = '00-00-00 00:00:00'
     time_stop = '00-00-00 00:00:00'
 
-dir1 = os.path.dirname(__file__)
+#dir1 = os.path.dirname(__file__)
+dir1 = os.path.dirname(os.path.abspath(__file__))
 PlumeRiseFile = "PlumeRise_Foxi"
 root = Tk()
 root.title("select the volcano")

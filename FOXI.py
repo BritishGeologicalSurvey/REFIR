@@ -70,8 +70,8 @@ time_stamp = time_st.strftime("%Y%m%d_%H%M")
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-dir1 = os.path.dirname(__file__)
-
+#dir1 = os.path.dirname(__file__)
+dir1 = os.path.dirname(os.path.abspath(__file__))
 try:
     os.makedirs('foxi_log')
     filename = os.path.join(dir1+'/foxi_log', 'refir_%s.log' % time_stamp)
