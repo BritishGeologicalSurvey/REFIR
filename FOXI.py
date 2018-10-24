@@ -43,7 +43,7 @@ from copy import deepcopy
 import sys
 import time
 from ftplib import FTP
-import winsound
+#import winsound
 import locale
 import urllib
 from urllib.request import urlopen 
@@ -2721,9 +2721,9 @@ while 1:
     #check if no data was within time frame of interest and if so skip all further steps
     if ckcode ==0:
         logger4.info("\n\n!! no new data within the selected time frame !!\n....MER computation steps skipped!\n\n")
-        winsound.Beep(Freq,Dur2)
-        winsound.Beep(Freq,Dur2)
-        winsound.Beep(Freq,Dur2) 
+        #winsound.Beep(Freq,Dur2)
+        #winsound.Beep(Freq,Dur2)
+        #winsound.Beep(Freq,Dur2)
 
     else:
         logger4.info("*** step 4 ***")
@@ -3969,7 +3969,7 @@ while 1:
                 if EQcode ==0:
                     logger7.info("\n\n!! no new exp. MER data within selected time frame !!\n\
                 ....exp. MER not considered for further computation!\n\n")
-                    winsound.Beep(Freq,Dur2)
+                    #winsound.Beep(Freq,Dur2)
                 else:
                     saveEMER(TIMEBASE)
             elif TIMEBASE == 30:
@@ -3977,7 +3977,7 @@ while 1:
                 if EQcode ==0:
                     logger7.info("\n\n!! no new exp. MER data within selected time frame !!\n\
                 ....exp. MER not considered for further computation!\n\n")
-                    winsound.Beep(Freq,Dur2)
+                    #winsound.Beep(Freq,Dur2)
                 else:
                     saveEMER(TIMEBASE)
             elif TIMEBASE == 60:
@@ -3985,7 +3985,7 @@ while 1:
                 if EQcode ==0:
                     logger7.info("\n\n!! no new exp. MER data within selected time frame !!\n\
                 ....exp. MER not considered for further computation!\n\n")
-                    winsound.Beep(Freq,Dur2)
+                    #winsound.Beep(Freq,Dur2)
                 else:
                     saveEMER(TIMEBASE)
             else:
@@ -3993,7 +3993,7 @@ while 1:
                 if EQcode ==0:
                     logger7.info("\n\n!! no new exp. MER data within selected time frame !!\n\
                 ....exp. MER not considered for further computation!\n\n")
-                    winsound.Beep(Freq,Dur2)
+                    #winsound.Beep(Freq,Dur2)
                 else:
                     saveEMER(180)
         
@@ -5352,12 +5352,12 @@ while 1:
         print(".....")
         time.sleep(18)
         print("Caution! New run in prepare!")
-        winsound.Beep(Freq,Dur2)
+        #winsound.Beep(Freq,Dur2)
         for ai in range(10,0,-1):
             time.sleep(1)
-            winsound.Beep(Freq,Dur)
+            #winsound.Beep(Freq,Dur)
             print (str(ai)+" seconds")
-        winsound.Beep(Freq,Dur2)
+        #winsound.Beep(Freq,Dur2)
     del gc.garbage[:]
     gc.collect()
     logger.debug('gc garbage: %r', gc.garbage)
