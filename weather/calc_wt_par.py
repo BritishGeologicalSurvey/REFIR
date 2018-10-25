@@ -51,7 +51,7 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
     dTdZ = []
     H_top = H_source + H_plume
     print('Opening file ' + prof_file)
-    with open(prof_file, 'r') as f1:
+    with open(prof_file, 'r',encoding="utf-8", errors="surrogateescape") as f1:
         next(f1)
         nlines = 0
         for line in f1:
@@ -134,7 +134,7 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
     Ws = (1.44 * V_H_top) / (N_avg * H_top)
     # Open file to store weather parameter needed for calculating MER
     wt_par = 'weather_parameters_' + validity + '.txt'
-    fwt_par = open(wt_par, 'w')
+    fwt_par = open(wt_par, 'w',encoding="utf-8", errors="surrogateescape")
     fwt_par.write(
         'Atmospheric pressure at the source [Pa] = %8.5e\nAtmospheric temperature at the source [K] = %8.5e\n\nData needed for Degruyter & Bonadonna (2012) model\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nPlume height-averaged wind speed [m/s] = %8.5e\n\nData needed for Woodhouse et al. (2013) model\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nWind speed at top plume height [m/s] = %8.5e\nWs = %8.5e\n' % (
         P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws))

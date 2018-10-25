@@ -209,7 +209,7 @@ try:
     kurzvulk = []
     defsetup = []
     fn = os.path.join(dir1 + '/refir_config', 'volcano_list.ini')
-    with open(fn) as f:
+    with open(fn,encoding="utf-8", errors="surrogateescape") as f:
         lines = f.readlines()
         Cse = []
         for l in lines:
@@ -397,7 +397,7 @@ def read_sensors():
     try:
         # C-band
         fnCb = os.path.join(dir1 + '/refir_config', 'Cband.ini')
-        with open(fnCb) as f:
+        with open(fnCb, encoding="utf-8", errors="surrogateescape") as f:
             lines = f.readlines()
             Cse = []
             for l in lines:
@@ -424,7 +424,7 @@ def read_sensors():
     try:
         # X-band
         fnXb = os.path.join(dir1 + '/refir_config', 'Xband.ini')
-        with open(fnXb) as f:
+        with open(fnXb,encoding="utf-8", errors="surrogateescape") as f:
             lines = f.readlines()
             Dse = []
             for l in lines:
@@ -450,7 +450,7 @@ def read_sensors():
     try:
         # Cams
         fnCam = os.path.join(dir1 + '/refir_config', 'Cam.ini')
-        with open(fnCam) as f:
+        with open(fnCam,encoding="utf-8", errors="surrogateescape") as f:
             lines = f.readlines()
             Ase = []
             for l in lines:
@@ -482,7 +482,7 @@ def get_last_time():
     global time_OBS
     try:
 
-        config2file = open("fix_config.txt", "r")
+        config2file = open("fix_config.txt", "r",encoding="utf-8", errors="surrogateescape")
         config2lines = config2file.readlines()
         config2file.close()
         time_OBS_str0 = config2lines[2]
@@ -698,7 +698,7 @@ LatC = []
 LonC = []
 try:
     fnCb = os.path.join(dir1 + '/refir_config', 'Cband.ini')
-    with open(fnCb) as f:
+    with open(fnCb,encoding="utf-8", errors="surrogateescape") as f:
         lines = f.readlines()
         Cse = []
         for l in lines:
@@ -729,7 +729,7 @@ LonX = []
 
 try:
     fnXb = os.path.join(dir1 + '/refir_config', 'Xband.ini')
-    with open(fnXb) as f:
+    with open(fnXb,encoding="utf-8", errors="surrogateescape") as f:
         lines = f.readlines()
         Cse = []
         for l in lines:
@@ -758,7 +758,7 @@ LonCam = []
 
 try:
     fnCam = os.path.join(dir1 + '/refir_config', 'Cam.ini')
-    with open(fnCam) as f:
+    with open(fnCam,encoding="utf-8", errors="surrogateescape") as f:
         lines = f.readlines()
         Cse = []
         for l in lines:
@@ -879,7 +879,7 @@ def get_last_data():
 
     try:
 
-        configfile = open("fix_config.txt", "r")
+        configfile = open("fix_config.txt", "r",encoding="utf-8", errors="surrogateescape")
         configlines3 = configfile.readlines()
         configfile.close()
         checkfile = 1
@@ -1037,7 +1037,7 @@ masterklick = Tk()
 
 def save_default_file():
     time_update = datetime.datetime.utcnow()
-    default_FILE = open("fix_config.txt", 'w')
+    default_FILE = open("fix_config.txt", 'w',encoding="utf-8", errors="surrogateescape")
     default_FILE.write(str(vulkan) + " \n" + str(time_update) + " \n" + \
                        str(time_OBS) + "\n" + str(Hmin_obs) + " \n" + str(Hmax_obs) + \
                        " \n" + str(OBS_on) + " \n" + str(qf_OBS) + " \n" + str(theta_a0) + \
@@ -1426,7 +1426,7 @@ def SourceStatOview():
     else:
         file_gfz1 = sens_file[12] + ".txt"
         try:
-            with open(file_gfz1) as f:
+            with open(file_gfz1,encoding="utf-8", errors="surrogateescape") as f:
                 rlines = []
                 for line in f:
                     rlines.append(line)
@@ -1461,7 +1461,7 @@ def SourceStatOview():
     else:
         file_gfz2 = sens_file[13] + ".txt"
         try:
-            with open(file_gfz2) as f:
+            with open(file_gfz2,encoding="utf-8", errors="surrogateescape") as f:
                 rlines = []
                 for line in f:
                     rlines.append(line)
@@ -1496,7 +1496,7 @@ def SourceStatOview():
     else:
         file_gfz3 = sens_file[14] + ".txt"
         try:
-            with open(file_gfz3) as f:
+            with open(file_gfz3,encoding="utf-8", errors="surrogateescape") as f:
                 rlines = []
                 for line in f:
                     rlines.append(line)
@@ -1529,7 +1529,7 @@ def SourceStatOview():
     else:
         file_cam4 = sens_file[15] + ".txt"
         try:
-            with open(file_cam4) as f:
+            with open(file_cam4,encoding="utf-8", errors="surrogateescape") as f:
                 rlines = []
                 for line in f:
                     rlines.append(line)
@@ -1562,7 +1562,7 @@ def SourceStatOview():
     else:
         file_cam5 = sens_file[16] + ".txt"
         try:
-            with open(file_cam5) as f:
+            with open(file_cam5,encoding="utf-8", errors="surrogateescape") as f:
                 rlines = []
                 for line in f:
                     rlines.append(line)
@@ -1595,7 +1595,7 @@ def SourceStatOview():
     else:
         file_cam6 = sens_file[17] + ".txt"
         try:
-            with open(file_cam6) as f:
+            with open(file_cam6,encoding="utf-8", errors="surrogateescape") as f:
                 rlines = []
                 for line in f:
                     rlines.append(line)
@@ -1626,7 +1626,7 @@ def SourceStatOview():
     else:
         file_iskef = sens_file[0] + ".txt"
         try:
-            with open(file_iskef) as f:
+            with open(file_iskef,encoding="utf-8", errors="surrogateescape") as f:
                 iskef_con = 1
                 iskef_status = "ONLINE"
                 iskef_status_fg = "lime green"
@@ -1642,7 +1642,7 @@ def SourceStatOview():
     else:
         file_isegs = sens_file[1] + ".txt"
         try:
-            with open(file_isegs) as f:
+            with open(file_isegs,encoding="utf-8", errors="surrogateescape") as f:
                 isegs_con = 1
                 isegs_status = "ONLINE"
                 isegs_status_fg = "lime green"
@@ -1658,7 +1658,7 @@ def SourceStatOview():
     else:
         file_cband3 = sens_file[2] + ".txt"
         try:
-            with open(file_cband3) as f:
+            with open(file_cband3,encoding="utf-8", errors="surrogateescape") as f:
                 cband3_con = 1
                 cband3_status = "ONLINE"
                 cband3_status_fg = "lime green"
@@ -1674,7 +1674,7 @@ def SourceStatOview():
     else:
         file_cband4 = sens_file[3] + ".txt"
         try:
-            with open(file_cband4) as f:
+            with open(file_cband4,encoding="utf-8", errors="surrogateescape") as f:
                 cband4_con = 1
                 cband4_status = "ONLINE"
                 cband4_status_fg = "lime green"
@@ -1690,7 +1690,7 @@ def SourceStatOview():
     else:
         file_cband5 = sens_file[4] + ".txt"
         try:
-            with open(file_cband5) as f:
+            with open(file_cband5,encoding="utf-8", errors="surrogateescape") as f:
                 cband5_con = 1
                 cband5_status = "ONLINE"
                 cband5_status_fg = "lime green"
@@ -1706,7 +1706,7 @@ def SourceStatOview():
     else:
         file_cband6 = sens_file[5] + ".txt"
         try:
-            with open(file_cband6) as f:
+            with open(file_cband6,encoding="utf-8", errors="surrogateescape") as f:
                 cband6_con = 1
                 cband6_status = "ONLINE"
                 cband6_status_fg = "lime green"
@@ -1722,7 +1722,7 @@ def SourceStatOview():
     else:
         file_isx1 = sens_file[6] + ".txt"
         try:
-            with open(file_isx1) as f:
+            with open(file_isx1,encoding="utf-8", errors="surrogateescape") as f:
                 isx1_con = 1
                 isx1_status = "ONLINE"
                 isx1_status_fg = "lime green"
@@ -1738,7 +1738,7 @@ def SourceStatOview():
     else:
         file_isx2 = sens_file[7] + ".txt"
         try:
-            with open(file_isx2) as f:
+            with open(file_isx2,encoding="utf-8", errors="surrogateescape") as f:
                 isx2_con = 1
                 isx2_status = "ONLINE"
                 isx2_status_fg = "lime green"
@@ -1754,7 +1754,7 @@ def SourceStatOview():
     else:
         file_xband3 = sens_file[8] + ".txt"
         try:
-            with open(file_xband3) as f:
+            with open(file_xband3,encoding="utf-8", errors="surrogateescape") as f:
                 xband3_con = 1
                 xband3_status = "ONLINE"
                 xband3_status_fg = "lime green"
@@ -1770,7 +1770,7 @@ def SourceStatOview():
     else:
         file_xband4 = sens_file[9] + ".txt"
         try:
-            with open(file_xband4) as f:
+            with open(file_xband4,encoding="utf-8", errors="surrogateescape") as f:
                 xband4_con = 1
                 xband4_status = "ONLINE"
                 xband4_status_fg = "lime green"
@@ -1786,7 +1786,7 @@ def SourceStatOview():
     else:
         file_xband5 = sens_file[10] + ".txt"
         try:
-            with open(file_xband5) as f:
+            with open(file_xband5,encoding="utf-8", errors="surrogateescape") as f:
                 xband5_con = 1
                 xband5_status = "ONLINE"
                 xband5_status_fg = "lime green"
@@ -1802,7 +1802,7 @@ def SourceStatOview():
     else:
         file_xband6 = sens_file[11] + ".txt"
         try:
-            with open(file_xband6) as f:
+            with open(file_xband6,encoding="utf-8", errors="surrogateescape") as f:
                 xband6_con = 1
                 xband6_status = "ONLINE"
                 xband6_status_fg = "lime green"
@@ -2913,7 +2913,7 @@ MinuteNUNAs = TimeNUNAs[14:16]
 
 def save_OBSfile(inputEoZ):
     """stores input data into fix_OBSin file"""
-    FILE_OBS = open("fix_OBSin.txt", "a")
+    FILE_OBS = open("fix_OBSin.txt", "a",encoding="utf-8", errors="surrogateescape")
     FILE_OBS.write(str(time_OBSdata) + "\t" + str(OBSd_on) + "\t" \
                    + str(sourceOBSdata) + "\t" + str(Hmin_obs) + "\t" + str(Havg_obs) + "\t" + str(
         Hmax_obs) + "\t" + str(unc_OBS) + "\t" + str(qf_OBS) + "\t" + str(inputEoZ) + "\t" + "9" + "\t" + str(
@@ -3288,7 +3288,7 @@ def check_configfile():
         global TimeUpdate1
         global sTimeUpdate1
         global sTimeObs1
-        configfile = open("fix_config.txt", "r")
+        configfile = open("fix_config.txt", "r",encoding="utf-8", errors="surrogateescape")
         configlines4 = configfile.readlines()
         configfile.close()
         TimeUpdate = configlines4[1]
@@ -3623,7 +3623,7 @@ def conv_fF():
     Label(conv_f, text="ON", fg="lime green").grid(row=4, column=0, columnspan=2)
 
     try:
-        with open(PlumeRiseFile + ".txt") as f:
+        with open(PlumeRiseFile + ".txt",encoding="utf-8", errors="surrogateescape") as f:
             wood_con = 1
             wood_status = "ONLINE"
             wood_status_fg = "lime green"
@@ -3859,16 +3859,16 @@ def man_MERF():
         print("maximum: " + str(max_manMER))
         comment_merin = str(Com_manual.get())
         try:
-            with open("fix_MERin.txt", 'r') as manMER_FILE_original:
+            with open("fix_MERin.txt", 'r',encoding="utf-8", errors="surrogateescape") as manMER_FILE_original:
                 data = manMER_FILE_original.read()
-            with open("fix_MERin.txt", 'w') as manMER_FILE:
+            with open("fix_MERin.txt", 'w',encoding="utf-8", errors="surrogateescape") as manMER_FILE:
                 manMER_FILE.write(str(time_MERin) + "\t" + str(oo_manual) + "\t" + \
                                   str(wtf_manual) + "\t" + str(min_manMER) + "\t" + str(max_manMER) + "\t" + str(
                     "7") + "\t" + \
                                   str("7") + "\t" + str("7") + "\t" + str("7") + "\t" + str(
                     comment_merin) + "\n" + data)
         except:
-            manMER_FILE = open("fix_MERin.txt", 'a')
+            manMER_FILE = open("fix_MERin.txt", 'a',encoding="utf-8", errors="surrogateescape")
             manMER_FILE.write(str(time_MERin) + "\t" + str(oo_manual) + "\t" + \
                               str(wtf_manual) + "\t" + str(min_manMER) + "\t" + str(max_manMER) + "\t" + str("7") + "\t" \
                               + str("7") + "\t" + str("7") + "\t" + str("7") + "\t" + str(comment_merin) + "\n")

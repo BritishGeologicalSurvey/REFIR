@@ -192,7 +192,7 @@ def read_sensors():
     try:
         #C-band
         fnCb= os.path.join(dir1+'/refir_config','Cband.ini')
-        with open (fnCb) as f:
+        with open (fnCb,encoding="utf-8", errors="surrogateescape") as f:
             lines =f.readlines()
             Cse = []
             for l in lines:
@@ -218,7 +218,7 @@ def read_sensors():
     try:
         #X-band
         fnXb= os.path.join(dir1+'/refir_config','Xband.ini')
-        with open (fnXb) as f:
+        with open (fnXb,encoding="utf-8", errors="surrogateescape") as f:
             lines =f.readlines()
             Dse = []
             for l in lines:
@@ -242,7 +242,7 @@ def read_sensors():
     try:
         #Cams
         fnCam= os.path.join(dir1+'/refir_config','Cam.ini')
-        with open (fnCam) as f:
+        with open (fnCam,encoding="utf-8", errors="surrogateescape") as f:
             lines =f.readlines()
             Ase = []
             for l in lines:
@@ -358,10 +358,10 @@ except EnvironmentError:
     lead_Time_m = input ("Minutes since start of eruption: ")
     lead_Time =24*60*lead_Time_d + 60*lead_Time_h+lead_Time_m
 
-fMER_file = open(out_txt + "_FMER.txt", "a")
+fMER_file = open(out_txt + "_FMER.txt", "a",encoding="utf-8", errors="surrogateescape")
 fMER_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'FMER min'+"\t"+'FMER avg'+"\t"+'FMER max'+"\n")
 fMER_file.close()
-PLH_file = open(out_txt + "_PLH.txt", "a")
+PLH_file = open(out_txt + "_PLH.txt", "a",encoding="utf-8", errors="surrogateescape")
 PLH_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'PLH min'+"\t"+'PLH avg'+"\t"+'PLH max'+"\n")
 PLH_file.close()
 
@@ -384,14 +384,17 @@ def elaborate_weather(plume_height):
     print('Plume height',plume_height)
     cwd=os.getcwd()
     if run_type == 1:
-        folder_name=cwd+"\\raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
+        #folder_name=cwd+"\\raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
+        folder_name = os.path.join(cwd,"raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs)
+
         #abs_validity = YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs
         year_vals = YearNUNAs
         month_vals = MonthNUNAs
         day_vals = DayNUNAs
         hour_vals = HourNUNAs
     else:
-        folder_name = cwd + "\\raw_weather_data_" + eruption_start_year + eruption_start_month + eruption_start_day
+        #folder_name = cwd + "\\raw_weather_data_" + eruption_start_year + eruption_start_month + eruption_start_day
+        folder_name = os.path.join(cwd,"raw_weather_data_"+ eruption_start_year + eruption_start_month + eruption_start_day)
         year_vals = YearNOWs
         month_vals = MonthNOWs
         day_vals = DayNOWs
@@ -401,7 +404,8 @@ def elaborate_weather(plume_height):
 
     if os.path.exists(folder_name):
         profile_data_file = "profile_data_" + abs_validity + ".txt"
-        profile_data_file_full = folder_name+"\\"+profile_data_file
+        #profile_data_file_full = folder_name+"\\"+profile_data_file
+        profile_data_file_full = os.path.join(folder_name,profile_data_file)
         if os.path.exists(profile_data_file_full):
             print("Elaborating "+profile_data_file)
             [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals,month_vals,day_vals,abs_validity,profile_data_file_full,plume_height,vent_h)
@@ -436,7 +440,8 @@ def elaborate_weather(plume_height):
                     abs_validity = year_vals + month_vals + day_vals + hour_vals
                     profile_data_file = "profile_data_" + abs_validity + ".txt"
                     print("Searching for " + profile_data_file)
-                    profile_data_file_full = folder_name + "\\" + profile_data_file
+                    #profile_data_file_full = folder_name + "\\" + profile_data_file
+                    profile_data_file_full = os.path.join(folder_name,profile_data_file)
                     if os.path.exists(profile_data_file_full):
                         print("Elaborating " + profile_data_file)
                         [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals,
@@ -509,7 +514,7 @@ while 1:
 
     try:
         
-        configfile = open("fix_config.txt", "r")
+        configfile = open("fix_config.txt", "r",encoding="utf-8", errors="surrogateescape")
         configlines = configfile.readlines()
         configfile.close()
         checkfile = 1
@@ -990,7 +995,7 @@ while 1:
                 logger3.info(">>> "+str(idsrc)+" >>> connected!")
                 f.cwd(dirsrc)                         #path of source file
                 if filesrc_txt in f.nlst():           #name of source file
-                    fd = open(filesrc+'.txt', 'w')    #name of local file
+                    fd = open(filesrc+'.txt', 'w',encoding="utf-8", errors="surrogateescape")    #name of local file
                     f.retrlines('RETR '+filesrc_txt, writeline) 
                     fd.close()
                     logger3.info("OK - file transferred!")
@@ -1078,22 +1083,22 @@ while 1:
     def input_allphfile(timediffH,hminH,plhH,hmaxH,qfH,sourceH,onoffH):
         """ logs all obtained plumeheights in a file"""
         try:
-            FILE1 = open(out_txt+"_plh_log_tmp.txt", "a")
+            FILE1 = open(out_txt+"_plh_log_tmp.txt", "a",encoding="utf-8", errors="surrogateescape")
             TimiH = TimeNOW - datetime.timedelta(minutes=timediffH)
             FILE1.write(str(TimiH) +"\t"+str(hminH)+"\t"+str(plhH)+"\t"+str(hmaxH)\
             +"\t"+str(qfH)+"\t"+str(sourceH)+"\t"+str(onoffH)+"\n")
             FILE1.close()
                
         except EnvironmentError:
-            FILE1 = open(out_txt+"_plh_log_tmp.txt", "w")
+            FILE1 = open(out_txt+"_plh_log_tmp.txt", "w",encoding="utf-8", errors="surrogateescape")
             TimiH = TimeNOW - datetime.timedelta(minutes=timediffH)
             FILE1.write(str(TimiH) +"\t"+str(hminH)+"\t"+str(plhH)+"\t"+str(hmaxH)\
             +"\t"+str(qfH)+"\t"+str(sourceH)+"\t"+str(onoffH)+"\n")
             FILE1.close()
         #Remove duplettes
-        lines = open(out_txt+"_plh_log_tmp.txt", 'r').readlines()
+        lines = open(out_txt+"_plh_log_tmp.txt", 'r',encoding="utf-8", errors="surrogateescape").readlines()
         lines_set = set(lines)
-        out  = open(out_txt+'_plh_log.txt', 'w')
+        out  = open(out_txt+'_plh_log.txt', 'w',encoding="utf-8", errors="surrogateescape")
         for line in lines_set:
             out.write(line)
 
@@ -2127,7 +2132,7 @@ while 1:
     
         obsin_doo,obsin_src,obsin_hmin,obsin_havg,obsin_hmax,obsin_unc,\
     obsin_qf = np.loadtxt("fix_OBSin.txt",usecols=(1,2,3,4,5,6,7), unpack=True, delimiter='\t')  
-        with open("fix_OBSin.txt", "r") as fp:
+        with open("fix_OBSin.txt", "r",encoding="utf-8", errors="surrogateescape") as fp:
             for line in fp:
                 rlines.append(line[:19])
         fp.close()  
@@ -2218,7 +2223,7 @@ while 1:
 
     if OBS_on == 1:
         try:
-            FILE5 = open("fix_OBSin.txt", "r")
+            FILE5 = open("fix_OBSin.txt", "r",encoding="utf-8", errors="surrogateescape")
             FILE5.close()
             OBSin()
         except EnvironmentError:
@@ -2260,7 +2265,7 @@ while 1:
         if run_type == 1:
             TimeNOW = datetime.datetime.utcnow()
         rlines =[]
-        with open(radarC_file+".txt", "r") as ins:
+        with open(radarC_file+".txt", "r",encoding="utf-8", errors="surrogateescape") as ins:
             for line in ins:
                 rlines.append(line)
 
@@ -2313,7 +2318,7 @@ while 1:
         else:
             
             try:
-                Cbandfile = open(sens_file[z]+".txt", "r")
+                Cbandfile = open(sens_file[z]+".txt", "r",encoding="utf-8", errors="surrogateescape")
                 Cbandfile.close()
                 if SensOO[z]==1:
                     logger3.info("checking ............"+ ID[z])
@@ -2360,7 +2365,7 @@ while 1:
         if run_type == 1:
             TimeNOW = datetime.datetime.utcnow()
         rlines = []
-        with open(radarX_file+".txt", "r") as ins:
+        with open(radarX_file+".txt", "r",encoding="utf-8", errors="surrogateescape") as ins:
             for line in ins:
                 rlines.append(line)
         ins.close()
@@ -2408,7 +2413,7 @@ while 1:
             huj=10
         else:
             try:
-                Xbandfile = open(sens_file[zy+6]+".txt", "r")
+                Xbandfile = open(sens_file[zy+6]+".txt", "r",encoding="utf-8", errors="surrogateescape")
                 Xbandfile.close()
                 if SensOO[zy+6]==1:
                     logger3.info("checking ............"+ ID[zy+6])
@@ -2430,7 +2435,7 @@ while 1:
         rlines = []
         gfz_vis,gfz_havg,gfz_hstd = np.loadtxt(GFZ_file+".txt",\
      usecols=(3,4,5), unpack=True, delimiter='\t')  
-        with open(GFZ_file+".txt", "r") as fp:
+        with open(GFZ_file+".txt", "r",encoding="utf-8", errors="surrogateescape") as fp:
             for line in fp:
                 rlines.append(line[:20])
         fp.close() 
@@ -2512,7 +2517,7 @@ while 1:
             huj=11
         else:
             try:
-                Camfile = open(sens_file[c+12]+".txt", "r")
+                Camfile = open(sens_file[c+12]+".txt", "r",encoding="utf-8", errors="surrogateescape")
                 Camfile.close()
                 if SensOO[c+12]==1:
                     logger3.info("checking ............" + ID[c+12])
@@ -2714,7 +2719,7 @@ while 1:
         print()
 
     #write QUO_LOG
-    qfct = open(out_txt+"_QUO_LOG.txt","a")
+    qfct = open(out_txt+"_QUO_LOG.txt","a",encoding="utf-8", errors="surrogateescape")
     qfct.write(str(timin)+"\t"+str(ckcode)+"\t"+str(timebase)+"\n")
     qfct.close()
 
@@ -2765,14 +2770,14 @@ while 1:
             """ logs computed plumeheight summaries on time base tiba in a file"""
             global timin
             try:
-                FILE1 = open(out_txt+"_hbe_"+str(tiba)+".txt", "a")
+                FILE1 = open(out_txt+"_hbe_"+str(tiba)+".txt", "a",encoding="utf-8", errors="surrogateescape")
                 
                 FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(phmin)+"\t"+str(phbe)\
                 +"\t"+str(phmax)+"\t"+str(tiba)+"\n")
                 FILE1.close()
                    
             except EnvironmentError:
-                FILE1 = open(out_txt+"_hbe_"+str(tiba)+".txt", "w")
+                FILE1 = open(out_txt+"_hbe_"+str(tiba)+".txt", "w",encoding="utf-8", errors="surrogateescape")
                 logger4.info(">>>>>>>>>>>>new plume height best estimate log file written")
                 
                 FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(phmin)+"\t"+str(phbe)\
@@ -2781,7 +2786,7 @@ while 1:
                 
         def plh_woo_file(phmin,phbe,phmax):
             """ logs plumeheight to be exported to Bristol on time base tiba in a file"""
-            FILE2 = open(out_txt+"Foxi_hbe.txt", "a")
+            FILE2 = open(out_txt+"Foxi_hbe.txt", "a",encoding="utf-8", errors="surrogateescape")
             
             FILE2.write(str(timin) +"\t"+str(vulkan) +"\t"+str(vent_h)+"\t"+str(phmin)+"\t"+str(phbe)\
                 +"\t"+str(phmax)+"\n")
@@ -2803,7 +2808,7 @@ while 1:
             stempel=str(YearSTs+MonthSTs+DaySTs+HourSTs+MinuteSTs)
             filename = "Foxi_hbe.txt"
             
-            FILE8 = open(filename, "w")
+            FILE8 = open(filename, "w",encoding="utf-8", errors="surrogateescape")
            
             FILE8.write(str(stempel)+"\n"+str(timin) +"\n"+str(vulkan) +"\n"+str(vent_h)+"\n"+str(phmin)+"\n"+str(phbe)\
                 +"\n"+str(phmax)+"\n")
@@ -3060,7 +3065,7 @@ while 1:
                 elif zz == 7:
                     PR_pradMax = asunicode_win(line)
                     pr_pradMax = PR_pradMax.strip("\n")        
-            FILE7 = open(out_txt+"_plumerise_log.txt", "a") ##additional log file
+            FILE7 = open(out_txt+"_plumerise_log.txt", "a",encoding="utf-8", errors="surrogateescape") ##additional log file
             
             
             FILE7.write(str(pr_date) +"\t"+str(pr_MERmin)+"\t"+str(pr_MERavg)+"\t"+str(pr_MERmax)\
@@ -3205,7 +3210,7 @@ while 1:
         def allmer_file(n,hbe_used,model,merhmin,merhbe,merhmax,tiba):
             """ logs all computed mer values on time base tiba in a file"""
             try:
-                FILE1 = open(out_txt+"_allmer_"+str(tiba)+".txt", "a")
+                FILE1 = open(out_txt+"_allmer_"+str(tiba)+".txt", "a",encoding="utf-8", errors="surrogateescape")
  
                 FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(hbe_used)+"\t"+str(model)\
                 +"\t"+str(merhmin)+"\t"+str(merhbe)\
@@ -3213,7 +3218,7 @@ while 1:
                 FILE1.close()
                    
             except EnvironmentError:
-                FILE1 = open(out_txt+"_allmer_"+str(tiba)+".txt", "w")
+                FILE1 = open(out_txt+"_allmer_"+str(tiba)+".txt", "w",encoding="utf-8", errors="surrogateescape")
 
                 FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(model)+"\t"+str(merhmin)+"\t"+str(merhbe)\
                 +"\t"+str(merhmax)+"\t"+str(tiba)+"\n")
@@ -3392,7 +3397,7 @@ while 1:
         def merstat_file(n,mer_stat,tiba):
             """ logs statistic summary of  MER on spec. time base tiba in a file"""
             try:
-                FILE1 = open(out_txt+"_statmer_"+str(tiba)+".txt", "a")
+                FILE1 = open(out_txt+"_statmer_"+str(tiba)+".txt", "a",encoding="utf-8", errors="surrogateescape")
                 
                 FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(mer_stat[0])+"\t"+str(mer_stat[1])\
                 +"\t"+str(mer_stat[2])+"\t"+str(mer_stat[3])\
@@ -3400,7 +3405,7 @@ while 1:
                 "\t"+str(mer_stat[7])+"\t"+str(mer_stat[8])+"\t"+str(mer_stat[9])+"\t"+str(tiba)+"\n")
                 FILE1.close()
             except EnvironmentError:
-                FILE1 = open(out_txt+"_statmer_"+str(tiba)+".txt", "w")
+                FILE1 = open(out_txt+"_statmer_"+str(tiba)+".txt", "w",encoding="utf-8", errors="surrogateescape")
                 
                 FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(mer_stat[0])+"\t"+str(mer_stat[1])\
                 +"\t"+str(mer_stat[2])+"\t"+str(mer_stat[3])\
@@ -3437,7 +3442,7 @@ while 1:
 
 
             Qlower = cur_Qlower
-            FILE1 = open(out_txt+"_mer_NOW.txt", "w")
+            FILE1 = open(out_txt+"_mer_NOW.txt", "w",encoding="utf-8", errors="surrogateescape")
             
             FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(mer_stat[0])+"\t"+str(mer_stat[1])\
             +"\t"+str(mer_stat[2])+"\t"+str(mer_stat[3])+"\t"+str(mer_stat[4])+"\t"\
@@ -3490,7 +3495,7 @@ while 1:
             cur_PlumeRadiusMax = PlumeRadiusMax
 
 
-            FILE1 = open(out_txt+"_mer_LOG.txt", "a")
+            FILE1 = open(out_txt+"_mer_LOG.txt", "a",encoding="utf-8", errors="surrogateescape")
             FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(hbe)+"\t"\
             +str(mer_stat[0])+"\t"+str(mer_stat[1])\
             +"\t"+str(mer_stat[2])+"\t"+str(mer_stat[3])+"\t"+str(mer_stat[4])+\
@@ -3537,11 +3542,11 @@ while 1:
 "\t"+str(qfak_Xband3)+"\t"+str(qfak_Xband4)+"\t"+str(qfak_Xband5)+"\t"+str(qfak_Xband6)+\
 "\t"+str(qfak_Cam4)+"\t"+str(qfak_Cam5)+"\t"+str(qfak_Cam6)+"\t"+str(wtf_wood0d)+"\t"+str(MERwood0d)+"\n")
             FILE1.close()
-            FILE2 = open(out_txt + "_FMER.txt", "a")
+            FILE2 = open(out_txt + "_FMER.txt", "a",encoding="utf-8", errors="surrogateescape")
             FILE2.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min) + "\t" + str(Qfmer) + "\t" + str(
                 Qfmer_max) + "\n")
             FILE2.close()
-            FILE3 = open(out_txt + "_PLH.txt", "a")
+            FILE3 = open(out_txt + "_PLH.txt", "a",encoding="utf-8", errors="surrogateescape")
             FILE3.write(
                 str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(hbe) + "\t" + str(hbe_max) + "\n")
             FILE3.close()
@@ -3769,7 +3774,7 @@ while 1:
 
         def saveEMER(tiba_in):
             global Qcode
-            qfrt = open(out_txt+"_EMER_LOG.txt","a")
+            qfrt = open(out_txt+"_EMER_LOG.txt","a",encoding="utf-8", errors="surrogateescape")
             qfrt.write(str(timin)+"\t"+str(wemer_min)+"\t"+str(wemer_avg)+"\t"+\
         str(wemer_max)+"\t"+str(Qcode)+"\t"+str(tiba_in)+"\n")
             qfrt.close()
@@ -3781,7 +3786,7 @@ while 1:
             expMERmin,expMERmax,expMER_flag = np.loadtxt(importfile+".txt",\
         usecols=(1,2,3), unpack=True, delimiter='\t')  
             rlines = []
-            with open(importfile+".txt", "r") as fp:
+            with open(importfile+".txt", "r",encoding="utf-8", errors="surrogateescape") as fp:
                 for line in fp:
                     rlines.append(line[:19])
             fp.close() 
@@ -3863,7 +3868,7 @@ while 1:
 
             if oo_isound ==1:
                 logger7.info("checking ............infrasound")
-                Isound = open("isound_out.txt", "r")
+                Isound = open("isound_out.txt", "r",encoding="utf-8", errors="surrogateescape")
                 Isound.close()
                 ExpMER_import("isound_out",100,wtf_isound)
             else:
@@ -3875,7 +3880,7 @@ while 1:
         try:
         
             if oo_esens ==1:
-                Esens = open("esens_out.txt", "r")
+                Esens = open("esens_out.txt", "r",encoding="utf-8", errors="surrogateescape")
                 Esens.close()
                 logger7.info("checking ............E-sensors")
                 ExpMER_import("esens_out",200,wtf_esens)
@@ -3888,7 +3893,7 @@ while 1:
         try:
         
             if oo_pulsan ==1:
-                Pulsan = open("pulse_out.txt", "r")
+                Pulsan = open("pulse_out.txt", "r",encoding="utf-8", errors="surrogateescape")
                 Pulsan.close()
                 logger7.info("checking ............pulse analysis")
                 ExpMER_import("pulse_out",300,wtf_pulsan)
@@ -3900,7 +3905,7 @@ while 1:
         try:
         
             if oo_scatter ==1:
-                Scatter = open("mwave_out.txt", "r")
+                Scatter = open("mwave_out.txt", "r",encoding="utf-8", errors="surrogateescape")
                 Scatter.close()
                 logger7.info("checking ............microwave scatter analysis")
                 ExpMER_import("mwave_out",400,wtf_scatter)
@@ -4029,7 +4034,7 @@ while 1:
 #            oo_manMER,wf_manMER,manMER_min,manMER_max = np.loadtxt("fix_MERin.txt",\
 #        usecols=(1,2,3,4), unpack=True, delimiter='\t')
 #            rlines = []
-            with open("fix_MERin.txt", "r") as fp:
+            with open("fix_MERin.txt", "r",encoding="utf-8", errors="surrogateescape") as fp:
                 first_line = fp.readline()
                 time_string = first_line[:19]
 #                for line in fp:
@@ -4058,7 +4063,7 @@ while 1:
                     Qman_stacksort(time_diffe_min, manMER_min, manMER_max, wf_manMER, 900, oo_manMER)
 
         try:
-            Pulsan = open("fix_MERin.txt", "r")
+            Pulsan = open("fix_MERin.txt", "r",encoding="utf-8", errors="surrogateescape")
             Pulsan.close()
             logger7.info("checking ............manual MER data")
             manMER_import()
@@ -4654,7 +4659,7 @@ while 1:
             else:
                 t_s = [xx * 60 for xx in tiPH.tolist()] #list of times in seconds
             try:
-                FILE1 = open(out_txt+"_mass_LOG.txt", "r")
+                FILE1 = open(out_txt+"_mass_LOG.txt", "r",encoding="utf-8", errors="surrogateescape")
                 M_MIN_hmin = np.trapz(MIN,x=t_s)
                 M_MAX_hmax = np.trapz(MAX,x=t_s)
                 M_MAXhmin = np.trapz(MAXhmin,x=t_s)
@@ -4696,7 +4701,7 @@ while 1:
             def save_totalmass_logfile(M_MIN_hmin,M_MAXhmin,M_MERWE,M_RMER,M_MAXPLUS,M_MAX_hmax,M_MERmtg,M_MERdb,M_MERwood0d,M_FABSMIN,M_FABSMAX,M_FMERMIN,M_FMER,M_FMERMAX):
                 """ logs continously statistic summary of MER in a file"""
     
-                FILE1 = open(out_txt+"_mass_LOG.txt", "a")
+                FILE1 = open(out_txt+"_mass_LOG.txt", "a",encoding="utf-8", errors="surrogateescape")
                 
                 FILE1.write(str(timin) +"\t"+str(M_MIN_hmin)+"\t"+str(M_MAX_hmax)+"\t"+str(M_MAXhmin)+"\t"\
                 +str(M_MERWE)+"\t"+str(M_RMER)+"\t"+str(M_MAXPLUS)\
@@ -4861,7 +4866,7 @@ while 1:
                 
                 time_nun = TimeNOW.strftime("%m/%d/%Y %H:%M:%S") 
                   
-                FILE3 = open(out_txt+"_status1.txt", "w")
+                FILE3 = open(out_txt+"_status1.txt", "w",encoding="utf-8", errors="surrogateescape")
                 FILE3.write("PLUME HEIGHT STATUS\n"+\
                 "==========================================\n"+\
                 scenario+"\n"+"\n"+\
@@ -4878,7 +4883,7 @@ while 1:
                  "==================================================\n")
                 FILE3.close()
                     
-                FILE4 = open(out_txt+"_status2.txt", "w")
+                FILE4 = open(out_txt+"_status2.txt", "w",encoding="utf-8", errors="surrogateescape")
                     
                 if cur_MERMAX_hmin < cur_MERavg:                  
                     FILE4.write("ERUPTION SOURCE PARAMETER STATUS 1\n"+\
@@ -4904,7 +4909,7 @@ while 1:
                     +"and need to be confirmed by authorized staff!\n")
                     FILE4.close()
                 else:
-                    FILE4 = open(out_txt+"_status2.txt", "w")
+                    FILE4 = open(out_txt+"_status2.txt", "w",encoding="utf-8", errors="surrogateescape")
                     FILE4.write("ERUPTION SOURCE PARAMETER STATUS 1\n"+\
                     "==========================================\n"+\
                     "   >>> Overall Mass Eruption Rate Stats <<<             \n"+\
@@ -4929,7 +4934,7 @@ while 1:
                     FILE4.close()
 
 
-                FILE5 = open(out_txt+"_status3.txt", "w")
+                FILE5 = open(out_txt+"_status3.txt", "w",encoding="utf-8", errors="surrogateescape")
                     
                 Vol_MIN_hmin = M_MIN_hmin/1000
                 Vol_MERWE = M_MERWE/1000
@@ -4953,7 +4958,7 @@ while 1:
                     +"and need to be confirmed by authorized staff!\n")
                 FILE5.close()
             
-                FILE6 = open(out_txt+"_status4.txt", "w")
+                FILE6 = open(out_txt+"_status4.txt", "w",encoding="utf-8", errors="surrogateescape")
                     
                           
                 FILE6.write("REFIR MODEL PARAMETERS 1 \n"+\
@@ -4982,7 +4987,7 @@ while 1:
                         "============================================\n")
                 FILE6.close()
 
-                FILE7 = open(out_txt+"_status5.txt", "w")
+                FILE7 = open(out_txt+"_status5.txt", "w",encoding="utf-8", errors="surrogateescape")
                     
                           
                 FILE7.write("REFIR MODEL PARAMETERS 2 \n"+\
@@ -5010,7 +5015,7 @@ while 1:
                         "==============================================\n")
                 FILE7.close()                    
 
-                FILE7b = open(out_txt+"_status6.txt", "w")
+                FILE7b = open(out_txt+"_status6.txt", "w",encoding="utf-8", errors="surrogateescape")
                     
                           
                 FILE7b.write("REFIR MODEL PARAMETERS 3 \n"+\
@@ -5034,7 +5039,7 @@ while 1:
                 FILE7b.close()  
 
                     
-                FILE8 = open(out_txt+"_status7.txt", "w")                          
+                FILE8 = open(out_txt+"_status7.txt", "w",encoding="utf-8", errors="surrogateescape")
                 FILE8.write("REFIR MODEL PARAMETERS 4 \n"+\
                 "=========================================\n"+\
                 "  >>> Sensor Locations <<<        \n"+\
@@ -5054,7 +5059,7 @@ while 1:
                 "============================================\n")
                 FILE8.close()                    
 
-                FILE9 = open(out_txt+"_status8.txt", "w")                          
+                FILE9 = open(out_txt+"_status8.txt", "w",encoding="utf-8", errors="surrogateescape")
                 FILE9.write("REFIR MODEL PARAMETERS 5 \n"+\
                 "=================================================\n"+\
                 "  >>> Sensor Settings I (Auto-stream sources) <<< \n"+\
@@ -5080,7 +5085,7 @@ while 1:
                 "=============================================\n")
                 FILE9.close()  
 
-                FILE9b = open(out_txt+"_status9.txt", "w")                          
+                FILE9b = open(out_txt+"_status9.txt", "w",encoding="utf-8", errors="surrogateescape")
                 FILE9b.write("REFIR MODEL PARAMETERS 6 \n"+\
                 "=================================================\n"+\
                 "  >>> Sensor Settings II (Manual input channels) <<< \n"+\
@@ -5100,7 +5105,7 @@ while 1:
                 "=============================================\n")
                 FILE9b.close() 
 
-                FILE10 = open(out_txt+"_status10.txt", "w")                          
+                FILE10 = open(out_txt+"_status10.txt", "w",encoding="utf-8", errors="surrogateescape")
                 FILE10.write("REFIR MODEL PARAMETERS 7 \n"+\
                 "==============================================================\n"+\
                 "  >>> Radar Sensor Calibration <<<        \n"+\
@@ -5132,7 +5137,7 @@ while 1:
                 "==============================================================\n")
                 FILE10.close()  
 
-                FILE11 = open(out_txt+"_status11.txt", "w")                          
+                FILE11 = open(out_txt+"_status11.txt", "w",encoding="utf-8", errors="surrogateescape")
                 FILE11.write("REFIR MODEL PARAMETERS 8 \n"+\
                 "==============================================\n"+\
                 "  >>> Model settings <<<        \n"+\
@@ -5169,7 +5174,7 @@ while 1:
                 "=============================================\n")
                 FILE11.close()  
                 
-                FILE12 = open(out_txt+"_status12.txt", "w")                          
+                FILE12 = open(out_txt+"_status12.txt", "w",encoding="utf-8", errors="surrogateescape")
                 FILE12.write("REFIR MODEL PARAMETERS 9 \n"+\
                 "=============================================\n"+\
                 "--------------output settings------------\n"+\
@@ -5201,7 +5206,7 @@ while 1:
                 time_nun = TimeNOW.strftime("%m/%d/%Y %H:%M:%S") 
                 if cur_MERMAX_hmin < cur_MERavg:
                         
-                    FILE3 = open(out_txt+"_STATUS_REPORT.txt", "w")
+                    FILE3 = open(out_txt+"_STATUS_REPORT.txt", "w",encoding="utf-8", errors="surrogateescape")
                     FILE3.write("ERUPTION SOURCE PARAMETER STATUS REPORT\n"+\
                     "==========================================\n"+\
                     "- - - - - output from Refir 18.1c - - - - - \n"+\
@@ -5257,7 +5262,7 @@ while 1:
                   
                 else:
                                         
-                    FILE3 = open(out_txt+"_STATUS_REPORT.txt", "w")
+                    FILE3 = open(out_txt+"_STATUS_REPORT.txt", "w",encoding="utf-8", errors="surrogateescape")
                     FILE3.write("ERUPTION SOURCE PARAMETER STATUS REPORT\n"+\
                     "==========================================\n"+\
                     "- - - - - output from Refir 18.1c - - - - - \n"+\

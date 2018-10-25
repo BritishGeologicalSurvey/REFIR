@@ -238,7 +238,7 @@ def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     # Split wtfile_prof into multiple file, each one for a specific time step
     splitLen = 148
     outputBase = 'profile_'
-    input = open(wtfile_prof, 'r')
+    input = open(wtfile_prof, 'r',encoding="utf-8", errors="surrogateescape")
     count = 0
     dest = None
     steps = []
@@ -247,7 +247,7 @@ def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
             if dest: dest.close()
             first_line = line.split(':')
             val = first_line[2].split('d=')
-            dest = open(outputBase + val[1] + '.txt', 'w')
+            dest = open(outputBase + val[1] + '.txt', 'w',encoding="utf-8", errors="surrogateescape")
             steps.append(val[1])
         dest.write(line)
         count += 1

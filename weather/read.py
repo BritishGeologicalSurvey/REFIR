@@ -31,7 +31,7 @@ RNZ170318FS
 
 def extract_data_gfs(year, month, day, validity, wtfile_prof_step):
     from calc_wt_par import weather_parameters
-    file = open(wtfile_prof_step, "r")
+    file = open(wtfile_prof_step, "r",encoding="utf-8", errors="surrogateescape")
     records1 = []
     records2 = []
     values = []
@@ -89,7 +89,7 @@ def extract_data_gfs(year, month, day, validity, wtfile_prof_step):
         p.append(mb[i] * 100)
     p[len(u_tmp) - 1] = 100000
     prof_file = 'profile_data_' + validity + '.txt'
-    wt_output = open(prof_file, 'w')
+    wt_output = open(prof_file, 'w',encoding="utf-8", errors="surrogateescape")
     wt_output.write('  HGT[m]         P[Pa]       T[K]       T[C]     U[m/s]     V[m/s]  WIND[m/s]\n')
 
     for i in range(0, len(u)):
@@ -102,7 +102,7 @@ def extract_data_gfs(year, month, day, validity, wtfile_prof_step):
 
 def extract_data_erain(year, month, day, validity, wtfile_prof_step):
     from calc_wt_par import weather_parameters
-    file = open(wtfile_prof_step, "r")
+    file = open(wtfile_prof_step, "r",encoding="utf-8", errors="surrogateescape")
     records1 = []
     records2 = []
     values = []
@@ -147,7 +147,7 @@ def extract_data_erain(year, month, day, validity, wtfile_prof_step):
         mb.append(float(mb_tmp[i][0]))
         p.append(mb[i] * 100)
     prof_file = 'profile_data_' + validity + '.txt'
-    wt_output = open(prof_file, 'w')
+    wt_output = open(prof_file, 'w',encoding="utf-8", errors="surrogateescape")
     wt_output.write('  HGT[m]         P[Pa]       T[K]       T[C]     U[m/s]     V[m/s]  WIND[m/s]\n')
     for i in range(0, len(u)):
         wt_output.write('%8.2f %13.2f %10.2f %10.2f %10.2f %10.2f %10.2f\n' % (

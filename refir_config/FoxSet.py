@@ -1,4 +1,4 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 *** FoxSet v19.0 ***                                                                          
 - component of REFIR 19.0 -
@@ -80,7 +80,7 @@ def read_sensors0():
     global ID0,N_en,N_en1,N_en2,volc_exist
     try:
         fn='volcano_list.ini'
-        with open (fn) as f:
+        with open (fn,encoding="utf-8", errors="surrogateescape") as f:
                 lines =f.readlines()
         f.close()
         #file exists   
@@ -92,7 +92,7 @@ def read_sensors0():
     try:          
         #C-band
         fnCb= 'Cband.ini'
-        with open (fnCb) as f:
+        with open (fnCb,encoding="utf-8", errors="surrogateescape") as f:
             lines =f.readlines()
             Cse = []
             for l in lines:
@@ -113,7 +113,7 @@ def read_sensors0():
     try:
         #X-band
         fnXb= 'Xband.ini'
-        with open (fnXb) as f:
+        with open (fnXb,encoding="utf-8", errors="surrogateescape") as f:
             lines =f.readlines()
             Dse = []
             for l in lines:
@@ -131,7 +131,7 @@ def read_sensors0():
     try:
         #Cams
         fnCam= 'Cam.ini'
-        with open (fnCam) as f:
+        with open (fnCam,encoding="utf-8", errors="surrogateescape") as f:
             lines =f.readlines()
             Ase = []
             for l in lines:
@@ -158,14 +158,14 @@ for i in range(0,18):
 
 def create_volcheader():
     if volc_exist==0:
-        FILE1 = open("volcano_list.ini", "w")
+        FILE1 = open("volcano_list.ini", "w",encoding="utf-8", errors="surrogateescape")
         FILE1.write("ID" +"\t"+"Lat"+"\t"+"Lon"+"\t"+"hvent/m"+"\t"+"default"+"\t"+"full name""\n")
         FILE1.close()
     else:
         yu=0
 
 def volcentry(volc):
-    FILE1 = open("volcano_list.ini", "a")
+    FILE1 = open("volcano_list.ini", "a",encoding="utf-8", errors="surrogateescape")
     FILE1.write(str(volc[0]) +"\t"+str(volc[1]) +"\t"+str(volc[2]) +"\t"+str(volc[3]) +"\t"+str(volc[4]) +"\t"+str(volc[5]) +"\n")
     FILE1.close()
 
@@ -270,7 +270,7 @@ def newvolc_setup():
 
 def create_sensorheadersC():
     
-    FILE1 = open("Cband.ini", "w")
+    FILE1 = open("Cband.ini", "w",encoding="utf-8", errors="surrogateescape")
     FILE1.write("ID" +"\t"+"lat"+"\t"+"lon"+"\t"+"type"+"\t"+"focus"+"\t"+"bwidth"+"\t"+"file"+"\t"+"www"+"\t"+"IP"+"\t"+"directory"+"\n")
     FILE1.close()
 
@@ -280,7 +280,7 @@ def create_sensorheadersX():
     FILE1.close()
 
 def create_sensorheadersCam():
-    FILE1 = open("Cam.ini", "w")
+    FILE1 = open("Cam.ini", "w",encoding="utf-8", errors="surrogateescape")
     FILE1.write("ID" +"\t"+"lat"+"\t"+"lon"+"\t"+"type"+"\t"+"focus"+"\t"+"bwidth"+"\t"+"file"+"\t"+"www"+"\t"+"IP"+"\t"+"directory"+"\n")
     FILE1.close()
 
@@ -290,17 +290,17 @@ def create_sensorheaders():
     create_sensorheadersCam()
 
 def C_entry(sens):
-    FILE1 = open("Cband.ini", "a")
+    FILE1 = open("Cband.ini", "a",encoding="utf-8", errors="surrogateescape")
     FILE1.write(str(sens[0]) +"\t"+str(sens[1]) +"\t"+str(sens[2]) +"\t"+str(sens[3]) +"\t"+str(sens[4]) +"\t"+str(sens[5]) +"\t"+str(sens[6]) +"\t"+str(sens[7]) +"\t"+str(sens[8])+"\t"+str(sens[9])+"\n")
     FILE1.close()
 
 def X_entry(sens):
-    FILE1 = open("Xband.ini", "a")
+    FILE1 = open("Xband.ini", "a",encoding="utf-8", errors="surrogateescape")
     FILE1.write(str(sens[0]) +"\t"+str(sens[1]) +"\t"+str(sens[2]) +"\t"+str(sens[3]) +"\t"+str(sens[4]) +"\t"+str(sens[5])+"\t"+str(sens[6]) +"\t"+str(sens[7]) +"\t"+str(sens[8]) +"\t"+str(sens[9]) +"\n")
     FILE1.close()
 
 def Cam_entry(sens):
-    FILE1 = open("Cam.ini", "a")
+    FILE1 = open("Cam.ini", "a",encoding="utf-8", errors="surrogateescape")
     FILE1.write(str(sens[0]) +"\t"+str(sens[1]) +"\t"+str(sens[2]) +"\t"+str(sens[3]) +"\t"+str(sens[4]) +"\t"+str(sens[5])+"\t"+str(sens[6]) +"\t"+str(sens[7]) +"\t"+str(sens[8]) +"\t"+str(sens[9])+"\n")
     FILE1.close()
 
@@ -573,7 +573,7 @@ def Cam_new():
             sens[3] = 3
             try:
                 fn='volcano_list.ini'
-                with open (fn) as f:
+                with open (fn,encoding="utf-8", errors="surrogateescape") as f:
                     lines =f.readlines()
                     vulk = []
                     for l in lines:
@@ -631,7 +631,7 @@ def newsensors_setup_menu():
     global sm
     try:
         fn='Cband.ini'
-        with open (fn) as f:
+        with open (fn,encoding="utf-8", errors="surrogateescape") as f:
                 lines =f.readlines()
         f.close()
         #file exists   
@@ -641,7 +641,7 @@ def newsensors_setup_menu():
         
     try:
         fn='Xband.ini'
-        with open (fn) as f:
+        with open (fn,encoding="utf-8", errors="surrogateescape") as f:
                 lines =f.readlines()
         f.close()
         #file exists    
@@ -651,7 +651,7 @@ def newsensors_setup_menu():
     
     try:
         fn='Cam.ini'
-        with open (fn) as f:
+        with open (fn,encoding="utf-8", errors="surrogateescape") as f:
                 lines =f.readlines()
         f.close()
         #file exists    
@@ -749,7 +749,7 @@ def read_volcanoes():
     global VolcID,LatV,LonV,VolcH,N_Volc
     fn='volcano_list.ini'
     try:
-        with open (fn) as f:
+        with open (fn,encoding="utf-8", errors="surrogateescape") as f:
             lines =f.readlines()
             vulk = []
             for l in lines:
@@ -771,7 +771,7 @@ def read_sensors():
     global ID,LatS,LonS,TypS,FocS
     try:
         #C-band
-        with open ("Cband.ini") as f:
+        with open ("Cband.ini",encoding="utf-8", errors="surrogateescape") as f:
             lines =f.readlines()
             Cse = []
             for l in lines:
@@ -788,7 +788,7 @@ def read_sensors():
                     TypS[x] = int(Cse[x+1][3])            
                     FocS[x] = int(Cse[x+1][4])
         #X-band
-        with open ("Xband.ini") as f:
+        with open ("Xband.ini",encoding="utf-8", errors="surrogateescape") as f:
             lines =f.readlines()
             Cse = []
             for l in lines:
@@ -805,7 +805,7 @@ def read_sensors():
                     TypS[x+6] = int(Cse[x+1][3])            
                     FocS[x+6] = int(Cse[x+1][4])
         #Cams
-        with open ("Cam.ini") as f:
+        with open ("Cam.ini",encoding="utf-8", errors="surrogateescape") as f:
             lines =f.readlines()
             Cse = []
             for l in lines:
@@ -827,7 +827,7 @@ def read_sensors():
 
 def create_vdbheader():
     """generates header of volc_database.ini file"""
-    FILE1 = open("volc_database.ini", "w")
+    FILE1 = open("volc_database.ini", "w",encoding="utf-8", errors="surrogateescape")
     FILE1.write("Note: This data base was automatically generated by FoxSet!\n")
     FILE1.write(""+"\t"+"Lat"+"\t"+"Lon"+"\t"+"hvent/m"+"\t")
     FILE1.write(str(ID[0])+"\t"+str(ID[1])+"\t"+str(ID[2])+"\t"+str(ID[3])+"\t"+str(ID[4])+"\t"+str(ID[5])+"\t")
@@ -837,7 +837,7 @@ def create_vdbheader():
 
 def create_vdbline(dbline):
     """generates line within volc_database.ini file"""
-    FILE1 = open("volc_database.ini", "a")  
+    FILE1 = open("volc_database.ini", "a",encoding="utf-8", errors="surrogateescape")
     FILE1.write(str(dbline[0])+"\t"+str(dbline[1])+"\t"+str(dbline[2])+"\t"+str(dbline[3])+"\t"+str(dbline[4])+"\t"+str(dbline[5])+"\t")
     FILE1.write(str(dbline[6])+"\t"+str(dbline[7])+"\t"+str(dbline[8])+"\t"+str(dbline[9])+"\t"+str(dbline[10])+"\t"+str(dbline[11])+"\t")
     FILE1.write(str(dbline[12])+"\t"+str(dbline[13])+"\t"+str(dbline[14])+"\t"+str(dbline[15])+"\t"+str(dbline[16])+"\t"+str(dbline[17])+"\t")

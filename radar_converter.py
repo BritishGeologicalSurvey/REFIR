@@ -152,7 +152,7 @@ def process_radar_file():
                 heights.append(float(record[k]))
 
     try:
-        file = open(file_name)
+        file = open(file_name,encoding="utf-8", errors="surrogateescape")
         for line in file:
             nrecords += 1
             records.append(line.split(' '))
@@ -204,7 +204,7 @@ def process_radar_file():
                 hour_isegs.append(time_isegs[j][0:2])
                 minute_isegs.append(time_isegs[j][3:5])
 
-        with open('radar_iskef.txt','w') as f_iskef, open('radar_isx1.txt','w') as f_isx1, open('radar_isx2.txt','w') as f_isx2, open('radar_isegs.txt','w') as f_isegs:
+        with open('radar_iskef.txt','w',encoding="utf-8", errors="surrogateescape") as f_iskef, open('radar_isx1.txt','w',encoding="utf-8", errors="surrogateescape") as f_isx1, open('radar_isx2.txt','w',encoding="utf-8", errors="surrogateescape") as f_isx2, open('radar_isegs.txt','w',encoding="utf-8", errors="surrogateescape") as f_isegs:
             f_iskef.write('Date       Time     Year Mo  D Hr Mn Height\n\n')
             f_isx1.write('Date       Time     Year Mo  D Hr Mn Height\n\n')
             f_isx2.write('Date       Time     Year Mo  D Hr Mn Height\n\n')
