@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *** FIX v18.1 ***   
 - component of REFIR 19.0 -

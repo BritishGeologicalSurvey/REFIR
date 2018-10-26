@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *** read v1.0 ***
 - component of the weather package included in REFIR 19.0 -

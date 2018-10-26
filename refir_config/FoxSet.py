@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *** FoxSet v19.0 ***                                                                          
 - component of REFIR 19.0 -

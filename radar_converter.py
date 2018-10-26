@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *** radar_converter v1.0 ***
 - component of REFIR 19.0 -
