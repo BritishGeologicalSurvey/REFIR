@@ -380,24 +380,27 @@ def elaborate_weather(plume_height):
     from retrieve_data import gfs_forecast_retrieve
     from shutil import move
 
-    print('Plume height',plume_height)
     cwd=os.getcwd()
+    year_vals = YearNOWs
+    month_vals = MonthNOWs
+    day_vals = DayNOWs
+    hour_vals = HourNOWs
     if run_type == 1:
         #folder_name=cwd+"\\raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
         folder_name = os.path.join(cwd,"raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs)
 
         #abs_validity = YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs
-        year_vals = YearNUNAs
-        month_vals = MonthNUNAs
-        day_vals = DayNUNAs
-        hour_vals = HourNUNAs
+        #year_vals = YearNUNAs
+        #month_vals = MonthNUNAs
+        #day_vals = DayNUNAs
+        #hour_vals = HourNUNAs
     else:
         #folder_name = cwd + "\\raw_weather_data_" + eruption_start_year + eruption_start_month + eruption_start_day
         folder_name = os.path.join(cwd,"raw_weather_data_"+ eruption_start_year + eruption_start_month + eruption_start_day)
-        year_vals = YearNOWs
-        month_vals = MonthNOWs
-        day_vals = DayNOWs
-        hour_vals = HourNOWs
+        #year_vals = YearNOWs
+        #month_vals = MonthNOWs
+        #day_vals = DayNOWs
+        #hour_vals = HourNOWs
 
     abs_validity = year_vals + month_vals + day_vals + hour_vals
 
@@ -701,7 +704,11 @@ while 1:
     if run_type == 1:
         TimeNOW = datetime.datetime.utcnow()
         TimeNOWs = str(TimeNOW)
+        YearNOWs = TimeNOWs[:4]
+        MonthNOWs = TimeNOWs[5:7]
+        DayNOWs = TimeNOWs[8:10]
         HourNOWs = TimeNOWs[11:13]
+        MinuteNOWs = TimeNOWs[14:16]
         HourNOW = int(HourNOWs)
     else:
         eruption_start = datetime.datetime.strptime(time_start, "%Y-%m-%d %H:%M:%S\n")
