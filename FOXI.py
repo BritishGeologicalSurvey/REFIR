@@ -49,6 +49,7 @@ from urllib.request import urlopen
 import logging
 import os
 import gc
+import shutil
 #import matplotlib.image as image
 
 """ settings START """
@@ -363,7 +364,8 @@ fMER_file.close()
 PLH_file = open(out_txt + "_PLH.txt", "a",encoding="utf-8", errors="surrogateescape")
 PLH_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'PLH min'+"\t"+'PLH avg'+"\t"+'PLH max'+"\n")
 PLH_file.close()
-
+rundir = "run_"+ YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs + MinuteNUNAs
+os.mkdir(rundir)
 
 # Elaborate automatically retrieved weather data
 def elaborate_weather(plume_height):
@@ -729,9 +731,7 @@ while 1:
         MinuteNOWs = TimeNOWs[14:16]
         HourNOW = int(HourNOWs)
         if TimeNOW > eruption_stop:
-            print("Eruption ended")
-            print("REFIR is going to stop")
-            sys.exit()
+            break
         lead_Time = 0
 
 
@@ -4675,18 +4675,13 @@ while 1:
                 M_MERmtg = np.trapz(MERmtg,x=t_s)
                 M_MERdb = np.trapz(MERdb,x=t_s)
                 M_MERwood0d = np.trapz(MERwood0d,x=t_s)
-                
                 M_Qc_lower = np.trapz(Qc_lower,x=t_s)
-
                 M_FABSMIN = np.trapz(Qfabs_min,x=t_s)
                 M_FABSMAX = np.trapz(Qfabs_max,x=t_s)
                 M_FMERMIN = np.trapz(Fmer_min,x=t_s)
                 M_FMER = np.trapz(Fmer,x=t_s)
                 M_FMERMAX = np.trapz(Fmer_max,x=t_s)
-                
-
-                
-                FILE1.close
+                FILE1.close()
             except EnvironmentError:  
                 M_MIN_hmin = 0
                 M_MAX_hmax = 0
@@ -4721,8 +4716,9 @@ while 1:
          
             def plot_TotalMass():
                 
-                tiM,SM_MIN_hmin,SM_MAX_hmax,SM_MAXhmin,SM_MERWE,SM_RMER,SM_MAXPLUS,SM_MERmtg,SM_MERdb,SM_MQclower = \
-                np.loadtxt(out_txt+"_mass_LOG.txt", usecols=(0,1,2,3,4,5,6,7,8,9), unpack=True, delimiter='\t')
+                with open(out_txt+"_mass_LOG.txt", "r",encoding="utf-8", errors="surrogateescape") as FILE1:
+                    tiM,SM_MIN_hmin,SM_MAX_hmax,SM_MAXhmin,SM_MERWE,SM_RMER,SM_MAXPLUS,SM_MERmtg,SM_MERdb,SM_MQclower = \
+                np.loadtxt(FILE1, usecols=(0,1,2,3,4,5,6,7,8,9), unpack=True, delimiter='\t')
                 
                 if run == 1:
                     tiM_end = tiM
@@ -4796,8 +4792,9 @@ while 1:
             logger8.info("\n Total mass erupted computed -  first estimate plot provided. \n ")
 
             def plot_TotalMassFMER():
-                tiM,SM_FABSMIN,SM_FABSMAX,SM_FMERMIN,SM_FMER,SM_FMERMAX = \
-                np.loadtxt(out_txt+"_mass_LOG.txt", usecols=(0,10,11,12,13,14), unpack=True, delimiter='\t')
+                with open(out_txt+"_mass_LOG.txt", "r",encoding="utf-8", errors="surrogateescape") as FILE1:
+                    tiM,SM_FABSMIN,SM_FABSMAX,SM_FMERMIN,SM_FMER,SM_FMERMAX = \
+                np.loadtxt(FILE1, usecols=(0,10,11,12,13,14), unpack=True, delimiter='\t')
                 
                 if run == 1:
                     tiM_end = tiM
@@ -5388,4 +5385,18 @@ while 1:
     else:
         continue
 
+print("Eruption ended")
+print("REFIR is going to stop")
+file_list = os.listdir(os.getcwd())
+rundir_path = os.path.join(dir1,rundir)
+for file_to_move in file_list:
+    if os.path.isfile(file_to_move):
+        if (file_to_move.startswith("fix_config")):
+            shutil.copy(file_to_move,rundir_path)
+        elif (file_to_move.endswith(".txt") or file_to_move.endswith(".png") or file_to_move.endswith(".svg")):
+            shutil.move(file_to_move,rundir_path)
+    elif os.path.isdir(file_to_move):
+        if (file_to_move.startswith("raw")):
+            shutil.move(file_to_move, rundir_path)
+sys.exit()
 ("\n --- programm aborted")
