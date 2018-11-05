@@ -53,7 +53,9 @@ else:
 runtype_weather = Tk()
 weather = 1  # Default is automatic weather data retrieval
 run_type = 1  # Default is real_time mode
-
+quit_refir = IntVar()
+#quit_refir.set(0) # FOXI continues until exit_param = 0
+exit_param = 0
 
 def first_widget():
     global run_type_in, weather_in
@@ -92,7 +94,6 @@ weather = weather_in.get()
 if run_type == 2:
     past_eruption = Tk()
     out = StringVar()
-
 
     def second_widget():
         past_eruption.title("Reanalysis mode control")
@@ -185,7 +186,6 @@ if run_type == 2:
                width=24, height=2, command=on_button).grid(row=14, column=0, columnspan=5)
 
         past_eruption.mainloop()
-
 
     second_widget()
 else:
@@ -315,6 +315,14 @@ rho_dre_default = 2600
 Vmax_default = 10
 ki_default = 1.6
 
+def safe_exit():
+    global exit_param
+    exit_param = 1
+    save_default_file()
+    print("Aborting FIX")
+    print("FOXI will stop at next iteration")
+    sys.exit()
+    return(exit_param)
 
 def automatic_weather():
     sys.path.insert(0, './weather')
@@ -875,6 +883,7 @@ def get_last_data():
         cal_Cband6a, cal_Cband6b, cal_Xband3a, cal_Xband3b, cal_Xband4a, cal_Xband4b, \
         cal_Xband5a, cal_Xband5b, cal_Xband6a, cal_Xband6b
     global wtf_wood0d
+    global time_start, time_stop
 
     try:
 
@@ -1094,9 +1103,8 @@ def save_default_file():
                        + "\n" + str(loc_GFZ1) + "\n" + str(loc_GFZ2) + "\n" + str(loc_GFZ3) \
                        + "\n" + str(loc_Cam4) + "\n" + str(loc_Cam5) + "\n" + str(loc_Cam6) + "\n" + str(defsetup) \
                        + "\n" + str(run_type) + "\n" + str(weather) + "\n" + str(wtf_wood0d) + "\n" + str(time_start) \
-                       + "\n" + str(time_stop))  # New variables in the config files for the run type and weather
+                       + "\n" + str(time_stop)  + "\n" + str(exit_param))  # New variables in the config files for the run type and weather
     default_FILE.close()
-
 
 defaultvalues(vent_h)
 
@@ -2395,7 +2403,6 @@ def plot_mode():
     Label(plotmode, text="   ", font="Helvetica 11", fg="red4").grid(row=23, column=0)
 
     plotmode.mainloop()
-
 
 # OVERVIEW AND CONTROL PANEL
 def sourcecontrol():
@@ -3952,6 +3959,10 @@ def operation_control():
     Label(masterklick, text="   ", font=("Verdana", 8)).grid(row=3, column=0)
     Label(masterklick, text="Initializing Parameters", font=("Verdana", 8, \
                                                              "bold"), fg="navy").grid(row=4, column=0)
+
+    Button(masterklick, text="QUIT REFIR", \
+           font=("Verdana", 10), fg="red", bg="white", width=10, height=2, \
+           command=safe_exit).grid(row=2, column=2)
 
     Button(masterklick, text="Plume Height Sensors", \
            font=("Verdana", 8), fg="green yellow", bg="forest green", width=18, height=2, \

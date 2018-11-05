@@ -55,7 +55,6 @@ import shutil
 """ settings START """
 global PI_THRESH
 
-print("FOXI PID = " + str(os.getpid()))
 scenario = "      +++ EXERCISE! +++ " # change into " " in real eruption
 FOXIversion ="18.1c"
 operator = "User"
@@ -365,8 +364,6 @@ fMER_file.close()
 PLH_file = open(out_txt + "_PLH.txt", "a",encoding="utf-8", errors="surrogateescape")
 PLH_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'PLH min'+"\t"+'PLH avg'+"\t"+'PLH max'+"\n")
 PLH_file.close()
-rundir = "run_"+ YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs + MinuteNUNAs
-os.mkdir(rundir)
 
 # Elaborate automatically retrieved weather data
 def elaborate_weather(plume_height):
@@ -505,6 +502,36 @@ Max_DiaOBSold = 0
 TStartSim = datetime.datetime.utcnow()
 #HERE BEGIN of while loop!
 mins = 0
+
+def refir_end():
+    import os
+    import datetime
+    import shutil
+    import sys
+    TimeNUNA = datetime.datetime.utcnow()
+    TimeNUNAs = str(TimeNUNA)
+    YearNUNAs = TimeNUNAs[:4]
+    MonthNUNAs = TimeNUNAs[5:7]
+    DayNUNAs = TimeNUNAs[8:10]
+    HourNUNAs = TimeNUNAs[11:13]
+    MinuteNUNAs = TimeNUNAs[14:16]
+    rundir = "run_" + YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs + MinuteNUNAs
+    os.mkdir(rundir)
+    print("REFIR is going to stop")
+    file_list = os.listdir(os.getcwd())
+    rundir_path = os.path.join(dir1, rundir)
+    for file_to_move in file_list:
+        if os.path.isfile(file_to_move):
+#            if (file_to_move.startswith("fix_config")):
+#                shutil.copy(file_to_move, rundir_path)
+            if (file_to_move.endswith(".txt") or file_to_move.endswith(".png") or file_to_move.endswith(".svg")):
+                shutil.move(file_to_move, rundir_path)
+        elif os.path.isdir(file_to_move):
+            if (file_to_move.startswith("raw")):
+                shutil.move(file_to_move, rundir_path)
+    sys.exit()
+    ("\n --- programm aborted")
+
 while 1:
 
     run = run +1
@@ -702,6 +729,10 @@ while 1:
     wtf_wood0d = float(configlines[165])
     time_start = configlines[166]
     time_stop = configlines[167]
+    exit_param = int(configlines[168])
+
+    if exit_param == 1:
+        refir_end()
 
     mins = mins + steptime
     if run_type == 1:
@@ -722,7 +753,7 @@ while 1:
         eruption_start_day = str(eruption_start.day)
         if len(eruption_start_day) == 1:
             eruption_start_day = '0' + eruption_start_day
-        eruption_stop = datetime.datetime.strptime(time_stop, "%Y-%m-%d %H:%M:%S")
+        eruption_stop = datetime.datetime.strptime(time_stop, "%Y-%m-%d %H:%M:%S\n")
         TimeNOW = eruption_start + datetime.timedelta(minutes=mins)
         TimeNOWs = str(TimeNOW)
         YearNOWs = TimeNOWs[:4]
@@ -732,7 +763,8 @@ while 1:
         MinuteNOWs = TimeNOWs[14:16]
         HourNOW = int(HourNOWs)
         if TimeNOW > eruption_stop:
-            break
+            print("Eruption ended")
+            refir_end()
         lead_Time = 0
 
 
@@ -5348,7 +5380,14 @@ while 1:
     Xband1_t_stack,Xband2_t_stack,Xband3_t_stack,Xband4_t_stack,Xband5_t_stack,Xband6_t_stack = [],[],[],[],[],[]
     Cam1_t_stack,Cam2_t_stack,Cam3_t_stack,Cam4_t_stack,Cam5_t_stack,Cam6_t_stack,air_t_stack,ground_t_stack,other_t_stack= [],[],[],[],[],[],[],[],[]
     def waitingProc():
-            
+        # Check if the stop signal from FIX
+        configfile = open("fix_config.txt", "r",encoding="utf-8", errors="surrogateescape")
+        configlines = configfile.readlines()
+        configfile.close()
+        exit_param = int(configlines[168])
+        if exit_param == 1:
+            refir_end()
+
         time.sleep(27)#adjust so that with time of run a resulting time of 300s is obtained
         waittime = int(270-verz)
         print ("...next run in "+str(waittime)+" seconds")
@@ -5356,6 +5395,14 @@ while 1:
         waittime2 = int(waittime - waittime1)
         time.sleep(waittime1)
         for i in range(waittime2,30,-30):
+            # Check the stop signal from FIX
+            configfile = open("fix_config.txt", "r", encoding="utf-8", errors="surrogateescape")
+            configlines = configfile.readlines()
+            configfile.close()
+            exit_param = int(configlines[168])
+            if exit_param == 1:
+                refir_end()
+
             time.sleep(30)
             print ("...next run in "+str(i)+" seconds")
         print(".....")
@@ -5367,6 +5414,7 @@ while 1:
             #winsound.Beep(Freq,Dur)
             print (str(ai)+" seconds")
         #winsound.Beep(Freq,Dur2)
+
     del gc.garbage[:]
     gc.collect()
     logger.debug('gc garbage: %r', gc.garbage)
@@ -5381,23 +5429,8 @@ while 1:
     logger8.manager.loggerDict.clear()
     logger9.manager.loggerDict.clear()
     logger10.manager.loggerDict.clear()
+
     if run_type == 1:
         waitingProc()
     else:
         continue
-
-print("Eruption ended")
-print("REFIR is going to stop")
-file_list = os.listdir(os.getcwd())
-rundir_path = os.path.join(dir1,rundir)
-for file_to_move in file_list:
-    if os.path.isfile(file_to_move):
-        if (file_to_move.startswith("fix_config")):
-            shutil.copy(file_to_move,rundir_path)
-        elif (file_to_move.endswith(".txt") or file_to_move.endswith(".png") or file_to_move.endswith(".svg")):
-            shutil.move(file_to_move,rundir_path)
-    elif os.path.isdir(file_to_move):
-        if (file_to_move.startswith("raw")):
-            shutil.move(file_to_move, rundir_path)
-sys.exit()
-("\n --- programm aborted")
