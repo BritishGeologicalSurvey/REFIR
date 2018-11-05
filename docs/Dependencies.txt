@@ -13,6 +13,17 @@
   The user needs to install the personal key in a .ecmwfapirc file, to save in different locations depending on
   the OS. Please read the instructions.
 
-
-
+With Conda, it is possible to set a virtual environmnent with all the required dependencies specific for REFIR. This simplifies the 
+installation of the different packages and the management of the Python installation in the system.
+Instructions for setting the Conda environment:
+1) create the environment with all the needed additional packages:
+	conda create --name name_of_environment python=3.7 basemap pandas xlrd future
+2) activate the environment with:
+	source activate name_of_environment (Linux)
+	conda activate name_of_environment (Windows)
+3) install ecmwfapi
+	pip install --user https://software.ecmwf.int/wiki/download/attachments/56664858/ecmwf-api-client-python.tgz
+4) to exit from the environment:
+	source deactivate (Linux)
+	conda deactivate (Windows)
    

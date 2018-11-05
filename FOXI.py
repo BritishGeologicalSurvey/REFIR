@@ -55,6 +55,7 @@ import shutil
 """ settings START """
 global PI_THRESH
 
+print("FOXI PID = " + str(os.getpid()))
 scenario = "      +++ EXERCISE! +++ " # change into " " in real eruption
 FOXIversion ="18.1c"
 operator = "User"
