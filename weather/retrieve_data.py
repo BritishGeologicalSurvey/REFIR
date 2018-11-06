@@ -28,7 +28,7 @@ RNZ170318FS
 """
 
 
-def gfs_forecast_retrieve(lon_source,lat_source,Nfcst):
+def gfs_forecast_retrieve(lon_source,lat_source):
     import urllib.request
     import urllib.error
     #	import urllib2
@@ -129,28 +129,24 @@ def gfs_forecast_retrieve(lon_source,lat_source,Nfcst):
     lat_corner = str(int(lat_source))
 
     data_folder = 'raw_forecast_weather_data_'+ year + month + day + '/'
-    if Nfcst == 6:
-        fcst_list = [ifcst, ifcst + 1, ifcst + 2, ifcst + 3, ifcst + 4, ifcst + 5]
+
+    ival = ianl + ifcst
+    if ival < 10:
+        validity = '0' + str(ival)
     else:
-        fcst_list = [ifcst]
-    for ifcst in fcst_list:
-        ival = ianl + ifcst
-        if ival < 10:
-            validity = '0' + str(ival)
-        else:
-            validity = str(ival)
-        if ifcst < 10:
-            fcst = 'f00' + str(ifcst)
-        elif 10 <= ifcst < 100:
-            fcst = 'f0' + str(ifcst)
-        else:
-            fcst = 'f' + str(ifcst)
-        abs_validity = year + month + day + validity
-        elaborated_prof_file = 'profile_data_' + abs_validity + '.txt'
-        print('Checking if ' + elaborated_prof_file + ' exists in ' + data_folder)
-        if os.path.isfile(data_folder + elaborated_prof_file):
-            print('File ' + elaborated_prof_file + ' already available in ' + data_folder)
-            continue
+        validity = str(ival)
+    if ifcst < 10:
+        fcst = 'f00' + str(ifcst)
+    elif 10 <= ifcst < 100:
+        fcst = 'f0' + str(ifcst)
+    else:
+        fcst = 'f' + str(ifcst)
+    abs_validity = year + month + day + validity
+    elaborated_prof_file = 'profile_data_' + abs_validity + '.txt'
+    print('Checking if ' + elaborated_prof_file + ' exists in ' + data_folder)
+    if os.path.isfile(data_folder + elaborated_prof_file):
+        print('File ' + elaborated_prof_file + ' already available in ' + data_folder)
+    else:
         wtfile_dwnl = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
         wtfile = 'weather_data_' + year + month + day + anl + '_' + fcst
         wtfile_int = 'weather_data_interpolated_' + year + month + day + anl + '_' + fcst
