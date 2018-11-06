@@ -57,8 +57,17 @@ quit_refir = IntVar()
 #quit_refir.set(0) # FOXI continues until exit_param = 0
 exit_param = 0
 
+def calculate_position(self,x, y):
+# Function that control the position of the widget in the screen
+    screen_width = self.winfo_screenwidth()
+    screen_height = self.winfo_screenheight()
+    pos_x = x * screen_width
+    pos_y = y * screen_height
+    return (pos_x, pos_y)
+
 def first_widget():
     global run_type_in, weather_in
+
     run_type_in = IntVar()
     weather_in = IntVar()
     run_type_in.set(1)
@@ -84,6 +93,12 @@ def first_widget():
     Radiobutton(runtype_weather, text="Manual entry", variable=weather_in, value=2).grid(row=5, column=4, columnspan=2,
                                                                                          sticky=W)
 
+    x_screen_fr = 0.2
+    y_screen_fr = 0.2
+    size_x = 300
+    size_y = 100
+    pos_x, pos_y = calculate_position(runtype_weather,x_screen_fr, y_screen_fr)
+    runtype_weather.geometry('%dx%d+%d+%d' % (size_x, size_y, pos_x, pos_y))
     runtype_weather.mainloop()
 
 
@@ -196,6 +211,12 @@ else:
 dir1 = os.path.dirname(os.path.abspath(__file__))
 PlumeRiseFile = "PlumeRise_Foxi"
 root = Tk()
+x_screen_fr = 0.2
+y_screen_fr = 0.2
+size_x = 210
+size_y = 350
+pos_x, pos_y = calculate_position(root,x_screen_fr, y_screen_fr)
+root.geometry('%dx%d+%d+%d' % (size_x, size_y, pos_x, pos_y))
 root.title("select the volcano")
 vulkan = 0
 vulk = IntVar()
@@ -338,7 +359,7 @@ def automatic_weather():
         year = now[0:4]
         month = now[5:7]
         day = now[8:10]
-        gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan],6)
+        gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan])
         folder = 'raw_weather_data_' + year + month + day
     elif run_type == 2:
         print('Retrieving past GFS forecasts for the eruption interval')

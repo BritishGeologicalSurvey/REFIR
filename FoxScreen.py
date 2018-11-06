@@ -28,12 +28,13 @@ RLZ170318M
 """
 import datetime
 
-try:
-    # Python2
-    import Tkinter as tk
-except ImportError:
-    # Python3
-    import tkinter as tk
+# try:
+#     # Python2
+#     import Tkinter as tk
+# except ImportError:
+#     # Python3
+#     import tkinter as tk
+from tkinter import *
 from PIL import Image, ImageTk
 print("******* FOX SCREEN **********")
 print("         v18.1      ")
@@ -86,7 +87,6 @@ def switch_results():
     else:
         statpath = statpath_def
     #update_image()
-
 
 def switch_status():
     """switches status monitor"""
@@ -143,8 +143,7 @@ def switch_plh_src():
     else:
         path = path_def
     #update_image() 
-    
-    
+
 def switch_map():
     """switches map view"""
     global path_map1, path_map2
@@ -155,7 +154,6 @@ def switch_map():
     else:
         path_map1 = path_map_def
     #update_image() 
-    
 
 def switch_Nplot():
     """switches source stats"""
@@ -189,16 +187,17 @@ blankscreen = "\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\n"+\
 
 u=99
 v=0
+
 def update_image():
      global u,v
      global blankscreen
      v= 1    
-     frame0 = tk.LabelFrame(root, text="Map", width=480, height=320, bd=5)
-     frame1 = tk.LabelFrame(root, text="Plumeheight monitor", width=400, height=320, bd=5) 
-     frame2 = tk.LabelFrame(root, text="Source stats", width=440, height=320, bd=5)
+     #frame0 = LabelFrame(root, text="Map", width=480, height=320, bd=5)
+     #frame1 = LabelFrame(root, text="Plumeheight monitor", width=400, height=320, bd=5)
+     #frame2 = LabelFrame(root, text="Source stats", width=440, height=320, bd=5)
      try:
          im0 = Image.open(path_map1)
-         im0 = im0.resize((480, 320), Image.ANTIALIAS)
+         im0 = im0.resize((size_x,size_y), Image.ANTIALIAS)
          tkimage0 = ImageTk.PhotoImage(im0)
          label0.tkimage0=tkimage0     ## keep in instance of label
          label0.config(image=label0.tkimage0)
@@ -207,7 +206,7 @@ def update_image():
     
      try:
          im1 = Image.open(path)
-         im1 = im1.resize((400, 320), Image.ANTIALIAS)
+         im1 = im1.resize((size_x,size_y), Image.ANTIALIAS)
          tkimage1 = ImageTk.PhotoImage(im1)
          label1.tkimage1=tkimage1     ## keep in instance of label
          label1.config(image=label1.tkimage1)
@@ -216,7 +215,7 @@ def update_image():
 
      try:
          im2 = Image.open(Npath)
-         im2 = im2.resize((440, 320), Image.ANTIALIAS)
+         im2 = im2.resize((size_x,size_y), Image.ANTIALIAS)
          tkimage2 = ImageTk.PhotoImage(im2)
          label2.tkimage2=tkimage2     ## keep in instance of label
          label2.config(image=label2.tkimage2)
@@ -225,7 +224,7 @@ def update_image():
 
      try:
          im3 = Image.open(merpath)
-         im3 = im3.resize((480, 320), Image.ANTIALIAS)
+         im3 = im3.resize((size_x,size_y), Image.ANTIALIAS)
          tkimage3 = ImageTk.PhotoImage(im3)
          label3.tkimage3=tkimage3     ## keep in instance of label
          label3.config(image=label3.tkimage3)
@@ -233,7 +232,7 @@ def update_image():
          u = 3
      try:
          im5 = Image.open(masspath)
-         im5 = im5.resize((480, 320), Image.ANTIALIAS)
+         im5 = im5.resize((size_x,size_y), Image.ANTIALIAS)
          tkimage5 = ImageTk.PhotoImage(im5)
          label5.tkimage5=tkimage5     ## keep in instance of label
          label5.config(image=label5.tkimage5)
@@ -244,125 +243,117 @@ def update_image():
          file = open(statpath)
          data = file.read()
          file.close()
-         Results = tk.Label(frame4, text = blankscreen, font = "Helvetica 10", fg = "lime",bg="black")
-         Results.grid(row = 1, column = 1)
-         Results = tk.Label(frame4, text = data, font = "Helvetica 10", fg = "white",bg="black")
-         Results.grid(row = 1, column = 1)
+         frame4 = LabelFrame(root, text="REFIR Status Monitor", font="Helvetica 12", fg="lime", bg="black", bd=5)
+         frame4.grid(row=3, column=2)
+         Results = Label(frame4, text = data, font = "Helvetica 10", fg = "white",bg="black")
+         Results.pack()
      except EnvironmentError:     
          u = 4     
 
      root.after(1500, update_image) 
 
-
-
-
-
-root = tk.Tk()
-root.geometry("1280x1024")
+root = Tk()
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+root.geometry(str(screen_width)+"x"+str(screen_height))
 root.title("Output FoxShow")
 root.configure(background='black')
+# Sizes of the picture in the screen
+size_x = int(screen_width / 3.1)
+size_y = int(screen_height / 2.6)
 
-
-frame0 = tk.LabelFrame(root, text="Map",font = "Helvetica 12", width=400, height=320,fg="lime",bg="black", bd=5)
 try:
+    frame0 = LabelFrame(root, text="Map", font="Helvetica 12", fg="lime", bg="black", bd=5)
+    frame0.grid(row = 0, column = 0)
     im0 = Image.open(path_map1)
-    im0 = im0.resize((400, 320), Image.ANTIALIAS)
+    im0 = im0.resize((size_x, size_y), Image.ANTIALIAS)
     tkimage0 = ImageTk.PhotoImage(im0)
-    label0 =  tk.Label(frame0, image=tkimage0)
-    label0.pack()
+    label0 =  Label(frame0, image=tkimage0)
+    label0.pack(side=LEFT)
 except EnvironmentError:     
     print("WARNING: No map available!")
 try:    
-    frame1 = tk.LabelFrame(root, text="Plumeheight monitor",font = "Helvetica 12", width=400, height=320,fg="lime",bg="black", bd=5)
+    frame1 = LabelFrame(root, text="Plumeheight monitor",font = "Helvetica 12", fg="lime",bg="black", bd=5)
+    frame1.grid(row = 0, column = 1)
     im1 = Image.open(path)
-    im1 = im1.resize((400, 320), Image.ANTIALIAS)
+    #im1 = im1.resize((size_x, size_y), Image.ANTIALIAS)
     tkimage1 = ImageTk.PhotoImage(im1)
-    label1 =  tk.Label(frame1, image=tkimage1)
-    label1.pack()
+    label1 =  Label(frame1, image=tkimage1)
+    label1.pack(side=LEFT)
 except EnvironmentError:     
     print("WARNING: No REFIR results available!")
 try:    
-    frame2 = tk.LabelFrame(root, text="Source stats monitor",font = "Helvetica 12", width=400, height=320,fg="lime",bg="black", bd=5)
+    frame2 = LabelFrame(root, text="Source stats monitor",font = "Helvetica 12", fg="lime",bg="black", bd=5)
+    frame2.grid(row = 0, column = 2)
     im2 = Image.open(Npath)
-    im2 = im2.resize((400, 320), Image.ANTIALIAS)
+    #im2 = im2.resize((size_x, size_y), Image.ANTIALIAS)
     tkimage2 = ImageTk.PhotoImage(im2)
-    label2 =  tk.Label(frame2, image=tkimage2)
-    label2.pack()
+    label2 =  Label(frame2, image=tkimage2)
+    label2.pack(side=LEFT)
 except EnvironmentError:     
     print("WARNING: No REFIR results available!")
-
-
-
-
 
 try:    
-    frame3 = tk.LabelFrame(root, text="Mass Eruption Rate",font = "Helvetica 12", width=400, height=320,fg="lime",bg="black", bd=5)
+    frame3 = LabelFrame(root, text="Mass Eruption Rate",font = "Helvetica 12", fg="lime",bg="black", bd=5)
+    frame3.grid(row = 3, column = 0)
     im3 = Image.open(merpath)
-    im3 = im3.resize((400, 320), Image.ANTIALIAS)
+    #im3 = im3.resize((size_x, size_y), Image.ANTIALIAS)
     tkimage3 = ImageTk.PhotoImage(im3)
-    label3 =  tk.Label(frame3, image=tkimage3)
-    label3.pack()
+    label3 =  Label(frame3, image=tkimage3)
+    label3.pack(side=LEFT)
 except EnvironmentError:     
     print("WARNING: No REFIR results available!")
-
-
 
 try:
-    frame4 = tk.LabelFrame(root, text="REFIR Status Monitor",font = "Helvetica 12", width=400, height=320,fg="lime",bg="black", bd=5)
+    frame4 = LabelFrame(root, text="REFIR Status Monitor",font = "Helvetica 12", fg="lime",bg="black", bd=5)
+    frame4.grid(row=3, column=2)
     file = open(statpath)
     data = file.read()
     file.close()
-    Results = tk.Label(frame4, text = data, font = "Helvetica 10", fg = "white",bg="black")
-    Results.grid(row = 1, column = 1)
+    Results = Label(frame4, text = data, font = "Helvetica 10", fg = "white",bg="black")
+    Results.pack()
 except EnvironmentError:     
     print("WARNING: No REFIR results available!")
-    
 
 try:    
-    frame5 = tk.LabelFrame(root, text="Erupted Mass",font = "Helvetica 12", width=480, height=320,fg="lime",bg="black", bd=5)
+    frame5 = LabelFrame(root, text="Erupted Mass",font = "Helvetica 12",fg="lime",bg="black", bd=5)
+    frame5.grid(row = 3, column = 1)
     im5 = Image.open(masspath)
-    im5 = im5.resize((400, 320), Image.ANTIALIAS)
+    #im5 = im5.resize((size_x, size_y), Image.ANTIALIAS)
     tkimage5 = ImageTk.PhotoImage(im5)
-    label5 =  tk.Label(frame5, image=tkimage5)
+    label5 =  Label(frame5, image=tkimage5)
     label5.pack()
 except EnvironmentError:     
     print("WARNING: No REFIR results available!")
 
 v = 0
 
-frameb=tk.LabelFrame(root, text="",fg="lime",bg="dark green")
-tk.Button(root, text = "Switch Map View",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
-    width =22, height=1,bd=3, command = switch_map).grid(row=1, column=0,sticky=tk.N)
+frameb=LabelFrame(root, text="",fg="lime",bg="dark green")
+Button(root, text = "Switch Map View",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
+    width =22, height=1,bd=3, command = switch_map).grid(row=1, column=0,sticky=N)
 
-tk.Button(root, text = "Switch Plumeheight View",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
-    width =22, height=1, command = switch_plh_src).grid(row=1, column=1,sticky=tk.N)
+Button(root, text = "Switch Plumeheight View",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
+    width =22, height=1, command = switch_plh_src).grid(row=1, column=1,sticky=N)
 
-tk.Label(root, text= "R3F1R",font = "Helvetica 11",fg="lime",bg="dark green").grid(row=2, column=3)
+Label(root, text= "R3F1R",font = "Helvetica 11",fg="lime",bg="dark green").grid(row=2, column=3)
 
-tk.Button(root, text = "Switch Source Stats",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
-    width =22, height=1, command = switch_Nplot).grid(row=1, column=2,sticky=tk.N)
+Button(root, text = "Switch Source Stats",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
+    width =22, height=1, command = switch_Nplot).grid(row=1, column=2,sticky=N)
 
-tk.Button(root, text = "Switch MER Plots",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
-    width =22, height=1, command = switch_MER).grid(row=3, column=0,sticky=tk.S)
+Button(root, text = "Switch MER Plots",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
+    width =22, height=1, command = switch_MER).grid(row=2, column=0,sticky=S)
 
-b1=tk.Button(frameb, text = "REFIR Results",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
-    width =16, height=1, command = switch_results)
-b2=tk.Button(frameb, text = "REFIR Parameters",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
-    width =16, height=1, command = switch_status)
+b1=Button(frameb, text = "REFIR Results",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
+    width =16, height=1, command = switch_results)#.grid(row=2, column = 2)#, sticky=N)
+b2=Button(frameb, text = "REFIR Parameters",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
+   width =16, height=1, command = switch_status)#.grid(row=2, column=3)
 
-tk.Button(root, text = "Switch Erupted Mass Plots",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
-    width =22, height=1, command = switch_mass).grid(row=3, column=1,sticky=tk.S)
+Button(root, text = "Switch Erupted Mass Plots",font = "Helvetica 11", fg="lime",bg="dark green",highlightbackground="black",\
+    width =22, height=1, command = switch_mass).grid(row=2, column=1,sticky=S)
 
-frameb.grid(row=3, column=2)
+frameb.grid(row=2, column=2, sticky=N)
 b1.grid(row=0, column=0)
 b2.grid(row=0, column=1)
-frame0.grid(row=0, column=0)
-frame1.grid(row=0, column=1)
-frame2.grid(row=0, column=2)
-
-frame3.grid(row=5, column=0,sticky=tk.N)
-frame4.grid(row=5, column=2)
-frame5.grid(row=5, column=1,sticky=tk.N)
 root.after(1500, update_image)
 root.mainloop()
 

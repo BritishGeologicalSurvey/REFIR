@@ -186,6 +186,15 @@ ground_t_stack = []
 other_t_stack = []
 APHmax_y = 0
 
+def calculate_position(self,x, y):
+# Function that control the position of the widget in the screen
+    screen_width = self.winfo_screenwidth()
+    screen_height = self.winfo_screenheight()
+    pos_x = x * screen_width
+    pos_y = y * screen_height
+    return (pos_x, pos_y)
+
+
 def read_sensors():
     """reads IDs and GPS coordinates from *.ini files"""
     global ID,sens_file,N_en,N_en1,N_en2,sens_url,sens_IP,sens_dir
@@ -346,7 +355,12 @@ try:
     
     Button(masterout, text = "Initiate!",font = "Helvetica 11", fg="yellow",bg="red",\
     width =24, height=2, command = on_button).grid(row=11, column=0, columnspan=5)
-    
+    x_screen_fr = 0.6
+    y_screen_fr = 0.2
+    size_x = 310
+    size_y = 300
+    pos_x, pos_y = calculate_position(masterout,x_screen_fr, y_screen_fr)
+    masterout.geometry('%dx%d+%d+%d' % (size_x, size_y, pos_x, pos_y))
     masterout.mainloop()
 
 #END GUI
@@ -415,7 +429,7 @@ def elaborate_weather(plume_height):
             print("File " + profile_data_file + " not present")
             if run_type == 1:
                 print('Retrieving new GFS forecast data')
-                gfs_forecast_retrieve(volcLON, volcLAT,1)
+                gfs_forecast_retrieve(volcLON, volcLAT)
                 current = os.getcwd()
                 files = os.listdir(current)
                 for file in files:
