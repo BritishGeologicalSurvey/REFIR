@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 If you wish to contribute to the development of REFIR or to reports bugs or other problems with
 the software, please write an email to me.
 
-Contact: tobi@hi.is, fabiod@bgs.ac.uk
+Contact: tobias.durig@otago.ac.nz, fabiod@bgs.ac.uk
 
 RNZ22323I
 
@@ -4036,10 +4036,10 @@ def operation_control():
     label3 = Label(masterklick, textvariable=sdefault_txt, bg=bgcol.get())
     label3.grid(row=11, column=0, columnspan=3)
     Label(masterklick, text="   ", font=("Verdana", 8)).grid(row=12, column=0)
-    Label(masterklick, text="For citation contact:", font=("Verdana", 8)).grid(row=12, column=2, sticky=W, )
+    Label(masterklick, text="For citation contact:", font=("Verdana", 8)).grid(row=12, column=0, sticky=W, )
 
-    Label(masterklick, text="Tobias Dürig, tobi@hi.is", font=("Verdana", 8)).grid(row=13, column=2, sticky=W,
-                                                                                  columnspan=2)
+    Label(masterklick, text="Tobias Dürig, tobias.durig@otago.ac.nz; Fabio Dioguardi, fabiod@bgs.ac.uk", font=("Verdana", 8)).grid(row=13, column=0, sticky=W,
+                                                                                  columnspan=3)
     masterklick.mainloop()
 
 

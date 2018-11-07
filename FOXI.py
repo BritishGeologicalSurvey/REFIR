@@ -21,7 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 If you wish to contribute to the development of REFIR or to reports bugs or other problems with
 the software, please write an email to me.
 
-Contact: tobi@hi.is, fabiod@bgs.ac.uk
+Contact: tobias.durig@otago.ac.nz, fabiod@bgs.ac.uk
 
 
 RNZ180615C 
