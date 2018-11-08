@@ -51,11 +51,11 @@ def gfs_forecast_retrieve(lon_source,lat_source):
 
     # Find last GFS analysis
     ihour = int(hour)
-    if 0 < ihour < 6:
+    if 0 <= ihour < 6:
         ianl = 0
-    elif 6 < ihour < 12:
+    elif 6 <= ihour < 12:
         ianl = 6
-    elif 12 < ihour < 18:
+    elif 12 <= ihour < 18:
         ianl = 12
     else:
         ianl = 18
