@@ -360,7 +360,7 @@ def automatic_weather():
         month = now[5:7]
         day = now[8:10]
         gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan])
-        folder = 'raw_weather_data_' + year + month + day
+        folder = 'raw_forecast_weather_data_' + year + month + day
     elif run_type == 2:
         print('Retrieving past GFS forecasts for the eruption interval')
         eruption_start_datetime = datetime(Y_eru_start, MO_eru_start, D_eru_start, H_eru_start)
@@ -368,12 +368,12 @@ def automatic_weather():
         response = gfs_past_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan], eruption_start_datetime,
                                    eruption_stop_datetime)
         if response == True:
-            folder = 'raw_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
+            folder = 'raw_reanalysis_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
         else:
             print('GFS data not available.')
             print('Retrieving ERA Interim data')
             era_interim_retrieve(volc_lon[vulkan], volc_lat[vulkan], eruption_start, eruption_stop)
-            folder = 'raw_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
+            folder = 'raw_reanalysis_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
     if not os.path.isdir(folder):
         os.makedirs(folder)
     current = os.getcwd()
@@ -2959,6 +2959,7 @@ def sensorliste():
         liSens.append(ID[b + 6])
     liSens.append("aircraft")
     liSens.append("ground")
+    liSens.append("satellite")
     liSens.append("other")
     return (liSens)
 
@@ -3102,7 +3103,8 @@ def add_plhobs():
         time_OBSdata = datetime.datetime(Y_OBSdata, MO_OBSdata, D_OBSdata, H_OBSdata, M_OBSdata)
         time_OBSdata = time_OBSdata.strftime("%m %d %Y %H:%M:%S")
         menu = str(SRC_var.get())
-
+        Hmin_obs = 0 #new
+        Hmax_obs = 0 #new
         if len(pl_width_min.get()) == 0:
             Min_DiaOBS = 0
             Max_DiaOBS = 0
@@ -3149,15 +3151,24 @@ def add_plhobs():
                     Hmax_obs = Havg_obs + OBSerr
         if menu == "aircraft":
             OBSerr = 1000  # assumed error for plh data obtained by aircraft
-            Hmin_obs = Havg_obs - OBSerr
-            Hmax_obs = Havg_obs + OBSerr
+            #Hmin_obs = Havg_obs - OBSerr
+            #Hmax_obs = Havg_obs + OBSerr
         elif menu == "ground":
             OBSerr = 1500  # assumed error for ground obs obtained plh data
-            Hmin_obs = Havg_obs - OBSerr
-            Hmax_obs = Havg_obs + OBSerr
+            #Hmin_obs = Havg_obs - OBSerr
+            #Hmax_obs = Havg_obs + OBSerr
+        elif menu == "satellite":
+            OBSerr = 1000 # to review
+            #Hmin_obs = Havg_obs - OBSerr
+            #Hmax_obs = Havg_obs + OBSerr
         elif menu == "other":
             OBSerr = 1500  # assumed error for plh data by other source
+            #Hmin_obs = Havg_obs - OBSerr
+            #Hmax_obs = Havg_obs + OBSerr
+
+        if Hmin_obs == 0:
             Hmin_obs = Havg_obs - OBSerr
+        if Hmax_obs == 0:
             Hmax_obs = Havg_obs + OBSerr
 
         comment_obs = str(comment_OBS.get())
@@ -3181,6 +3192,8 @@ def add_plhobs():
             sourceOBSdata = 700
         elif menu == "ground":
             sourceOBSdata = 800
+        elif menu == "satellite":
+            sourceOBSdata = 850
         elif menu == "other":
             sourceOBSdata = 900
 

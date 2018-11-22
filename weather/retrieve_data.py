@@ -36,12 +36,13 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     from read import extract_data_gfs
     import os
     from shutil import copyfile
-
+    cwd = os.getcwd()
     if(lon_source < 0):
         lon_source = 360 + lon_source
+
     now = str(datetime.utcnow())
     yesterday = str(datetime.utcnow().today() - timedelta(1))
-    year = now[0:4]
+    year= now[0:4]
     month = now[5:7]
     day = now[8:10]
     hour = now[11:13]
@@ -63,7 +64,10 @@ def gfs_forecast_retrieve(lon_source,lat_source):
         anl = '0' + str(ianl)
     else:
         anl = str(ianl)
-    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + anl
+    year_anl = year
+    month_anl = month
+    day_anl = day
+    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl
     try:
         # urllib2.urlopen(url)
         urllib.request.urlopen(url)
@@ -78,21 +82,22 @@ def gfs_forecast_retrieve(lon_source,lat_source):
         ianl = ianl - 6
         print('Analysis file at ' + anl + 'z not yet available. Retrieving the latest available')
     if ianl < 0:  # this is in case the analysis at 00z is not available; in this case, ianl = -6 from above, hence must be corrected. Additionally, the variable ianl will be updated later otherwise it would affect ifcst
-        year = year_yst
-        month = month_yst
-        day = day_yst
         anl = '18'
+        year_anl = year_yst
+        month_anl = month_yst
+        day_anl = day_yst
     elif 0 <= ianl < 10:
         anl = '0' + str(ianl)
     else:
         anl = str(ianl)
-    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + anl
+    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl
     print('Most up to date GFS analysis: ' + url)
 
     # Retrieve weather data that best matches current time
     ifcst = ihour - ianl
     if ianl < 0:
         ianl = 18
+        ifcst = ihour + 6
 
     if ifcst < 10:
         fcst = 'f00' + str(ifcst)
@@ -101,7 +106,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     else:
         fcst = 'f' + str(ifcst)
     wtfile = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
-    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + anl + '/' + wtfile
+    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl + '/' + wtfile
     try:
         # urllib2.urlopen(url)
         urllib.request.urlopen(url)
@@ -118,7 +123,13 @@ def gfs_forecast_retrieve(lon_source,lat_source):
         ifcst = ifcst + 6
         print('Forecast file ' + wtfile + ' not yet available. Retrieving the equivalent from the previous forecast')
 
-    if ianl < 10:
+    if ianl < 0:
+        ianl = 18
+        year_anl = year_yst
+        month_anl = month_yst
+        day_anl = day_yst
+        anl = str(ianl)
+    elif 0 <= ianl < 10:
         anl = '0' + str(ianl)
     else:
         anl = str(ianl)
@@ -128,10 +139,14 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     lon_corner = str(int(lon_source))
     lat_corner = str(int(lat_source))
 
-    data_folder = 'raw_forecast_weather_data_'+ year + month + day + '/'
+    #data_folder = 'raw_forecast_weather_data_'+ year + month + day + '/'
+    data_folder = os.path.join(cwd,'raw_forecast_weather_data_'+ year + month + day)
 
     ival = ianl + ifcst
     if ival < 10:
+        validity = '0' + str(ival)
+    elif ival >= 24:
+        ival = ival - 24
         validity = '0' + str(ival)
     else:
         validity = str(ival)
@@ -143,16 +158,18 @@ def gfs_forecast_retrieve(lon_source,lat_source):
         fcst = 'f' + str(ifcst)
     abs_validity = year + month + day + validity
     elaborated_prof_file = 'profile_data_' + abs_validity + '.txt'
+    elaborated_prof_file_path = os.path.join(data_folder,elaborated_prof_file)
     print('Checking if ' + elaborated_prof_file + ' exists in ' + data_folder)
-    if os.path.isfile(data_folder + elaborated_prof_file):
+    #if os.path.isfile(data_folder + elaborated_prof_file):
+    if os.path.isfile(elaborated_prof_file_path):
         print('File ' + elaborated_prof_file + ' already available in ' + data_folder)
     else:
         wtfile_dwnl = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
-        wtfile = 'weather_data_' + year + month + day + anl + '_' + fcst
-        wtfile_int = 'weather_data_interpolated_' + year + month + day + anl + '_' + fcst
+        wtfile = 'weather_data_' + year_anl + month_anl + day_anl + anl + '_' + fcst
+        wtfile_int = 'weather_data_interpolated_' + year_anl + month_anl + day_anl + anl + '_' + fcst
         wtfile_prof = 'profile_' + year + month + day + anl + validity + '.txt'
-        url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + anl + '/' + wtfile_dwnl
-        print('Checking if ' + wtfile + ' exists')
+        url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl + '/' + wtfile_dwnl
+        print('Checking if ' + wtfile + ' exists in ' + data_folder)
         if os.path.isfile(data_folder + wtfile):
             print('File ' + wtfile + ' found')
             copyfile('raw_forecast_weather_data_' + year + month + day + '/' + wtfile, wtfile)
@@ -172,6 +189,8 @@ def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     from ecmwfapi import ECMWFDataServer
     from read import extract_data_erain
     import os
+    from shutil import copyfile
+    cwd = os.getcwd()
     if(lon_source < 0):
         lon_source = 360 + lon_source
     year_start = eruption_start[0:4]
@@ -193,13 +212,19 @@ def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     lon_corner = str(int(lon_source))
     lat_corner = str(int(lat_source))
     area = lat_SW + '/' + lon_SW + '/' + lat_NE + '/' + lon_NE
-
+    #data_folder = 'raw_reanalysis_weather_data_' + year_start + month_start + day_start + '/'
+    data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_' + year_start + month_start + day_start )
     wtfile = 'weather_data_' + date_bis
+    wtfile_path = os.path.join(cwd,data_folder,wtfile)
+    grib_file = "pressure_level.grib"
+    grib_file_path = os.path.join(cwd,data_folder,grib_file)
+    print('Checking if file ' + wtfile + ' exists in ' + data_folder)
 
-    print('Checking if file ' + wtfile + ' exists')
-
-    if os.path.isfile(wtfile):
-        print('File ' + wtfile + 'found')
+    #if os.path.isfile(wtfile):
+    if os.path.isfile(wtfile_path):
+        print('File ' + wtfile + ' found')
+        copyfile(wtfile_path,wtfile)
+        copyfile(grib_file_path,grib_file)
     else:
         print('Downloading file from ERA Interim database')
         server = ECMWFDataServer()
@@ -271,6 +296,7 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
             yield currentDate
             currentDate += delta
 
+    cwd = os.getcwd()
     if(lon_source < 0):
         lon_source = 360 + lon_source
     slon_source = str(lon_source)
@@ -287,7 +313,8 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
     else:
         dt = eruption_start.hour - 18
 
-    data_folder = 'raw_reanalysis_weather_data_' + str(eruption_start.year) + str(eruption_start.month) + str(eruption_start.day) + '/'
+    #data_folder = 'raw_reanalysis_weather_data_' + str(eruption_start.year) + str(eruption_start.month) + str(eruption_start.day) + '/'
+    data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_' + str(eruption_start.year) + str(eruption_start.month) + str(eruption_start.day))
     first_analysis = eruption_start - timedelta(hours=dt)
     ifcst = dt
     count = 1
@@ -322,20 +349,27 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
             day_validity = month_validity + day
             abs_validity = day_validity + validity
             elaborated_prof_file = 'profile_data_' + abs_validity + '.txt'
+            elaborated_prof_file_path = os.path.join(data_folder,elaborated_prof_file)
             print('Checking if ' + elaborated_prof_file + ' exists in ' + data_folder)
-            if os.path.isfile(data_folder + elaborated_prof_file):
+            #if os.path.isfile(data_folder + elaborated_prof_file):
+            if os.path.isfile(elaborated_prof_file_path):
                 print('File ' + elaborated_prof_file + ' already available in ' + data_folder)
-                continue
+                break
+                #continue
+            data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_'+ day_validity)
             wtfile_dwnl = month_validity + '/' + day_validity + '/' + 'gfs_4_' + day_validity + '_' + hour + '00_' + fcst + '.grb2'
             wtfile = 'weather_data_' + year + month + day + hour + '_' + fcst
+            wtfile_path = os.path.join(data_folder,wtfile)
             wtfile_int = 'weather_data_interpolated_' + year + month + day + hour + '_' + fcst
             wtfile_prof = 'profile_' + year + month + day + hour + validity + '.txt'
             url1 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + hour + '/gfs.t' + hour + 'z.pgrb2.0p25.f' + fcst
             url2 = 'https://nomads.ncdc.noaa.gov/data/gfs4/' + wtfile_dwnl
             print('Checking if ' + wtfile + ' exists')
-            if os.path.isfile('raw_reanalysis_weather_data_'+ day_validity + '/' + wtfile):
+            if os.path.isfile(wtfile_path):
+            #if os.path.isfile('raw_reanalysis_weather_data_'+ day_validity + '/' + wtfile):
                 print('File ' + wtfile + ' found')
-                copyfile('raw_reanalysis_weather_data_'+ day_validity + '/' + wtfile,wtfile)
+                #copyfile('raw_reanalysis_weather_data_'+ day_validity + '/' + wtfile,wtfile)
+                copyfile(wtfile_path, wtfile)
             else:
                 print('Downloading forecast file ' + url1)
                 try:

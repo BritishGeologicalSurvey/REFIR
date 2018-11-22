@@ -401,7 +401,7 @@ def elaborate_weather(plume_height):
     hour_vals = HourNOWs
     if run_type == 1:
         #folder_name=cwd+"\\raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
-        folder_name = os.path.join(cwd,"raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs)
+        folder_name = os.path.join(cwd,"raw_forecast_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs)
 
         #abs_validity = YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs
         #year_vals = YearNUNAs
@@ -410,7 +410,7 @@ def elaborate_weather(plume_height):
         #hour_vals = HourNUNAs
     else:
         #folder_name = cwd + "\\raw_weather_data_" + eruption_start_year + eruption_start_month + eruption_start_day
-        folder_name = os.path.join(cwd,"raw_weather_data_"+ eruption_start_year + eruption_start_month + eruption_start_day)
+        folder_name = os.path.join(cwd,"raw_reanalysis_weather_data_"+ eruption_start_year + eruption_start_month + eruption_start_day)
         #year_vals = YearNOWs
         #month_vals = MonthNOWs
         #day_vals = DayNOWs
@@ -441,7 +441,7 @@ def elaborate_weather(plume_height):
                                                                                                 profile_data_file_full,
                                                                                                 plume_height, vent_h)
             else:
-                for itstep in range(1,5):
+                for itstep in range(1,6):
                     Time_updated = TimeNOW - datetime.timedelta(hours=itstep)
                     year_vals = str(Time_updated.year)
                     month_vals = str(Time_updated.month)
@@ -2931,7 +2931,8 @@ while 1:
         def mer_Mastin(H_in):
             rho_dre_M = 2500
             V_mastin = (H_in/2000)**(1/0.241)
-            M_ma = V_mastin * rho_dre_M
+            #M_ma = V_mastin * rho_dre_M
+            M_ma = V_mastin * rho_dre
             return(M_ma)
         
         def mer_adjMastin(H_med,H_max):
@@ -4764,8 +4765,8 @@ while 1:
             def plot_TotalMass():
                 
                 with open(out_txt+"_mass_LOG.txt", "r",encoding="utf-8", errors="surrogateescape") as FILE1:
-                    tiM,SM_MIN_hmin,SM_MAX_hmax,SM_MAXhmin,SM_MERWE,SM_RMER,SM_MAXPLUS,SM_MERmtg,SM_MERdb,SM_MQclower = \
-                np.loadtxt(FILE1, usecols=(0,1,2,3,4,5,6,7,8,9), unpack=True, delimiter='\t')
+                    tiM,SM_MIN_hmin,SM_MAX_hmax,SM_MAXhmin,SM_MERWE,SM_RMER,SM_MAXPLUS,SM_MERmtg,SM_MERdb,SM_MERwood0d,SM_MQclower = \
+                np.loadtxt(FILE1, usecols=(0,1,2,3,4,5,6,7,8,9,10), unpack=True, delimiter='\t')
                 
                 if run == 1:
                     tiM_end = tiM
@@ -4841,7 +4842,7 @@ while 1:
             def plot_TotalMassFMER():
                 with open(out_txt+"_mass_LOG.txt", "r",encoding="utf-8", errors="surrogateescape") as FILE1:
                     tiM,SM_FABSMIN,SM_FABSMAX,SM_FMERMIN,SM_FMER,SM_FMERMAX = \
-                np.loadtxt(FILE1, usecols=(0,10,11,12,13,14), unpack=True, delimiter='\t')
+                np.loadtxt(FILE1, usecols=(0,11,12,13,14,15), unpack=True, delimiter='\t')
                 
                 if run == 1:
                     tiM_end = tiM

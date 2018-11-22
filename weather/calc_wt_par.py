@@ -48,7 +48,11 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
     g = 9.81
     N = []
     dTdZ = []
+    if H_plume <= 0:
+        H_plume = 1
     H_top = H_source + H_plume
+    #with open("log_calc_wt_par.txt", 'a',) as logwt:
+    #    logwt.write(str(H_top) + "\t"+ str(H_source) + "\t" + str(H_plume) + "\n")
     print('Opening file ' + prof_file)
     with open(prof_file, 'r',encoding="utf-8", errors="surrogateescape") as f1:
         next(f1)
