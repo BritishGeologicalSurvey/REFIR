@@ -604,7 +604,7 @@ def defaultvalues(venth):
     global OBS1
     global P_0
 
-    global PM_Nplot, PM_PHplot, PM_MERplot, PM_TME, PM_FMERplot, PM_FTME, StatusR_oo
+    global PM_Nplot, PM_PHplot, PM_MERplot, PM_TME, PM_FMERplot, PM_FTME, PM_TAV, StatusR_oo, NAME_out_on
 
     global Min_DiaOBS, Max_DiaOBS, pl_width_min, pl_width_max
 
@@ -707,7 +707,9 @@ def defaultvalues(venth):
     PM_TME = 1
     PM_FMERplot = 1
     PM_FTME = 1
+    PM_TAV = 0
     StatusR_oo = 1
+    NAME_out_on = 0
 
     Cband3_on, Cband4_on, Cband5_on, Cband6_on, Xband3_on, Xband4_on, \
     Xband5_on, Xband6_on, Cam4_on, Cam5_on, Cam6_on, Cband3m_on, Cband4m_on, Cband5m_on, \
@@ -890,7 +892,7 @@ def get_last_data():
     global cal_ISX2_b
     global qf_obs
     global OBS1
-    global PM_Nplot, PM_PHplot, PM_MERplot, PM_TME, PM_FMERplot, PM_FTME, StatusR_oo
+    global PM_Nplot, PM_PHplot, PM_MERplot, PM_TME, PM_FMERplot, PM_FTME, PM_TAV, StatusR_oo, NAME_out_on
     global pl_minw_default, pl_maxw_default
     global qfak_Cband3
     global qfak_Cband4, qfak_Cband5, qfak_Cband6, qfak_Xband3, qfak_Xband4, \
@@ -1124,7 +1126,7 @@ def save_default_file():
                        + "\n" + str(loc_GFZ1) + "\n" + str(loc_GFZ2) + "\n" + str(loc_GFZ3) \
                        + "\n" + str(loc_Cam4) + "\n" + str(loc_Cam5) + "\n" + str(loc_Cam6) + "\n" + str(defsetup) \
                        + "\n" + str(run_type) + "\n" + str(weather) + "\n" + str(wtf_wood0d) + "\n" + str(time_start) \
-                       + "\n" + str(time_stop)  + "\n" + str(exit_param))  # New variables in the config files for the run type and weather
+                       + "\n" + str(time_stop)  + "\n" + str(exit_param) + "\n" + str(PM_TAV) + "\n" + str(NAME_out_on))  # New variables in the config files for the run type, weather and time averaging options
     default_FILE.close()
 
 defaultvalues(vent_h)
@@ -2230,38 +2232,59 @@ def plot_mode():
             menu_txt = "last 15min"
         return (menu_txt)
 
+    def tavg_output(tav_option):
+        if tav_option == 0:
+            menu_txt_tav = "off"
+        elif tav_option == 1:
+            menu_txt_tav = "15min"
+        elif tav_option == 2:
+            menu_txt_tav = "30min"
+        elif tav_option == 3:
+            menu_txt_tav = "60min"
+        elif tav_option == 4:
+            menu_txt_tav = "3hr"
+        else:
+            menu_txt_tav = "6hr"
+        return (menu_txt_tav)
+
     plotmode = Toplevel()
     plotmode.title("Output control panel")
 
     Label(plotmode, text="Output settings", \
-          font=("Verdana", 12, "bold"), fg="navy").grid(row=1, column=0, columnspan=5)
+          font=("Verdana", 12, "bold"), fg="navy").grid(row=1, column=0, columnspan=4)
 
     Label(plotmode, text=" ", \
           font="Helvetica 11").grid(row=2, column=0, columnspan=5)
 
     Label(plotmode, text="- - - Plume height estimates - - -", \
-          font="Helvetica 11", fg="green").grid(row=4, column=0, columnspan=5)
+          font="Helvetica 11", fg="green").grid(row=4, column=0, columnspan=4)
 
     Label(plotmode, text="- - - Model based estimates (CMER) - - -", \
-          font="Helvetica 11", fg="blue").grid(row=8, column=0, columnspan=5)
+          font="Helvetica 11", fg="blue").grid(row=8, column=0, columnspan=4)
 
     Label(plotmode, text="- - - Overall estimates (FMER) - - -", \
-          font="Helvetica 11", fg="red4").grid(row=12, column=0, columnspan=5)
+          font="Helvetica 11", fg="red4").grid(row=12, column=0, columnspan=4)
 
     Label(plotmode, text="   ", \
           font="Helvetica 11", fg="red4").grid(row=15, column=0)
 
+    Label(plotmode, text="- - - Time Averaged outputs - - -", \
+          font="Helvetica 11", fg="purple").grid(row=16, column=0, columnspan=4)
+
+    Label(plotmode, text="   ", \
+          font="Helvetica 11", fg="red4").grid(row=18, column=0)
+
     Label(plotmode, text="- - - Provide status report - - -", \
-          font="Helvetica 11").grid(row=16, column=0, columnspan=5)
+          font="Helvetica 11").grid(row=19, column=0, columnspan=4)
 
     statusR_o = IntVar()
     statusR_o.set(StatusR_oo)
     Radiobutton(plotmode, text="on", variable=statusR_o, value=1). \
-        grid(row=17, column=3, sticky=E)
+        grid(row=20, column=1, sticky=E)
     Radiobutton(plotmode, text="off", variable=statusR_o, value=0). \
-        grid(row=17, column=4, sticky=W)
+        grid(row=20, column=2, sticky=W)
     Label(plotmode, text=" ", \
-          font="Helvetica 11").grid(row=18, column=0, columnspan=6)
+          font="Helvetica 11").grid(row=21, column=0, columnspan=6)
 
     Label(plotmode, text="N-plot", font=("Verdana", 8, "bold"), fg="green"). \
         grid(row=5, column=0)
@@ -2275,15 +2298,15 @@ def plot_mode():
           font="Helvetica 11").grid(row=5, column=3)
 
     Label(plotmode, text="Plume height plot", font=("Verdana", 8, "bold"), fg="green"). \
-        grid(row=5, column=4)
+        grid(row=5, column=3)
 
     PMvari_PH = StringVar(plotmode)
     PMvari_PH.set(plot_modeset(PM_PHplot))
     wPH = OptionMenu(plotmode, PMvari_PH, "off", "total", "last 12h", "last 6h", "last 1h", "last 15min")
-    wPH.grid(row=6, column=4)
+    wPH.grid(row=6, column=3)
     wPH.config(width=12)
     Label(plotmode, text=" ", \
-          font="Helvetica 11").grid(row=7, column=0, columnspan=6)
+          font="Helvetica 11").grid(row=7, column=0, columnspan=4)
 
     Label(plotmode, text="CMER plot", font=("Verdana", 8, "bold"), fg="blue"). \
         grid(row=9, column=0)
@@ -2294,12 +2317,12 @@ def plot_mode():
     wq.grid(row=10, column=0)
     wq.config(width=12)
     Label(plotmode, text="Total mass erupted", font=("Verdana", 8, "bold"), fg="blue"). \
-        grid(row=9, column=4)
+        grid(row=9, column=3)
 
     PMvari_TME = StringVar(plotmode)
     PMvari_TME.set(plot_modeset(PM_TME))
     wTME = OptionMenu(plotmode, PMvari_TME, "off", "total", "last 12h", "last 6h", "last 1h", "last 15min")
-    wTME.grid(row=10, column=4)
+    wTME.grid(row=10, column=3)
     wTME.config(width=12)
 
     Label(plotmode, text=" ", \
@@ -2313,16 +2336,26 @@ def plot_mode():
     wqF.grid(row=14, column=0)
     wqF.config(width=12)
     Label(plotmode, text="Total mass erupted", font=("Verdana", 8, "bold"), fg="red4"). \
-        grid(row=13, column=4)
+        grid(row=13, column=3)
 
     PMvari_FTME = StringVar(plotmode)
     PMvari_FTME.set(plot_modeset(PM_FTME))
     wFM = OptionMenu(plotmode, PMvari_FTME, "off", "total", "last 12h", "last 6h", "last 1h", "last 15min")
-    wFM.grid(row=14, column=4)
+    wFM.grid(row=14, column=3)
     wFM.config(width=12)
 
+    PMvari_TAV = StringVar(plotmode)
+    PMvari_TAV.set(tavg_output(PM_TAV))
+    w_tav = OptionMenu(plotmode, PMvari_TAV, "off", "15min", "30min", "1hr", "3hr", "6hr")
+    w_tav.grid(row=17, column=1)
+    w_tav.config(width=12)
+
+    NAME_on = IntVar()
+    NAME_on.set(NAME_out_on)
+    Checkbutton(plotmode, text="NAME outputs", variable=NAME_on).grid(row=17, column=2, columnspan=2)
+
     def plotmode_update():
-        global PM_Nplot, PM_PHplot, PM_MERplot, PM_TME, PM_FMERplot, PM_FTME, StatusR_oo
+        global PM_Nplot, PM_PHplot, PM_MERplot, PM_TME, PM_FMERplot, PM_FTME, PM_TAV, StatusR_oo, NAME_out_on
         menu_N = str(PMvari_N.get())
         if menu_N == "off":
             PM_Nplot = 0
@@ -2407,21 +2440,37 @@ def plot_mode():
         else:
             PM_FTME = -1
 
-        StatusR_oo = int(statusR_o.get())
+        menu_TAV = str(PMvari_TAV.get())
+        if menu_TAV == "off":
+            PM_TAV = 0
+        elif menu_TAV == "15min":
+            PM_TAV = 1
+        elif menu_TAV == "30min":
+            PM_TAV = 2
+        elif menu_TAV == "1hr":
+            PM_TAV = 3
+        elif menu_TAV == "3hr":
+            PM_TAV = 4
+        elif menu_TAV == "6hr":
+            PM_TAV = 5
+        else:
+            PM_TAV = -1
 
+        StatusR_oo = int(statusR_o.get())
+        NAME_out_on = int(NAME_on.get())
         save_default_file()
         print("*** settings updated! ***")
         check_configfile()
 
     Button(plotmode, text="Confirm", font=("Verdana", 9), fg="green yellow", bg="forest green", width=18, height=2, \
-           command=plotmode_update).grid(row=20, column=0, columnspan=5)
+           command=plotmode_update).grid(row=22, column=0, columnspan=5)
 
     Label(plotmode, text="   ", font="Helvetica 11", fg="red4").grid(row=21, column=0)
 
     Button(plotmode, text="Show Map", font=("Verdana", 9), fg="blue2", bg="light steel blue", width=18, height=2, \
-           command=showmap).grid(row=22, column=0, columnspan=5)
+           command=showmap).grid(row=24, column=0, columnspan=5)
 
-    Label(plotmode, text="   ", font="Helvetica 11", fg="red4").grid(row=23, column=0)
+    Label(plotmode, text="   ", font="Helvetica 11", fg="red4").grid(row=25, column=0)
 
     plotmode.mainloop()
 

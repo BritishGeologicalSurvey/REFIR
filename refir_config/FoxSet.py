@@ -173,21 +173,21 @@ def icelandvolc_default():
     print("... setting up default Iceland volcanoes!")
     volc_exist=0
     create_volcheader()
-    volc = ["372020",63.6283,-19.625, 1651,1,"Eyjafjallajökull"]
+    volc = ["372020",63.6283,-19.625, 1666,1,"Eyjafjallajökull"]
     volcentry(volc)
-    volc = ["372030",63.633,-19.116, 1400,1,"Katla"]
+    volc = ["372030",63.633,-19.116, 1512,1,"Katla"]
     volcentry(volc)
     volc = ["372070",63.992,-19.667, 1491,1,"Hekla"]
     volcentry(volc)
-    volc = ["373010",64.417,-17.333, 1722,1,"Grímsvötn"]
+    volc = ["373010",64.417,-17.333, 1725,1,"Grímsvötn"]
     volcentry(volc)
-    volc = ["372010",63.417,-20.35, 283,1,"Vestmannaeyjar"]
+    volc = ["372010",63.417,-20.35, 279,1,"Vestmannaeyjar"]
     volcentry(volc)
     volc = ["373030",64.667,-17.5, 2009,1,"Bárðarbunga"]
     volcentry(volc)
-    volc = ["373050",64.65,-16.667, 1933,1,"Kverkfjöll"]
+    volc = ["373050",64.65,-16.667, 1929,1,"Kverkfjöll"]
     volcentry(volc)
-    volc = ["374010",64.00,-16.65, 2110,1,"Öræfajökull"]
+    volc = ["374010",64.00,-16.65, 2119,1,"Öræfajökull"]
     volcentry(volc)
     volc = ["373060",65.05,-16.783, 1516,1,"Askja"]
     volcentry(volc)
