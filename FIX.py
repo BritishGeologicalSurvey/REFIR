@@ -3707,7 +3707,7 @@ def conv_fF():
     Label(conv_f, text="Conventional model settings", font=("Verdana", 11, "bold") \
           , fg="red").grid(row=0, column=0, columnspan=5)
     Label(conv_f, text="    ").grid(row=1, column=2)
-    Label(conv_f, text="5 internal models", font=("Verdana", 9), fg="navy").grid(row=2, column=0, columnspan=2)
+    Label(conv_f, text="6 internal models", font=("Verdana", 9), fg="navy").grid(row=2, column=0, columnspan=2)
     Label(conv_f, text="PlumeRise model", font=("Verdana", 9), fg="navy").grid(row=2, column=3, columnspan=2)
     Label(conv_f, text="ON", fg="lime green").grid(row=4, column=0, columnspan=2)
 
@@ -3735,7 +3735,7 @@ def conv_fF():
     else:
         Checkbutton(conv_f, text="Include PlumeRise", state=DISABLED).grid(row=6, column=3, columnspan=2)
         # global setting
-    Checkbutton(conv_f, text="Include 5 internal", variable=Oo_RMER).grid(row=6, column=0, columnspan=2)
+    Checkbutton(conv_f, text="Include 6 internal", variable=Oo_RMER).grid(row=6, column=0, columnspan=2)
     Wtf_RMER.insert(10, str(wtf_RMER))
     Wtf_wood.insert(10, str(wtf_wood))
 

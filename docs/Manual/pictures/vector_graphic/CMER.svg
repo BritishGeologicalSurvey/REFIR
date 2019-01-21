@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="15cm" height="12cm" viewBox="362 195 293 239" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #9ff0f0" x="364" y="197" width="150" height="76"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="364" y="197" width="150" height="76"/>
+    <text font-size="15.8044" style="fill: #000000;text-anchor:middle;font-family:Arial;font-style:normal;font-weight:normal" x="439" y="229.544">
+      <tspan x="439" y="229.544">5 internal models</tspan>
+      <tspan x="439" y="249.3">"RMER"</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x1="439" y1="273" x2="439" y2="337.5"/>
+    <polygon style="fill: #000000" points="434,337.5 439,347.5 444,337.5 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" points="434,337.5 439,347.5 444,337.5 "/>
+  </g>
+  <g>
+    <rect style="fill: #f7b2b2" x="532" y="213" width="122" height="45"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="532" y="213" width="122" height="45"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="593" y="239.4">
+      <tspan x="593" y="239.4">Woodhouse</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x1="593" y1="258" x2="593" y2="338.5"/>
+    <polygon style="fill: #000000" points="588,338.5 593,348.5 598,338.5 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" points="588,338.5 593,348.5 598,338.5 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffff00" x="420" y="353" width="193" height="80"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="420" y="353" width="193" height="80"/>
+    <text font-size="15.8044" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="516.5" y="387.894">
+      <tspan x="516.5" y="387.894">Conventional models</tspan>
+      <tspan x="516.5" y="407.65">"CMER"</tspan>
+    </text>
+  </g>
+  <g>
+    <ellipse style="fill: #ffffff" cx="439.5" cy="310.7" rx="12" ry="10.5"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="439.5" cy="310.7" rx="12" ry="10.5"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="431.015" y1="303.275" x2="447.985" y2="318.125"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="431.015" y1="318.125" x2="447.985" y2="303.275"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ffffff" cx="594" cy="309.9" rx="12" ry="10.5"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="594" cy="309.9" rx="12" ry="10.5"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="585.515" y1="302.475" x2="602.485" y2="317.325"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="585.515" y1="317.325" x2="602.485" y2="302.475"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="424" y="297">
+    <tspan x="424" y="297">wt fac.</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="577" y="295.9">
+    <tspan x="577" y="295.9">wt fac.</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="439" y="235">
+    <tspan x="439" y="235"></tspan>
+  </text>
+</svg>
