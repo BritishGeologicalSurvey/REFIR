@@ -394,17 +394,17 @@ PLH_avg_file.close()
 FMER_avg_file = open(out_txt + "_tavg_FMER.txt", "a",encoding="utf-8", errors="surrogateescape")
 FMER_avg_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'FMER min'+"\t"+'FMER avg'+"\t"+'FMER max'+"\n")
 FMER_avg_file.close()
-NAME_file_avg = open(out_txt + "_avg_NAME_sources.txt", "a",encoding="utf-8", errors="surrogateescape")
+NAME_file_avg = open(out_txt + "_NAME_sources_avg.txt", "a",encoding="utf-8", errors="surrogateescape")
 NAME_file_writer = csv.writer(NAME_file_avg,delimiter = ',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
 NAME_file_writer.writerow(['Sources:'])
 NAME_file_writer.writerow(['Name','Z','dZ','Source Strength','Start Time','Stop Time'])
 NAME_file_avg.close()
-NAME_file_max = open(out_txt + "_max_NAME_sources.txt", "a",encoding="utf-8", errors="surrogateescape")
+NAME_file_max = open(out_txt + "_NAME_sources_max.txt", "a",encoding="utf-8", errors="surrogateescape")
 NAME_file_writer = csv.writer(NAME_file_max,delimiter = ',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
 NAME_file_writer.writerow(['Sources:'])
 NAME_file_writer.writerow(['Name','Z','dZ','Source Strength','Start Time','Stop Time'])
 NAME_file_max.close()
-NAME_file_min = open(out_txt + "_min_NAME_sources.txt", "a",encoding="utf-8", errors="surrogateescape")
+NAME_file_min = open(out_txt + "_NAME_sources_min.txt", "a",encoding="utf-8", errors="surrogateescape")
 NAME_file_writer = csv.writer(NAME_file_min,delimiter = ',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
 NAME_file_writer.writerow(['Sources:'])
 NAME_file_writer.writerow(['Name','Z','dZ','Source Strength','Start Time','Stop Time'])
@@ -3718,7 +3718,7 @@ while 1:
                         Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
                         Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
                         Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(minutes=15)).strftime("%d/%m/%Y %H:%M")
+                        Start_Time = (TimeNOW-datetime.timedelta(minutes=30)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
@@ -3753,7 +3753,7 @@ while 1:
                         Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
                         Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
                         Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(minutes=15)).strftime("%d/%m/%Y %H:%M")
+                        Start_Time = (TimeNOW-datetime.timedelta(minutes=60)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
@@ -3788,7 +3788,7 @@ while 1:
                         Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
                         Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
                         Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(minutes=15)).strftime("%d/%m/%Y %H:%M")
+                        Start_Time = (TimeNOW-datetime.timedelta(minutes=180)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
@@ -3823,7 +3823,7 @@ while 1:
                         Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
                         Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
                         Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(minutes=15)).strftime("%d/%m/%Y %H:%M")
+                        Start_Time = (TimeNOW-datetime.timedelta(minutes=360)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +

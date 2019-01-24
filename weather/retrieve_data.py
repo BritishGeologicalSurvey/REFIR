@@ -1,4 +1,4 @@
-"""
+e"""
 *** retrieve_data v1.0 ***
 - component of the weather package included in REFIR 19.0 -
 - Script to weather data from GFS and ERA-Interim datasets -
