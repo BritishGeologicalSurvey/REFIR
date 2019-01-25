@@ -54,7 +54,7 @@ import csv
 #import matplotlib.image as image
 
 """ settings START """
-global PI_THRESH
+global PI_THRESH, TimeOLD, n_corr
 
 scenario = "      +++ EXERCISE! +++ " # change into " " in real eruption
 FOXIversion ="18.1c"
@@ -118,6 +118,9 @@ lead_Time=0
 run=0
 steptime=5 #minutes between each loop
 passwort ="*****"
+
+dt_sec = 0
+timin_sec_cum = 0
 
 woodhlink = "http://www.maths.bris.ac.uk/~mw9428/PlumeRiseQH/FutureVolcSys/PlumeRise_REFIR.txt"
 timebase = 30
@@ -816,14 +819,19 @@ while 1:
             refir_end()
         lead_Time = 0
 
-
     if run_type == 1:
+        n_corr = 1
         if run == 1:
             timin = lead_Time
+            TimeOLD = TimeNOW
         else:
             timin = int((TimeNOW-time_tveir).total_seconds()/60)
     else:
+        n_corr = 0
         timin = int((TimeNOW-eruption_start).total_seconds()/60)
+        if run == 1:
+            TimeOLD = eruption_start
+    dt_sec = (TimeNOW - TimeOLD).total_seconds()
 
     fndb= os.path.join(dir1+'/refir_config','volc_database.ini')
     volcLAT, volcLON=\
@@ -3549,6 +3557,7 @@ while 1:
     cur_MERmtg,cur_MERdb,cur_RMER,cur_MERavg,cur_MERwood_min,cur_MERwood_avg,\
     cur_MERwood_max, cur_N,cur_QmaxNowiHmin, cur_Qlower, cur_PlumeRadiusMin, cur_PlumeRadiusMax
             global Qf_absmin,Qf_absmax,a_man,Qfmer_min,Qfmer_max,Qfmer
+            global dt_sec, timin_sec_cum
             global hbe_min_sum, hbe_sum, hbe_max_sum, Qfmer_min_sum, Qfmer_sum, Qfmer_max_sum, ndata, nsources, NAME_out_on
             cur_N = n
             cur_hbe = int(hbe) # current b.e. plume height
@@ -3644,7 +3653,7 @@ while 1:
 # Time averaged variables
             if NAME_out_on == 1 and PM_TAV == 0:
                 NAME_out_on = 0 #NAME source file cannot be written if the time averaging of the output is not activated
-
+            timin_sec_cum = timin_sec_cum + dt_sec
             if PM_TAV != 0:
                 FILE13 = open(out_txt + "_tavg_PLH.txt", "a",encoding="utf-8", errors="surrogateescape")
                 FILE14 = open(out_txt + "_tavg_FMER.txt", "a", encoding="utf-8", errors="surrogateescape")
@@ -3656,20 +3665,20 @@ while 1:
                     FILE17 = open(out_txt + "_NAME_sources_min.txt", "a", encoding="utf-8", errors="surrogateescape")
                     FILE17_writer = csv.writer(FILE17, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 ndata = ndata + 1
-                hbe_min_sum = hbe_min_sum + hbe_min * 300
-                hbe_sum = hbe_sum + hbe * 300
-                hbe_max_sum = hbe_max_sum + hbe_max * 300
-                Qfmer_min_sum = Qfmer_min_sum + Qfmer_min * 300
-                Qfmer_sum = Qfmer_sum + Qfmer * 300
-                Qfmer_max_sum = Qfmer_max_sum + Qfmer_max * 300
+                hbe_min_sum = hbe_min_sum + hbe_min * dt_sec
+                hbe_sum = hbe_sum + hbe * dt_sec
+                hbe_max_sum = hbe_max_sum + hbe_max * dt_sec
+                Qfmer_min_sum = Qfmer_min_sum + Qfmer_min * dt_sec
+                Qfmer_sum = Qfmer_sum + Qfmer * dt_sec
+                Qfmer_max_sum = Qfmer_max_sum + Qfmer_max * dt_sec
                 if PM_TAV == 1:
-                    if (timin/15).is_integer():
-                        hbe_min_tavg = hbe_min_sum / (ndata * 300)
-                        hbe_tavg = hbe_sum / (ndata * 300)
-                        hbe_max_tavg = hbe_max_sum / (ndata * 300)
-                        Qfmer_min_tavg = Qfmer_min_sum / (ndata * 300)
-                        Qfmer_tavg = Qfmer_sum / (ndata * 300)
-                        Qfmer_max_tavg = Qfmer_max_sum / (ndata * 300)
+                    if (ndata/(3+n_corr)).is_integer():
+                        hbe_min_tavg = hbe_min_sum / timin_sec_cum
+                        hbe_tavg = hbe_sum / timin_sec_cum
+                        hbe_max_tavg = hbe_max_sum / timin_sec_cum
+                        Qfmer_min_tavg = Qfmer_min_sum / timin_sec_cum
+                        Qfmer_tavg = Qfmer_sum / timin_sec_cum
+                        Qfmer_max_tavg = Qfmer_max_sum / timin_sec_cum
                         nsources = nsources + 1
                         nsource_str = 'Source ' + str(nsources)
                         Z_min_tavg = vent_h + hbe_min_tavg / 2
@@ -3697,15 +3706,15 @@ while 1:
                         Qfmer_min_sum = 0
                         Qfmer_sum = 0
                         Qfmer_max_sum = 0
-                        ndata = 0
+                        timin_sec_cum = 0
                 elif PM_TAV == 2:
-                    if (timin/30).is_integer():
-                        hbe_min_tavg = hbe_min_sum / (ndata * 300)
-                        hbe_tavg = hbe_sum / (ndata * 300)
-                        hbe_max_tavg = hbe_max_sum / (ndata * 300)
-                        Qfmer_min_tavg = Qfmer_min_sum / (ndata * 300)
-                        Qfmer_tavg = Qfmer_sum / (ndata * 300)
-                        Qfmer_max_tavg = Qfmer_max_sum / (ndata * 300)
+                    if (ndata/(6+n_corr)).is_integer():
+                        hbe_min_tavg = hbe_min_sum / timin_sec_cum
+                        hbe_tavg = hbe_sum / timin_sec_cum
+                        hbe_max_tavg = hbe_max_sum / timin_sec_cum
+                        Qfmer_min_tavg = Qfmer_min_sum / timin_sec_cum
+                        Qfmer_tavg = Qfmer_sum / timin_sec_cum
+                        Qfmer_max_tavg = Qfmer_max_sum / timin_sec_cum
                         nsources = nsources + 1
                         nsource_str = 'Source ' + str(nsources)
                         Z_min_tavg = vent_h + hbe_min_tavg / 2
@@ -3732,15 +3741,15 @@ while 1:
                         Qfmer_min_sum = 0
                         Qfmer_sum = 0
                         Qfmer_max_sum = 0
-                        ndata = 0
+                        timin_sec_cum = 0
                 elif PM_TAV == 3:
-                    if (timin/60).is_integer():
-                        hbe_min_tavg = hbe_min_sum / (ndata * 300)
-                        hbe_tavg = hbe_sum / (ndata * 300)
-                        hbe_max_tavg = hbe_max_sum / (ndata * 300)
-                        Qfmer_min_tavg = Qfmer_min_sum / (ndata * 300)
-                        Qfmer_tavg = Qfmer_sum / (ndata * 300)
-                        Qfmer_max_tavg = Qfmer_max_sum / (ndata * 300)
+                    if (ndata/(12+n_corr)).is_integer():
+                        hbe_min_tavg = hbe_min_sum / timin_sec_cum
+                        hbe_tavg = hbe_sum / timin_sec_cum
+                        hbe_max_tavg = hbe_max_sum / timin_sec_cum
+                        Qfmer_min_tavg = Qfmer_min_sum / timin_sec_cum
+                        Qfmer_tavg = Qfmer_sum / timin_sec_cum
+                        Qfmer_max_tavg = Qfmer_max_sum / timin_sec_cum
                         nsources = nsources + 1
                         nsource_str = 'Source ' + str(nsources)
                         Z_min_tavg = vent_h + hbe_min_tavg / 2
@@ -3767,15 +3776,15 @@ while 1:
                         Qfmer_min_sum = 0
                         Qfmer_sum = 0
                         Qfmer_max_sum = 0
-                        ndata = 0
+                        timin_sec_cum = 0
                 elif PM_TAV == 4:
-                    if (timin/180).is_integer():
-                        hbe_min_tavg = hbe_min_sum / (ndata * 300)
-                        hbe_tavg = hbe_sum / (ndata * 300)
-                        hbe_max_tavg = hbe_max_sum / (ndata * 300)
-                        Qfmer_min_tavg = Qfmer_min_sum / (ndata * 300)
-                        Qfmer_tavg = Qfmer_sum / (ndata * 300)
-                        Qfmer_max_tavg = Qfmer_max_sum / (ndata * 300)
+                    if (ndata/(36+n_corr)).is_integer():
+                        hbe_min_tavg = hbe_min_sum / timin_sec_cum
+                        hbe_tavg = hbe_sum / timin_sec_cum
+                        hbe_max_tavg = hbe_max_sum / timin_sec_cum
+                        Qfmer_min_tavg = Qfmer_min_sum / timin_sec_cum
+                        Qfmer_tavg = Qfmer_sum / timin_sec_cum
+                        Qfmer_max_tavg = Qfmer_max_sum / timin_sec_cum
                         nsources = nsources + 1
                         nsource_str = 'Source ' + str(nsources)
                         Z_min_tavg = vent_h + hbe_min_tavg / 2
@@ -3802,15 +3811,15 @@ while 1:
                         Qfmer_min_sum = 0
                         Qfmer_sum = 0
                         Qfmer_max_sum = 0
-                        ndata = 0
+                        timin_sec_cum = 0
                 elif PM_TAV == 5:
-                    if (timin/360).is_integer():
-                        hbe_min_tavg = hbe_min_sum / (ndata * 300)
-                        hbe_tavg = hbe_sum / (ndata * 300)
-                        hbe_max_tavg = hbe_max_sum / (ndata * 300)
-                        Qfmer_min_tavg = Qfmer_min_sum / (ndata * 300)
-                        Qfmer_tavg = Qfmer_sum / (ndata * 300)
-                        Qfmer_max_tavg = Qfmer_max_sum / (ndata * 300)
+                    if (ndata/(72+n_corr)).is_integer():
+                        hbe_min_tavg = hbe_min_sum / timin_sec_cum
+                        hbe_tavg = hbe_sum / timin_sec_cum
+                        hbe_max_tavg = hbe_max_sum / timin_sec_cum
+                        Qfmer_min_tavg = Qfmer_min_sum / timin_sec_cum
+                        Qfmer_tavg = Qfmer_sum / timin_sec_cum
+                        Qfmer_max_tavg = Qfmer_max_sum / timin_sec_cum
                         nsources = nsources + 1
                         nsource_str = 'Source ' + str(nsources)
                         Z_min_tavg = vent_h + hbe_min_tavg / 2
@@ -3837,7 +3846,7 @@ while 1:
                         Qfmer_min_sum = 0
                         Qfmer_sum = 0
                         Qfmer_max_sum = 0
-                        ndata = 0
+                        timin_sec_cum = 0
                 else:
                     FILE13.close()
                     FILE14.close()
@@ -5690,6 +5699,7 @@ while 1:
     logger9.manager.loggerDict.clear()
     logger10.manager.loggerDict.clear()
 
+    TimeOLD = TimeNOW
     if run_type == 1:
         waitingProc()
     else:
