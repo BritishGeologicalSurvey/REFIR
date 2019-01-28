@@ -820,11 +820,12 @@ while 1:
         lead_Time = 0
 
     if run_type == 1:
-        n_corr = 1
         if run == 1:
+            n_corr = 1
             timin = lead_Time
             TimeOLD = TimeNOW
         else:
+            n_corr = 0
             timin = int((TimeNOW-time_tveir).total_seconds()/60)
     else:
         n_corr = 0
