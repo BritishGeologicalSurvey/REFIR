@@ -54,7 +54,7 @@ import csv
 #import matplotlib.image as image
 
 """ settings START """
-global PI_THRESH, TimeOLD, n_corr
+global PI_THRESH, TimeOLD
 
 scenario = "      +++ EXERCISE! +++ " # change into " " in real eruption
 FOXIversion ="18.1c"
@@ -821,14 +821,10 @@ while 1:
 
     if run_type == 1:
         if run == 1:
-            n_corr = 1
-            timin = lead_Time
+#            timin = lead_Time
             TimeOLD = TimeNOW
-        else:
-            n_corr = 0
-            timin = int((TimeNOW-time_tveir).total_seconds()/60)
+        timin = int((TimeNOW-time_tveir).total_seconds()/60)
     else:
-        n_corr = 0
         timin = int((TimeNOW-eruption_start).total_seconds()/60)
         if run == 1:
             TimeOLD = eruption_start
@@ -3673,7 +3669,7 @@ while 1:
                 Qfmer_sum = Qfmer_sum + Qfmer * dt_sec
                 Qfmer_max_sum = Qfmer_max_sum + Qfmer_max * dt_sec
                 if PM_TAV == 1:
-                    if (ndata/(3+n_corr)).is_integer():
+                    if run > 1 and timin_sec_cum % 900 < 299:
                         hbe_min_tavg = hbe_min_sum / timin_sec_cum
                         hbe_tavg = hbe_sum / timin_sec_cum
                         hbe_max_tavg = hbe_max_sum / timin_sec_cum
@@ -3692,7 +3688,7 @@ while 1:
                         Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
                         Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
                         Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(minutes=15)).strftime("%d/%m/%Y %H:%M")
+                        Start_Time = (TimeNOW-datetime.timedelta(seconds=timin_sec_cum)).strftime("%d/%m/%Y %H:%M")
 
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
@@ -3709,7 +3705,7 @@ while 1:
                         Qfmer_max_sum = 0
                         timin_sec_cum = 0
                 elif PM_TAV == 2:
-                    if (ndata/(6+n_corr)).is_integer():
+                    if run > 1 and timin_sec_cum % 1800 < 299:
                         hbe_min_tavg = hbe_min_sum / timin_sec_cum
                         hbe_tavg = hbe_sum / timin_sec_cum
                         hbe_max_tavg = hbe_max_sum / timin_sec_cum
@@ -3728,7 +3724,7 @@ while 1:
                         Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
                         Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
                         Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(minutes=30)).strftime("%d/%m/%Y %H:%M")
+                        Start_Time = (TimeNOW-datetime.timedelta(seconds=timin_sec_cum)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
@@ -3744,7 +3740,7 @@ while 1:
                         Qfmer_max_sum = 0
                         timin_sec_cum = 0
                 elif PM_TAV == 3:
-                    if (ndata/(12+n_corr)).is_integer():
+                    if run > 1 and timin_sec_cum % 3600 < 299:
                         hbe_min_tavg = hbe_min_sum / timin_sec_cum
                         hbe_tavg = hbe_sum / timin_sec_cum
                         hbe_max_tavg = hbe_max_sum / timin_sec_cum
@@ -3763,7 +3759,7 @@ while 1:
                         Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
                         Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
                         Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(minutes=60)).strftime("%d/%m/%Y %H:%M")
+                        Start_Time = (TimeNOW-datetime.timedelta(seconds=timin_sec_cum)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
@@ -3779,7 +3775,7 @@ while 1:
                         Qfmer_max_sum = 0
                         timin_sec_cum = 0
                 elif PM_TAV == 4:
-                    if (ndata/(36+n_corr)).is_integer():
+                    if run > 1 and timin_sec_cum % 10800 < 299:
                         hbe_min_tavg = hbe_min_sum / timin_sec_cum
                         hbe_tavg = hbe_sum / timin_sec_cum
                         hbe_max_tavg = hbe_max_sum / timin_sec_cum
@@ -3798,7 +3794,7 @@ while 1:
                         Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
                         Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
                         Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(minutes=180)).strftime("%d/%m/%Y %H:%M")
+                        Start_Time = (TimeNOW-datetime.timedelta(seconds=timin_sec_cum)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
@@ -3814,7 +3810,7 @@ while 1:
                         Qfmer_max_sum = 0
                         timin_sec_cum = 0
                 elif PM_TAV == 5:
-                    if (ndata/(72+n_corr)).is_integer():
+                    if run > 1 and timin_sec_cum % 21600 < 299:
                         hbe_min_tavg = hbe_min_sum / timin_sec_cum
                         hbe_tavg = hbe_sum / timin_sec_cum
                         hbe_max_tavg = hbe_max_sum / timin_sec_cum
@@ -3833,7 +3829,7 @@ while 1:
                         Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
                         Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
                         Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(minutes=360)).strftime("%d/%m/%Y %H:%M")
+                        Start_Time = (TimeNOW-datetime.timedelta(seconds=timin_sec_cum)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
@@ -4584,7 +4580,7 @@ while 1:
             logger7.info(" Log files recorded. \n ")
             logger7.info("***** step 7 successful *****")
             
-            tiPH,bePH = np.loadtxt(out_txt+"_mer_LOG.txt", usecols=(0,2), unpack=True, delimiter='\t')
+            tiPH,bePH,minPH,maxPH = np.loadtxt(out_txt+"_mer_LOG.txt", usecols=(0,2,95,96), unpack=True, delimiter='\t')
             
             
             
@@ -4599,8 +4595,7 @@ while 1:
                 tiPH_end = tiPH
 
                 
-            def plot_plh(ti_PH,be_PH,tb):
-
+            def plot_plh(ti_PH,be_PH,max_PH,min_PH,tb):
                 try:
                     mintim=min(ti_PH)
                     maxtim=max(ti_PH)
@@ -4611,13 +4606,14 @@ while 1:
                     maxtim =ti_PH
                     minPH=0                
                     maxPH=be_PH
-                
+
                 print(">>>> phPlot maxtim: "+str(maxtim))
                 print(">>>> phPlot maxPH: "+str(maxPH))
-                fig=plt.plot(ti_PH,be_PH)
-                fig = figure.Figure()
-                
+                plt.plot(ti_PH,be_PH,color="blue")
+                plt.plot(ti_PH,max_PH,color="red")
+                plt.plot(ti_PH,min_PH,color="green")
 
+                fig = figure.Figure()
 
                 ax = plt.subplot(111)
                 plt.text(0.5*maxtim, 0.5*maxPH, 'REFIR',fontsize=80, color='gray',ha='center', va='center', alpha=0.09)
@@ -4626,13 +4622,15 @@ while 1:
                 
                 #im = image.imread(path_logo)
                 #myaximage = ax.imshow(im, aspect='auto', extent=(0,maxtim,0,maxPH), alpha=0.05, zorder=-1)
-                plt.legend(['current t_base: '+ tb], loc='upper left')
+#                plt.legend(['current t_base: '+ tb], loc='upper left')
+                plt.legend(['Average', 'Maximum', 'Minimum'], loc='lower right',
+                           ncol=1, fancybox=True, shadow=True,
+                           title="current timebase: " + tibalabel)
                 plt.xlabel('time since eruption start [min]')
                 plt.ylabel('height a.s.l. [m]')
-                plt.title('Plume Height')
+                plt.title('Plume Height a.s.l. [m]')
                 plt.ylim([0,np.amax(be_PH)+2000])
                 #plt.xticks
-
 
                 if PM_PHplot == 1:
                     plt.xlim(0)
@@ -4660,7 +4658,7 @@ while 1:
             if PM_PHplot == 0:
                 logger9.info("plume height plot: switched OFF!")
             else:
-                plot_plh(tiPH,bePH+vent_h,tibalabel)
+                plot_plh(tiPH,bePH+vent_h,maxPH+vent_h,minPH+vent_h,tibalabel)
             
             tiPH,MERWE,MERww,MERsp,MERma,MERmtg,MERdb,RMER,MIN,MAX,MERavg,MERwood,MERwood0d = \
             np.loadtxt(out_txt+"_mer_LOG.txt", usecols=(0,5,13,14,15,16,17,18,3,7,19,21,183), unpack=True, delimiter='\t')
