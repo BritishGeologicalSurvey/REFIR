@@ -2488,7 +2488,6 @@ def sourcecontrol():
     global ISX1m
     global ISX2m
     global OBSon
-
     global Cband3
     global Cband4
     global Cband5

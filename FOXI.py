@@ -3242,7 +3242,6 @@ while 1:
         PlumeRadiusMax = float(centlcorr(currentAvgPlH,Min_DiaOBS,Max_DiaOBS)[1]) 
         Min_DiaOBSold = float (2* PlumeRadiusMin)
         Max_DiaOBSold = float (2*PlumeRadiusMax)
-        
         logger5.debug("*!! wtf Deg Bona is: " + str(wtf_deg))
         logger5.debug(str(Min_DiaOBSold))
         logger5.debug(str(Max_DiaOBSold))
