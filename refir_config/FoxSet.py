@@ -900,8 +900,6 @@ def generate_volc_database():
     dist_attribution()
     print("\n*** Setup operation successful! ***")
 
-
-
 while za != 1:
     init_setup()
 
