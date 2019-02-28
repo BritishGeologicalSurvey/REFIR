@@ -3381,6 +3381,7 @@ while 1:
             merdb = stack_mer[4][1]
             merwd0d = stack_mer[5][1]
             tempstack = [stack_mer[1][0], stack_mer[2][0], stack_mer[3][0], stack_mer[4][0], stack_mer[5][0]]
+            # Initializes model switches
             if tempstack != [0.0, 0.0, 0.0, 0.0, 0.0]:
                 a = np.array(tempstack)
                 mermin_hmin = np.min(a.ravel()[np.flatnonzero(a)])
@@ -3388,11 +3389,46 @@ while 1:
                 mermin_hmin = 0
                 logger6.info("NO DATA!")
 
-            mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0])
+            def model_switches():
+                if wtf_wil == 0:
+                    wil_on = 0
+                else:
+                    wil_on = 1
+
+                if wtf_spa == 0:
+                    spa_on = 0
+                else:
+                    spa_on = 1
+
+                if wtf_mas == 0:
+                    mas_on = 0
+                else:
+                    mas_on = 1
+
+                if wtf_deg == 0:
+                    deg_on = 0
+                else:
+                    deg_on = 1
+
+                if wtf_wood0d == 0:
+                    wood0d_on = 0
+                else:
+                    wood0d_on = 1
+
+                if wtf_mtg == 0:
+                    mtg_on = 0
+                else:
+                    mtg_on = 1
+                return wil_on, spa_on, mas_on, deg_on, wood0d_on, mtg_on
+
+            [wil_on,spa_on,mas_on,deg_on,wood0d_on,mtg_on] = model_switches()
+
+            #mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],stack_mer[4][0],stack_mer[5][0])
+            mermax_hmin = max(wil_on*stack_mer[1][0], spa_on*stack_mer[2][0], mas_on*stack_mer[3][0], deg_on*stack_mer[4][0], wood0d_on*stack_mer[5][0])
             
-            QmaxNowiHmin = min(max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0]),min(stack_mer[1][1],stack_mer[2][1],stack_mer[3][1])) 
-            
-            
+            #QmaxNowiHmin = min(max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0]),min(stack_mer[1][1],stack_mer[2][1],stack_mer[3][1]))
+            QmaxNowiHmin = min(max(wil_on*stack_mer[1][0],spa_on*stack_mer[2][0],mas_on*stack_mer[3][0]),min(wil_on*stack_mer[1][1],spa_on*stack_mer[2][1],mas_on*stack_mer[3][1]))
+
             merwe = (wtf_wil*stack_mer[1][1]+wtf_spa*stack_mer[2][1]+\
             +wtf_mas*stack_mer[3][1]+wtf_deg*stack_mer[4][1]+wtf_wood0d*stack_mer[5][1]+wtf_mtg*stack_mer[0])/(wtf_wil+\
             wtf_spa+wtf_mas+wtf_mtg+wtf_deg+wtf_wood0d)
@@ -3404,9 +3440,11 @@ while 1:
             +wtf_mas*stack_mer[3][2]+wtf_deg*stack_mer[4][2]+wtf_wood0d*stack_mer[5][2]+wtf_mtg*stack_mer[0])/(wtf_wil+\
             wtf_spa+wtf_mas+wtf_mtg+wtf_deg+wtf_wood0d)
             
-            mermax_hmax =max(stack_mer[0],stack_mer[1][2],stack_mer[2][2],stack_mer[3][2],stack_mer[4][2],stack_mer[5][2])
+            mermax_hmax =max(mtg_on*stack_mer[0],wil_on*stack_mer[1][2],spa_on*stack_mer[2][2],mas_on*stack_mer[3][2],deg_on*stack_mer[4][2],wood0d_on*stack_mer[5][2])
             
             Rmer = (QmaxNowiHmin + mermaxplus + merwe)/3.0
+            if QmaxNowiHmin == 0: #Added
+                Rmer = (mermaxplus + merwe) / 2.0
             logger6.info("RMER >>> "+str(Rmer))
             
             mer_stat= [0,0,0,0,0,0,0,0,0,0,0]
@@ -3415,12 +3453,15 @@ while 1:
             mer_stat[2] = merwe
             mer_stat[3] = mermaxplus
             mer_stat[4] = mermax_hmax
-            mer_stat[5] = mermtg
-            mer_stat[6] = merdb
+            #mer_stat[5] = mermtg
+            mer_stat[5] = mtg_on*mermtg
+            #mer_stat[6] = merdb
+            mer_stat[6] = deg_on*merdb
             mer_stat[7] = Rmer
             mer_stat[8] = meravg
             mer_stat[9] = QmaxNowiHmin
-            mer_stat[10]= merwd0d
+            #mer_stat[10]= merwd0d
+            mer_stat[10] = wood0d_on*merwd0d
             return(mer_stat)
     
         
@@ -3436,10 +3477,59 @@ while 1:
             else:
                 mermin_hmin = 0
                 logger6.info("NO DATA!")
+            # Initializes model switches
+            wil_on = 1
+            spa_on = 1
+            mas_on = 1
+            deg_on = 1
+            wood0d_on = 1
+            mtg_on = 1
+            wood_on = 1
+            def model_switches():
+                if wtf_wil == 0:
+                    wil_on = 0
+                else:
+                    wil_on = 1
 
-            mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],\
-            stack_mer[4][0],stack_mer[5][0],float(Mwood[0]))
-            QmaxNowiHmin = min(max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0]),min(stack_mer[1][1],stack_mer[2][1],stack_mer[3][1])) 
+                if wtf_spa == 0:
+                    spa_on = 0
+                else:
+                    spa_on = 1
+
+                if wtf_mas == 0:
+                    mas_on = 0
+                else:
+                    mas_on = 1
+
+                if wtf_deg == 0:
+                    deg_on = 0
+                else:
+                    deg_on = 1
+
+                if wtf_wood0d == 0:
+                    wood0d_on = 0
+                else:
+                    wood0d_on = 1
+
+                if wtf_mtg == 0:
+                    mtg_on = 0
+                else:
+                    mtg_on = 1
+
+                if wtf_wood == 0:
+                    wood_on = 0
+                else:
+                    wood_on = 1
+                return wil_on, spa_on, mas_on, deg_on, wood0d_on, mtg_on, wood_on
+
+            [wil_on, spa_on, mas_on, deg_on, wood0d_on, mtg_on, wood_on] = model_switches()
+
+            #mermax_hmin = max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0],\
+            #stack_mer[4][0],stack_mer[5][0],float(Mwood[0]))
+            mermax_hmin = max(wil_on*stack_mer[1][0],spa_on*stack_mer[2][0],mas_on*stack_mer[3][0],\
+            deg_on*stack_mer[4][0],wood0d_on*stack_mer[5][0],wood_on*float(Mwood[0]))
+            #QmaxNowiHmin = min(max(stack_mer[1][0],stack_mer[2][0],stack_mer[3][0]),min(stack_mer[1][1],stack_mer[2][1],stack_mer[3][1]))
+            QmaxNowiHmin = min(max(wil_on*stack_mer[1][0],spa_on*stack_mer[2][0],mas_on*stack_mer[3][0]),min(wil_on*stack_mer[1][1],spa_on*stack_mer[2][1],mas_on*stack_mer[3][1]))
             merwe1 = (wtf_wil*stack_mer[1][1]+wtf_spa*stack_mer[2][1]+\
             +wtf_mas*stack_mer[3][1]+wtf_deg*stack_mer[4][1]+wtf_wood0d*stack_mer[5][1]+wtf_mtg*stack_mer[0])/(wtf_wil+\
             wtf_spa+wtf_mas+wtf_mtg+wtf_deg+wtf_wood0d)
@@ -3455,8 +3545,8 @@ while 1:
             
             mermaxplus = (wtf_5MER*mermaxplus1 + wtf_wood*float(Mwood[2]))/(wtf_5MER+wtf_wood)
             
-            mermax_hmax =max(stack_mer[0],stack_mer[1][2],stack_mer[2][2],stack_mer[3][2],\
-            stack_mer[4][2],stack_mer[5][2],float(Mwood[2]))
+            mermax_hmax =max(mtg_on*stack_mer[0],wil_on*stack_mer[1][2],spa_on*stack_mer[2][2],mas_on*stack_mer[3][2], \
+                             deg_on *stack_mer[4][2],wood0d_on*stack_mer[5][2],wood_on*float(Mwood[2]))
             
             Rmer = (QmaxNowiHmin + mermaxplus + merwe)/3.0 #Note that this "Rmer" is now in fact Cmer
             logger6.info("CMER >>> "+str(Rmer))
@@ -3467,12 +3557,15 @@ while 1:
             mer_stat[2] = merwe
             mer_stat[3] = mermaxplus
             mer_stat[4] = mermax_hmax
-            mer_stat[5] = mermtg
-            mer_stat[6] = merdb
+            #mer_stat[5] = mermtg
+            mer_stat[5] = mtg_on*mermtg
+            #mer_stat[6] = merdb
+            mer_stat[6] = deg_on*merdb
             mer_stat[7] = Rmer
             mer_stat[8] = meravg
             mer_stat[9] = QmaxNowiHmin
-            mer_stat[10]= merwd0d
+            #mer_stat[10]= merwd0d
+            mer_stat[10] = wood0d_on*merwd0d
             return(mer_stat)  
     
     
@@ -3675,27 +3768,28 @@ while 1:
                         Qfmer_min_tavg = Qfmer_min_sum / timin_sec_cum
                         Qfmer_tavg = Qfmer_sum / timin_sec_cum
                         Qfmer_max_tavg = Qfmer_max_sum / timin_sec_cum
-                        nsources = nsources + 1
-                        nsource_str = 'Source ' + str(nsources)
-                        Z_min_tavg = vent_h + hbe_min_tavg / 2
-                        Z_tavg = vent_h + hbe_tavg / 2
-                        Z_max_tavg = vent_h + hbe_max_tavg / 2
-                        Qfmer_NAME_min_tavg = Qfmer_min_tavg * 1000 * 3600
-                        Qfmer_NAME_min_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_min_tavg) + ' g/hr'
-                        Qfmer_NAME_tavg = Qfmer_tavg * 1000 * 3600
-                        Qfmer_NAME_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_tavg) + ' g/hr'
-                        Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
-                        Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
-                        Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(seconds=timin_sec_cum)).strftime("%d/%m/%Y %H:%M")
-
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
                                      "\t" + str(Qfmer_max_tavg) + "\n")
-                        FILE15_writer.writerow([nsource_str,Z_tavg,hbe_tavg,Qfmer_NAME_tavg_str,Start_Time,Stop_Time])
-                        FILE16_writer.writerow([nsource_str,Z_max_tavg,hbe_max_tavg,Qfmer_NAME_max_tavg_str,Start_Time,Stop_Time])
-                        FILE17_writer.writerow([nsource_str,Z_min_tavg,hbe_min_tavg,Qfmer_NAME_min_tavg_str,Start_Time,Stop_Time])
+                        if NAME_out_on == 1:
+                            nsources = nsources + 1
+                            nsource_str = 'Source ' + str(nsources)
+                            Z_min_tavg = vent_h + hbe_min_tavg / 2
+                            Z_tavg = vent_h + hbe_tavg / 2
+                            Z_max_tavg = vent_h + hbe_max_tavg / 2
+                            Qfmer_NAME_min_tavg = Qfmer_min_tavg * 1000 * 3600
+                            Qfmer_NAME_min_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_min_tavg) + ' g/hr'
+                            Qfmer_NAME_tavg = Qfmer_tavg * 1000 * 3600
+                            Qfmer_NAME_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_tavg) + ' g/hr'
+                            Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
+                            Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
+                            Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
+                            Start_Time = (TimeNOW - datetime.timedelta(seconds=timin_sec_cum)).strftime(
+                                "%d/%m/%Y %H:%M")
+                            FILE15_writer.writerow([nsource_str,Z_tavg,hbe_tavg,Qfmer_NAME_tavg_str,Start_Time,Stop_Time])
+                            FILE16_writer.writerow([nsource_str,Z_max_tavg,hbe_max_tavg,Qfmer_NAME_max_tavg_str,Start_Time,Stop_Time])
+                            FILE17_writer.writerow([nsource_str,Z_min_tavg,hbe_min_tavg,Qfmer_NAME_min_tavg_str,Start_Time,Stop_Time])
                         hbe_min_sum = 0
                         hbe_sum = 0
                         hbe_max_sum = 0
@@ -3711,26 +3805,28 @@ while 1:
                         Qfmer_min_tavg = Qfmer_min_sum / timin_sec_cum
                         Qfmer_tavg = Qfmer_sum / timin_sec_cum
                         Qfmer_max_tavg = Qfmer_max_sum / timin_sec_cum
-                        nsources = nsources + 1
-                        nsource_str = 'Source ' + str(nsources)
-                        Z_min_tavg = vent_h + hbe_min_tavg / 2
-                        Z_tavg = vent_h + hbe_tavg / 2
-                        Z_max_tavg = vent_h + hbe_max_tavg / 2
-                        Qfmer_NAME_min_tavg = Qfmer_min_tavg * 1000 * 3600
-                        Qfmer_NAME_min_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_min_tavg) + ' g/hr'
-                        Qfmer_NAME_tavg = Qfmer_tavg * 1000 * 3600
-                        Qfmer_NAME_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_tavg) + ' g/hr'
-                        Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
-                        Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
-                        Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(seconds=timin_sec_cum)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
                                      "\t" + str(Qfmer_max_tavg) + "\n")
-                        FILE15_writer.writerow([nsource_str,Z_tavg,hbe_tavg,Qfmer_NAME_tavg_str,Start_Time,Stop_Time])
-                        FILE16_writer.writerow([nsource_str,Z_max_tavg,hbe_max_tavg,Qfmer_NAME_max_tavg_str,Start_Time,Stop_Time])
-                        FILE17_writer.writerow([nsource_str,Z_min_tavg,hbe_min_tavg,Qfmer_NAME_min_tavg_str,Start_Time,Stop_Time])
+                        if NAME_out_on == 1:
+                            nsources = nsources + 1
+                            nsource_str = 'Source ' + str(nsources)
+                            Z_min_tavg = vent_h + hbe_min_tavg / 2
+                            Z_tavg = vent_h + hbe_tavg / 2
+                            Z_max_tavg = vent_h + hbe_max_tavg / 2
+                            Qfmer_NAME_min_tavg = Qfmer_min_tavg * 1000 * 3600
+                            Qfmer_NAME_min_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_min_tavg) + ' g/hr'
+                            Qfmer_NAME_tavg = Qfmer_tavg * 1000 * 3600
+                            Qfmer_NAME_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_tavg) + ' g/hr'
+                            Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
+                            Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
+                            Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
+                            Start_Time = (TimeNOW - datetime.timedelta(seconds=timin_sec_cum)).strftime(
+                                "%d/%m/%Y %H:%M")
+                            FILE15_writer.writerow([nsource_str,Z_tavg,hbe_tavg,Qfmer_NAME_tavg_str,Start_Time,Stop_Time])
+                            FILE16_writer.writerow([nsource_str,Z_max_tavg,hbe_max_tavg,Qfmer_NAME_max_tavg_str,Start_Time,Stop_Time])
+                            FILE17_writer.writerow([nsource_str,Z_min_tavg,hbe_min_tavg,Qfmer_NAME_min_tavg_str,Start_Time,Stop_Time])
                         hbe_min_sum = 0
                         hbe_sum = 0
                         hbe_max_sum = 0
@@ -3746,26 +3842,28 @@ while 1:
                         Qfmer_min_tavg = Qfmer_min_sum / timin_sec_cum
                         Qfmer_tavg = Qfmer_sum / timin_sec_cum
                         Qfmer_max_tavg = Qfmer_max_sum / timin_sec_cum
-                        nsources = nsources + 1
-                        nsource_str = 'Source ' + str(nsources)
-                        Z_min_tavg = vent_h + hbe_min_tavg / 2
-                        Z_tavg = vent_h + hbe_tavg / 2
-                        Z_max_tavg = vent_h + hbe_max_tavg / 2
-                        Qfmer_NAME_min_tavg = Qfmer_min_tavg * 1000 * 3600
-                        Qfmer_NAME_min_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_min_tavg) + ' g/hr'
-                        Qfmer_NAME_tavg = Qfmer_tavg * 1000 * 3600
-                        Qfmer_NAME_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_tavg) + ' g/hr'
-                        Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
-                        Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
-                        Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(seconds=timin_sec_cum)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
                                      "\t" + str(Qfmer_max_tavg) + "\n")
-                        FILE15_writer.writerow([nsource_str,Z_tavg,hbe_tavg,Qfmer_NAME_tavg_str,Start_Time,Stop_Time])
-                        FILE16_writer.writerow([nsource_str,Z_max_tavg,hbe_max_tavg,Qfmer_NAME_max_tavg_str,Start_Time,Stop_Time])
-                        FILE17_writer.writerow([nsource_str,Z_min_tavg,hbe_min_tavg,Qfmer_NAME_min_tavg_str,Start_Time,Stop_Time])
+                        if NAME_out_on == 1:
+                            nsources = nsources + 1
+                            nsource_str = 'Source ' + str(nsources)
+                            Z_min_tavg = vent_h + hbe_min_tavg / 2
+                            Z_tavg = vent_h + hbe_tavg / 2
+                            Z_max_tavg = vent_h + hbe_max_tavg / 2
+                            Qfmer_NAME_min_tavg = Qfmer_min_tavg * 1000 * 3600
+                            Qfmer_NAME_min_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_min_tavg) + ' g/hr'
+                            Qfmer_NAME_tavg = Qfmer_tavg * 1000 * 3600
+                            Qfmer_NAME_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_tavg) + ' g/hr'
+                            Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
+                            Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
+                            Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
+                            Start_Time = (TimeNOW - datetime.timedelta(seconds=timin_sec_cum)).strftime(
+                                "%d/%m/%Y %H:%M")
+                            FILE15_writer.writerow([nsource_str,Z_tavg,hbe_tavg,Qfmer_NAME_tavg_str,Start_Time,Stop_Time])
+                            FILE16_writer.writerow([nsource_str,Z_max_tavg,hbe_max_tavg,Qfmer_NAME_max_tavg_str,Start_Time,Stop_Time])
+                            FILE17_writer.writerow([nsource_str,Z_min_tavg,hbe_min_tavg,Qfmer_NAME_min_tavg_str,Start_Time,Stop_Time])
                         hbe_min_sum = 0
                         hbe_sum = 0
                         hbe_max_sum = 0
@@ -3781,26 +3879,28 @@ while 1:
                         Qfmer_min_tavg = Qfmer_min_sum / timin_sec_cum
                         Qfmer_tavg = Qfmer_sum / timin_sec_cum
                         Qfmer_max_tavg = Qfmer_max_sum / timin_sec_cum
-                        nsources = nsources + 1
-                        nsource_str = 'Source ' + str(nsources)
-                        Z_min_tavg = vent_h + hbe_min_tavg / 2
-                        Z_tavg = vent_h + hbe_tavg / 2
-                        Z_max_tavg = vent_h + hbe_max_tavg / 2
-                        Qfmer_NAME_min_tavg = Qfmer_min_tavg * 1000 * 3600
-                        Qfmer_NAME_min_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_min_tavg) + ' g/hr'
-                        Qfmer_NAME_tavg = Qfmer_tavg * 1000 * 3600
-                        Qfmer_NAME_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_tavg) + ' g/hr'
-                        Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
-                        Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
-                        Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(seconds=timin_sec_cum)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
                                      "\t" + str(Qfmer_max_tavg) + "\n")
-                        FILE15_writer.writerow([nsource_str,Z_tavg,hbe_tavg,Qfmer_NAME_tavg_str,Start_Time,Stop_Time])
-                        FILE16_writer.writerow([nsource_str,Z_max_tavg,hbe_max_tavg,Qfmer_NAME_max_tavg_str,Start_Time,Stop_Time])
-                        FILE17_writer.writerow([nsource_str,Z_min_tavg,hbe_min_tavg,Qfmer_NAME_min_tavg_str,Start_Time,Stop_Time])
+                        if NAME_out_on == 1:
+                            nsources = nsources + 1
+                            nsource_str = 'Source ' + str(nsources)
+                            Z_min_tavg = vent_h + hbe_min_tavg / 2
+                            Z_tavg = vent_h + hbe_tavg / 2
+                            Z_max_tavg = vent_h + hbe_max_tavg / 2
+                            Qfmer_NAME_min_tavg = Qfmer_min_tavg * 1000 * 3600
+                            Qfmer_NAME_min_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_min_tavg) + ' g/hr'
+                            Qfmer_NAME_tavg = Qfmer_tavg * 1000 * 3600
+                            Qfmer_NAME_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_tavg) + ' g/hr'
+                            Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
+                            Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
+                            Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
+                            Start_Time = (TimeNOW - datetime.timedelta(seconds=timin_sec_cum)).strftime(
+                                "%d/%m/%Y %H:%M")
+                            FILE15_writer.writerow([nsource_str,Z_tavg,hbe_tavg,Qfmer_NAME_tavg_str,Start_Time,Stop_Time])
+                            FILE16_writer.writerow([nsource_str,Z_max_tavg,hbe_max_tavg,Qfmer_NAME_max_tavg_str,Start_Time,Stop_Time])
+                            FILE17_writer.writerow([nsource_str,Z_min_tavg,hbe_min_tavg,Qfmer_NAME_min_tavg_str,Start_Time,Stop_Time])
                         hbe_min_sum = 0
                         hbe_sum = 0
                         hbe_max_sum = 0
@@ -3816,26 +3916,28 @@ while 1:
                         Qfmer_min_tavg = Qfmer_min_sum / timin_sec_cum
                         Qfmer_tavg = Qfmer_sum / timin_sec_cum
                         Qfmer_max_tavg = Qfmer_max_sum / timin_sec_cum
-                        nsources = nsources + 1
-                        nsource_str = 'Source ' + str(nsources)
-                        Z_min_tavg = vent_h + hbe_min_tavg / 2
-                        Z_tavg = vent_h + hbe_tavg / 2
-                        Z_max_tavg = vent_h + hbe_max_tavg / 2
-                        Qfmer_NAME_min_tavg = Qfmer_min_tavg * 1000 * 3600
-                        Qfmer_NAME_min_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_min_tavg) + ' g/hr'
-                        Qfmer_NAME_tavg = Qfmer_tavg * 1000 * 3600
-                        Qfmer_NAME_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_tavg) + ' g/hr'
-                        Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
-                        Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
-                        Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
-                        Start_Time = (TimeNOW-datetime.timedelta(seconds=timin_sec_cum)).strftime("%d/%m/%Y %H:%M")
                         FILE13.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min_tavg) + "\t" + str(hbe_tavg) +
                                      "\t" + str(hbe_max_tavg) + "\n")
                         FILE14.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min_tavg) + "\t" + str(Qfmer_tavg) +
                                      "\t" + str(Qfmer_max_tavg) + "\n")
-                        FILE15_writer.writerow([nsource_str,Z_tavg,hbe_tavg,Qfmer_NAME_tavg_str,Start_Time,Stop_Time])
-                        FILE16_writer.writerow([nsource_str,Z_max_tavg,hbe_max_tavg,Qfmer_NAME_max_tavg_str,Start_Time,Stop_Time])
-                        FILE17_writer.writerow([nsource_str,Z_min_tavg,hbe_min_tavg,Qfmer_NAME_min_tavg_str,Start_Time,Stop_Time])
+                        if NAME_out_on == 1:
+                            nsources = nsources + 1
+                            nsource_str = 'Source ' + str(nsources)
+                            Z_min_tavg = vent_h + hbe_min_tavg / 2
+                            Z_tavg = vent_h + hbe_tavg / 2
+                            Z_max_tavg = vent_h + hbe_max_tavg / 2
+                            Qfmer_NAME_min_tavg = Qfmer_min_tavg * 1000 * 3600
+                            Qfmer_NAME_min_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_min_tavg) + ' g/hr'
+                            Qfmer_NAME_tavg = Qfmer_tavg * 1000 * 3600
+                            Qfmer_NAME_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_tavg) + ' g/hr'
+                            Qfmer_NAME_max_tavg = Qfmer_max_tavg * 1000 * 3600
+                            Qfmer_NAME_max_tavg_str = 'VOLCANIC_ASH ' + str(Qfmer_NAME_max_tavg) + ' g/hr'
+                            Stop_Time = TimeNOW.strftime("%d/%m/%Y %H:%M")
+                            Start_Time = (TimeNOW - datetime.timedelta(seconds=timin_sec_cum)).strftime(
+                                "%d/%m/%Y %H:%M")
+                            FILE15_writer.writerow([nsource_str,Z_tavg,hbe_tavg,Qfmer_NAME_tavg_str,Start_Time,Stop_Time])
+                            FILE16_writer.writerow([nsource_str,Z_max_tavg,hbe_max_tavg,Qfmer_NAME_max_tavg_str,Start_Time,Stop_Time])
+                            FILE17_writer.writerow([nsource_str,Z_min_tavg,hbe_min_tavg,Qfmer_NAME_min_tavg_str,Start_Time,Stop_Time])
                         hbe_min_sum = 0
                         hbe_sum = 0
                         hbe_max_sum = 0
@@ -3848,9 +3950,10 @@ while 1:
                     FILE14.close()
                 FILE13.close()
                 FILE14.close()
-                FILE15.close()
-                FILE16.close()
-                FILE17.close()
+                if NAME_out_on == 1:
+                    FILE15.close()
+                    FILE16.close()
+                    FILE17.close()
 
 
 
@@ -4444,17 +4547,25 @@ while 1:
             """ computes the FMER key figures"""
             global skipFMER, Qf_absmin, Qf_absmax, Qfmer_min,Qfmer_max,Qfmer,cur_Qlower,cur_MERwood_avg
             cur_MERwood_avg = float(Mwood[1])
-            if mer_stat[6] == 0:
-                if float(Mwood[1]) == 0:    
-                    cur_Qlower = min (mer_stat[1],mer_stat[9])
-                else:
-                    cur_Qlower = min (mer_stat[1],mer_stat[9],float(Mwood[1]))
+# These lines commented since Deg & Bon model is always used now; also, included Wood0d in the calculation
+            # if mer_stat[6] == 0:
+            #     if float(Mwood[1]) == 0:
+            #         cur_Qlower = min (mer_stat[1],mer_stat[9])
+            #     else:
+            #         cur_Qlower = min (mer_stat[1],mer_stat[9],float(Mwood[1]))
+            # else:
+            #     if cur_MERwood_avg == 0:
+            #         cur_Qlower = min (mer_stat[1],mer_stat[9],mer_stat[6])
+            #     else:
+            #         cur_Qlower = min (mer_stat[1],mer_stat[9],float(Mwood[1]),mer_stat[6])
+
+            if cur_MERwood_avg == 0:
+                cur_Qlower = min(mer_stat[1],mer_stat[9],mer_stat[6], mer_stat[10])
             else:
-                if cur_MERwood_avg == 0:    
-                    cur_Qlower = min (mer_stat[1],mer_stat[9],mer_stat[6])
-                else:
-                    cur_Qlower = min (mer_stat[1],mer_stat[9],float(Mwood[1]),mer_stat[6])
-            
+                cur_Qlower = min(mer_stat[1],mer_stat[9],float(Mwood[1]),mer_stat[6],mer_stat[10])
+            if cur_Qlower == 0: #Added to make sure at least one model is always considered, e.g. when the weight factors are set to 0 for all except 1 model
+                cur_Qlower = mer_stat[1]
+
             if ckcode ==0 or oo_con==0:
                 if MQcode == 0:
                     if EQcode == 0 or oo_exp ==0:
