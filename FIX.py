@@ -604,7 +604,7 @@ def defaultvalues(venth):
     global OBS1
     global P_0
 
-    global PM_Nplot, PM_PHplot, PM_MERplot, PM_TME, PM_FMERplot, PM_FTME, PM_TAV, StatusR_oo, NAME_out_on
+    global PM_Nplot, PM_PHplot, PM_MERplot, PM_TME, PM_FMERplot, PM_FTME, PM_TAV, StatusR_oo, NAME_out_on, PI_THRESH
 
     global Min_DiaOBS, Max_DiaOBS, pl_width_min, pl_width_max
 
@@ -710,6 +710,7 @@ def defaultvalues(venth):
     PM_TAV = 0
     StatusR_oo = 1
     NAME_out_on = 0
+    PI_THRESH = 5.0
 
     Cband3_on, Cband4_on, Cband5_on, Cband6_on, Xband3_on, Xband4_on, \
     Xband5_on, Xband6_on, Cam4_on, Cam5_on, Cam6_on, Cband3m_on, Cband4m_on, Cband5m_on, \
@@ -907,6 +908,9 @@ def get_last_data():
         cal_Xband5a, cal_Xband5b, cal_Xband6a, cal_Xband6b
     global wtf_wood0d
     global time_start, time_stop
+    global loc_ISKEF, loc_ISEGS, loc_Cband3, loc_Cband5, loc_Cband6, loc_ISX1, loc_ISX2, loc_Xband3, loc_Xband4, \
+        loc_Xband5, loc_Xband6, loc_GFZ1, loc_GFZ2, loc_GFZ3, loc_Cam4, loc_Cam5, loc_Cam6
+    global defsetup, run_type, weather, exit_param, PI_THRESH
 
     try:
 
@@ -1055,6 +1059,34 @@ def get_last_data():
         cal_Xband5b = float(configlines3[141])
         cal_Xband6a = float(configlines3[142])
         cal_Xband6b = float(configlines3[143])
+        loc_ISKEF = float(configlines3[144])
+        loc_ISEGS = float(configlines3[145])
+        loc_Cband3 = float(configlines3[146])
+        loc_Cband4 = float(configlines3[147])
+        loc_Cband5 = float(configlines3[148])
+        loc_Cband6 = float(configlines3[149])
+        loc_ISX1 = float(configlines3[150])
+        loc_ISX2 = float(configlines3[151])
+        loc_Xband3 = float(configlines3[152])
+        loc_Xband4 = float(configlines3[153])
+        loc_Xband5 = float(configlines3[154])
+        loc_Xband6 = float(configlines3[155])
+        loc_GFZ1 = float(configlines3[156])
+        loc_GFZ2 = float(configlines3[157])
+        loc_GFZ3 = float(configlines3[158])
+        loc_Cam4 = float(configlines3[159])
+        loc_Cam5 = float(configlines3[160])
+        loc_Cam6 = float(configlines3[161])
+        defsetup = int(configlines3[162])
+        run_type = int(configlines3[163])
+        weather = int(configlines3[164])
+        wtf_wood0d = float(configlines3[165])
+        time_start = configlines3[166]
+        time_stop = configlines3[167]
+        exit_param = int(configlines3[168])
+        PM_TAV = int(configlines3[169])
+        NAME_out_on = int(configlines3[170])
+        PI_THRESH = float(configlines3[171])
         get_last_time()
 
     except EnvironmentError:
@@ -1126,7 +1158,7 @@ def save_default_file():
                        + "\n" + str(loc_GFZ1) + "\n" + str(loc_GFZ2) + "\n" + str(loc_GFZ3) \
                        + "\n" + str(loc_Cam4) + "\n" + str(loc_Cam5) + "\n" + str(loc_Cam6) + "\n" + str(defsetup) \
                        + "\n" + str(run_type) + "\n" + str(weather) + "\n" + str(wtf_wood0d) + "\n" + str(time_start) \
-                       + "\n" + str(time_stop)  + "\n" + str(exit_param) + "\n" + str(PM_TAV) + "\n" + str(NAME_out_on))  # New variables in the config files for the run type, weather and time averaging options
+                       + "\n" + str(time_stop)  + "\n" + str(exit_param) + "\n" + str(PM_TAV) + "\n" + str(NAME_out_on) + "\n" + str(PI_THRESH))  # New variables in the config files for the run type, weather and time averaging options
     default_FILE.close()
 
 defaultvalues(vent_h)
@@ -2839,6 +2871,7 @@ def default_parameter_panel():
     Label(master1, text="").grid(row=10, column=5, sticky=W)
 
     Label(master1, text="scale f.", fg="red").grid(row=8, column=6, sticky=W)
+    Label(master1, text="PI Thresh.", fg="red").grid(row=9, column=6, sticky=W)
 
     Label(master1, text="atmospheric conditions", font=("Verdana", 10, "bold"), fg="dark violet").grid(row=1, column=6,
                                                                                                        columnspan=3)
@@ -2906,6 +2939,7 @@ def default_parameter_panel():
     tempGrad_3_in = Entry(master1, width=10)
     Vmax_in = Entry(master1, width=10)
     ki_in = Entry(master1, width=4, fg="red")
+    PI_THRESH_in = Entry(master1, width=4, fg="red")
 
     H1_in.insert(10, H1)
     H2_in.insert(10, H2)
@@ -2914,6 +2948,7 @@ def default_parameter_panel():
     tempGrad_3_in.insert(10, tempGrad_3)
     Vmax_in.insert(10, Vmax_default)
     ki_in.insert(10, ki)
+    PI_THRESH_in.insert(10, PI_THRESH)
 
     H1_in.grid(row=2, column=7)
     H2_in.grid(row=3, column=7)
@@ -2922,6 +2957,7 @@ def default_parameter_panel():
     tempGrad_3_in.grid(row=6, column=7)
     Vmax_in.grid(row=7, column=7)
     ki_in.grid(row=8, column=5)
+    PI_THRESH_in.grid(row=9, column=5)
 
     def default_update():
         global theta_a0
@@ -2943,6 +2979,7 @@ def default_parameter_panel():
         global tempGrad_3
         global Vmax
         global ki
+        global PI_THRESH
         theta_a0 = float(theta_a0_in.get())
         P_0 = float(P_0_in.get())
         theta_0 = float(theta_0_in.get())
@@ -2962,6 +2999,7 @@ def default_parameter_panel():
         tempGrad_3 = float(tempGrad_3_in.get())
         Vmax = float(Vmax_in.get())
         ki = float(ki_in.get())
+        PI_THRESH = float(PI_THRESH_in.get())
 
         H1 = H1asl
         H2 = H2asl
