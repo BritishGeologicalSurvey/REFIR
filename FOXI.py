@@ -59,7 +59,7 @@ global PI_THRESH, TimeOLD
 scenario = "      +++ EXERCISE! +++ " # change into " " in real eruption
 FOXIversion ="19.0"
 operator = "User"
-PI_THRESH = 5.0
+#PI_THRESH = 5.0
 time_axis = 1 #0: inverted for pl.h. sector plots; 1: always same
 
 """ settings END """
@@ -780,6 +780,7 @@ while 1:
     exit_param = int(configlines[168])
     PM_TAV = int(configlines[169])
     NAME_out_on = int(configlines[170])
+    PI_THRESH = float(configlines[171])
 
     if exit_param == 1:
         refir_end()
