@@ -603,11 +603,8 @@ def defaultvalues(venth):
     global qf_obs
     global OBS1
     global P_0
-
     global PM_Nplot, PM_PHplot, PM_MERplot, PM_TME, PM_FMERplot, PM_FTME, PM_TAV, StatusR_oo, NAME_out_on, PI_THRESH
-
     global Min_DiaOBS, Max_DiaOBS, pl_width_min, pl_width_max
-
     global Cband3_on, Cband4_on, Cband5_on, Cband6_on, Xband3_on, Xband4_on, \
         Xband5_on, Xband6_on, Cam4_on, Cam5_on, Cam6_on
     global Cband3m_on, Cband4m_on, Cband5m_on, Cband6m_on, Xband3m_on, Xband4m_on, \
@@ -825,7 +822,6 @@ def checkbox_oo(oo_var):
     else:
         return False
 
-
 def get_last_data():
     """reads default values from fix_config file if existing"""
     global P_0
@@ -928,26 +924,22 @@ def get_last_data():
         tempGrad_1 = float(configlines3[20])
         tempGrad_2 = float(configlines3[21])
         tempGrad_3 = float(configlines3[22])
-
         wfac_mod4_default[0] = float(configlines3[13])
         wfac_mod4_default[1] = float(configlines3[14])
         wfac_mod4_default[2] = float(configlines3[15])
         wfac_mod4_default[3] = float(configlines3[16])
         wfac_mod4_default[4] = float(configlines3[17])
         wfac_mod4_default[5] = float(configlines3[165])
-
         wtf_wil = wfac_mod4_default[0]
         wtf_spa = wfac_mod4_default[1]
         wtf_mas = wfac_mod4_default[2]
         wtf_mtg = wfac_mod4_default[3]
         wtf_deg = wfac_mod4_default[4]
         wtf_wood0d = wfac_mod4_default[5]
-
         rho_dre = float(configlines3[10])
         Vmax = float(configlines3[23])
         Vmax_default = Vmax
         ki = float(configlines3[24])
-
         qf_OBS = int(configlines3[6])
         ISKEF_on = int(configlines3[37])
         ISEGS_on = int(configlines3[38])
@@ -991,7 +983,6 @@ def get_last_data():
         wtf_pulsan = float(configlines3[63])
         oo_scatter = int(configlines3[64])
         wtf_scatter = float(configlines3[65])
-
         PM_Nplot = int(configlines3[78])
         PM_PHplot = int(configlines3[79])
         PM_MERplot = int(configlines3[80])
@@ -1001,7 +992,6 @@ def get_last_data():
         StatusR_oo = int(configlines3[84])
         pl_minw_default = float(configlines3[85])
         pl_maxw_default = float(configlines3[86])
-
         qfak_Cband3 = float(configlines3[87])
         qfak_Cband4 = float(configlines3[88])
         qfak_Cband5 = float(configlines3[89])
@@ -1081,8 +1071,8 @@ def get_last_data():
         run_type = int(configlines3[163])
         weather = int(configlines3[164])
         wtf_wood0d = float(configlines3[165])
-        time_start = configlines3[166]
-        time_stop = configlines3[167]
+        #time_start = str(configlines3[166])
+        #time_stop = str(configlines3[167])
         exit_param = int(configlines3[168])
         PM_TAV = int(configlines3[169])
         NAME_out_on = int(configlines3[170])
