@@ -140,7 +140,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     lat_corner = str(int(lat_source))
 
     #data_folder = 'raw_forecast_weather_data_'+ year + month + day + '/'
-    data_folder = os.path.join(cwd,'raw_forecast_weather_data_'+ year + month + day)
+    data_folder = os.path.join(cwd,'raw_forecast_weather_data_'+ year + month + day + '/')
 
     ival = ianl + ifcst
     if ival < 10:
@@ -213,7 +213,7 @@ def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     lat_corner = str(int(lat_source))
     area = lat_SW + '/' + lon_SW + '/' + lat_NE + '/' + lon_NE
     #data_folder = 'raw_reanalysis_weather_data_' + year_start + month_start + day_start + '/'
-    data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_' + year_start + month_start + day_start )
+    data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_' + year_start + month_start + day_start + '/')
     wtfile = 'weather_data_' + date_bis
     wtfile_path = os.path.join(cwd,data_folder,wtfile)
     grib_file = "pressure_level.grib"
@@ -314,7 +314,7 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
         dt = eruption_start.hour - 18
 
     #data_folder = 'raw_reanalysis_weather_data_' + str(eruption_start.year) + str(eruption_start.month) + str(eruption_start.day) + '/'
-    data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_' + str(eruption_start.year) + str(eruption_start.month) + str(eruption_start.day))
+    data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_' + str(eruption_start.year) + str(eruption_start.month) + str(eruption_start.day) + '/')
     first_analysis = eruption_start - timedelta(hours=dt)
     ifcst = dt
     count = 1
@@ -356,7 +356,7 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
                 print('File ' + elaborated_prof_file + ' already available in ' + data_folder)
                 break
                 #continue
-            data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_'+ day_validity)
+            data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_'+ day_validity + '/')
             wtfile_dwnl = month_validity + '/' + day_validity + '/' + 'gfs_4_' + day_validity + '_' + hour + '00_' + fcst + '.grb2'
             wtfile = 'weather_data_' + year + month + day + hour + '_' + fcst
             wtfile_path = os.path.join(data_folder,wtfile)
