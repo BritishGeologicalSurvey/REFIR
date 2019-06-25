@@ -27,7 +27,6 @@ Contact: tobi@hi.is, fabiod@bgs.ac.uk
 RNZ170318FS
 """
 
-
 def gfs_forecast_retrieve(lon_source,lat_source):
     import urllib.request
     import urllib.error
