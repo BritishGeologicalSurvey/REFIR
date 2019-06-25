@@ -56,7 +56,7 @@ import csv
 """ settings START """
 global PI_THRESH, TimeOLD
 
-scenario = "      +++ EXERCISE! +++ " # change into " " in real eruption
+scenario = "     +++ EXERCISE! +++ " # change into " " in real eruption
 FOXIversion ="19.0"
 operator = "User"
 #PI_THRESH = 5.0
