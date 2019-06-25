@@ -40,7 +40,6 @@ print("******* FOX SCREEN **********")
 print("         v18.1      ")
 print("")
 outxt = input("name of data set: ")
-
 bgpath ="background5.jpg"
 
 path = outxt + "_PH_plot.png" 

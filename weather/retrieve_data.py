@@ -67,7 +67,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     year_anl = year
     month_anl = month
     day_anl = day
-    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl
+    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl
     try:
         # urllib2.urlopen(url)
         urllib.request.urlopen(url)
@@ -90,7 +90,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
         anl = '0' + str(ianl)
     else:
         anl = str(ianl)
-    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl
+    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl
     print('Most up to date GFS analysis: ' + url)
 
     # Retrieve weather data that best matches current time
@@ -106,7 +106,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     else:
         fcst = 'f' + str(ifcst)
     wtfile = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
-    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile
+    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl + '/' + wtfile
     try:
         # urllib2.urlopen(url)
         urllib.request.urlopen(url)
@@ -168,7 +168,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
         wtfile = 'weather_data_' + year_anl + month_anl + day_anl + anl + '_' + fcst
         wtfile_int = 'weather_data_interpolated_' + year_anl + month_anl + day_anl + anl + '_' + fcst
         wtfile_prof = 'profile_' + year + month + day + anl + validity + '.txt'
-        url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile_dwnl
+        url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl + '/' + wtfile_dwnl
         print('Checking if ' + wtfile + ' exists in ' + data_folder)
         if os.path.isfile(data_folder + wtfile):
             print('File ' + wtfile + ' found')
@@ -362,7 +362,7 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
             wtfile_path = os.path.join(data_folder,wtfile)
             wtfile_int = 'weather_data_interpolated_' + year + month + day + hour + '_' + fcst
             wtfile_prof = 'profile_' + year + month + day + hour + validity + '.txt'
-            url1 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + + '/' + hour + '/gfs.t' + hour + 'z.pgrb2.0p25.f' + fcst
+            url1 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + hour + '/gfs.t' + hour + 'z.pgrb2.0p25.f' + fcst
             url2 = 'https://nomads.ncdc.noaa.gov/data/gfs4/' + wtfile_dwnl
             print('Checking if ' + wtfile + ' exists')
             if os.path.isfile(wtfile_path):

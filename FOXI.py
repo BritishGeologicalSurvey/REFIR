@@ -3481,7 +3481,6 @@ while 1:
                     wil_on = 0
                 else:
                     wil_on = 1
-
                 if wtf_spa == 0:
                     spa_on = 0
                 else:
