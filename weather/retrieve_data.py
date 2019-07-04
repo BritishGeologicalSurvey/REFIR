@@ -66,7 +66,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     year_anl = year
     month_anl = month
     day_anl = day
-    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl
+    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' +  anl
     try:
         # urllib2.urlopen(url)
         urllib.request.urlopen(url)
@@ -89,7 +89,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
         anl = '0' + str(ianl)
     else:
         anl = str(ianl)
-    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl
+    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl
     print('Most up to date GFS analysis: ' + url)
 
     # Retrieve weather data that best matches current time
@@ -105,7 +105,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     else:
         fcst = 'f' + str(ifcst)
     wtfile = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
-    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl + '/' + wtfile
+    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile
     try:
         # urllib2.urlopen(url)
         urllib.request.urlopen(url)
@@ -167,7 +167,7 @@ def gfs_forecast_retrieve(lon_source,lat_source):
         wtfile = 'weather_data_' + year_anl + month_anl + day_anl + anl + '_' + fcst
         wtfile_int = 'weather_data_interpolated_' + year_anl + month_anl + day_anl + anl + '_' + fcst
         wtfile_prof = 'profile_' + year + month + day + anl + validity + '.txt'
-        url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + anl + '/' + wtfile_dwnl
+        url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile_dwnl
         print('Checking if ' + wtfile + ' exists in ' + data_folder)
         if os.path.isfile(data_folder + wtfile):
             print('File ' + wtfile + ' found')
@@ -281,6 +281,192 @@ def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
         # Extract and elaborate weather data
         extract_data_erain(year, month, day, validity, wtfile_prof_step)
 
+def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
+    from read import extract_data_erain
+    import os
+    from shutil import copyfile
+    from datetime import timedelta as td, datetime
+
+    def era5_request(index):
+        import cdsapi
+        print('Downloading file from ERA5 database')
+        c = cdsapi.Client()
+        try:
+            c.retrieve(
+             'reanalysis-era5-pressure-levels',
+             {
+                 'pressure_level': [
+                     '1', '2', '3',
+                     '5', '7', '10',
+                     '20', '30', '50',
+                     '70', '100', '125',
+                     '150', '175', '200',
+                     '225', '250', '300',
+                     '350', '400', '450',
+                     '500', '550', '600',
+                     '650', '700', '750',
+                     '775', '800', '825',
+                     '850', '875', '900',
+                     '925', '950', '975',
+                     '1000'
+                 ],
+                 'variable': [
+                     'geopotential', 'temperature',
+                     'u_component_of_wind', 'v_component_of_wind'
+                 ],
+                 'time': [
+                     '00:00', '01:00', '02:00',
+                     '03:00', '04:00', '05:00',
+                     '06:00', '07:00', '08:00',
+                     '09:00', '10:00', '11:00',
+                     '12:00', '13:00', '14:00',
+                     '15:00', '16:00', '17:00',
+                     '18:00', '19:00', '20:00',
+                     '21:00', '22:00', '23:00'
+                 ],
+                 'product_type': 'reanalysis',
+                 'year': years[index],
+                 'day': days[index],
+                 'month': months[index],
+                 'area': area,
+                 'format': 'grib'
+             },
+                str(index) + '.grib')
+        except:
+            print('Unable to retrieve ERA5 data')
+
+    cwd = os.getcwd()
+    year_start = eruption_start[0:4]
+    month_start = eruption_start[4:6]
+    day_start = eruption_start[6:8]
+    year_stop = eruption_stop[0:4]
+    month_stop = eruption_stop[4:6]
+    day_stop = eruption_stop[6:8]
+    slon_source = str(lon_source)
+    slat_source = str(lat_source)
+    date_bis = year_start + '-' + month_start + '-' + day_start + '_to_' + year_stop + '-' + month_stop + '-' + day_stop
+    data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_' + year_start + month_start + day_start + '/')
+    wtfile = 'weather_data_' + date_bis
+    wtfile_path = os.path.join(cwd,data_folder,wtfile)
+    grib_file = "pressure_level.grib"
+    grib_file_path = os.path.join(cwd,data_folder,grib_file)
+    print('Checking if file ' + wtfile + ' exists in ' + data_folder)
+
+    if os.path.isfile(wtfile_path):
+        print('File ' + wtfile + ' found')
+        copyfile(wtfile_path,wtfile)
+        copyfile(grib_file_path,grib_file)
+    else:
+        # Define area
+        lat_N = int(lat_source) + 2
+        lat_S = int(lat_source) - 2
+        lon_W = int(lon_source) - 2
+        lon_E = int(lon_source) + 2
+        area = [lat_N,lon_W,lat_S,lon_E]
+        # Define time vectors
+        #start = datetime.strptime(eruption_start, '%Y-%m-%d %H:%M:%S')
+        #stop = datetime.strptime(eruption_stop, '%Y-%m-%d %H:%M:%S')
+        start = datetime.strptime(eruption_start, '%Y%m%d%H')
+        stop = datetime.strptime(eruption_stop, '%Y%m%d%H')
+        delta = td(days=1)
+        dt_eruption = stop - start
+        dt_eruption_seconds = dt_eruption.total_seconds()
+        dt_eruption_days = int(divmod(dt_eruption_seconds, 86400)[0]) + 1
+        day = start
+        nmax_days = 20 # This looks like the optimal number of days to split
+        jmax = int(dt_eruption_days / nmax_days)
+        days = [[0 for k in range(0, nmax_days)] for j in range(0, jmax + 1)]
+        years = []
+        months = []
+        j = 0
+        while j <= jmax:
+            k = 0
+            years.append(str(day)[0:4])
+            months.append(str(day)[5:7])
+            while k <= nmax_days - 1:
+                if day > start and str(day)[8:10] == '01' and k > 0:
+                    j_zeros = j # Check where the 0s are
+                    k += 1
+                else:
+                    days[j][k] = str(day)[8:10]
+                    day += delta
+                    if day > stop:
+                        break
+                k += 1
+            j += 1
+        # Remove zeros from days array
+        try:
+            for k in range(0,nmax_days-1):
+                days[j_zeros].remove(0)
+        except:
+            print('No more zeros found in days')
+        # Remove zeros from days array
+        try:
+            for k in range(0,nmax_days-1):
+                days[jmax].remove(0)
+        except:
+            print('No more zeros found in days')
+
+        filenames_s = ''
+        if jmax == 0:
+            era5_request(jmax)
+            filenames_s = str(jmax) + '.grib'
+        else:
+            for j in range(0,jmax + 1):
+                era5_request(j)
+                filenames_s = filenames_s + ' ' + str(j) + '.grib'
+        # Merge all files
+        try:
+            if os.system('cat ' + filenames_s + '> pressure_level.grib') != 0: #Linux command to concatenate files
+                if os.system('type ' + filenames_s + ' > pressure_level.grib') != 0: #Windows command to concatenate files
+                    raise Exception
+                else:
+                    print('Grib files successfully concatenated')
+        except:
+            print('Unable to concatenate grib files')
+        # Delete all unconcatenated source files
+        try:
+            if os.system('rm ' + filenames_s) != 0: #Linux command to concatenate files
+                if os.system('del ' + filenames_s) != 0: #Windows command to concatenate files
+                    raise Exception
+                else:
+                    print('Unconcatenated source files removed')
+        except:
+            print('No source grib files found')
+
+    # Convert grib1 to grib2 with the NOAA Perl script. To make it more portable and avoiding the need to set up many paths, I have included in the package also the required files and scripts that are originally available in the grib2 installation folder
+    print('Converting grib1 data to grib2')
+    os.system('grib_set -s edition=2 pressure_level.grib ' + wtfile)
+    wtfile_prof = 'profile_' + date_bis + '.txt'
+    print('Saving weather data along the vertical at the vent location')
+    os.system('wgrib2 ' + wtfile + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
+    # Split wtfile_prof into multiple file, each one for a specific time step
+    splitLen = 148
+    outputBase = 'profile_'
+    input = open(wtfile_prof, 'r',encoding="utf-8", errors="surrogateescape")
+    count = 0
+    dest = None
+    steps = []
+    for line in input:
+        if count % splitLen == 0:
+            if dest: dest.close()
+            first_line = line.split(':')
+            val = first_line[2].split('d=')
+            dest = open(outputBase + val[1] + '.txt', 'w',encoding="utf-8", errors="surrogateescape")
+            steps.append(val[1])
+        dest.write(line)
+        count += 1
+    input.close()
+    dest.close()
+    for validity in steps:
+        year = validity[0:4]
+        month = validity[4:6]
+        day = validity[6:8]
+        hour = validity[8:10]
+        wtfile_prof_step = 'profile_' + validity + '.txt'
+        # Extract and elaborate weather data
+        extract_data_erain(year, month, day, validity, wtfile_prof_step)
+
 def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     import urllib.request
     import urllib.error
@@ -361,7 +547,7 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
             wtfile_path = os.path.join(data_folder,wtfile)
             wtfile_int = 'weather_data_interpolated_' + year + month + day + hour + '_' + fcst
             wtfile_prof = 'profile_' + year + month + day + hour + validity + '.txt'
-            url1 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + hour + '/gfs.t' + hour + 'z.pgrb2.0p25.f' + fcst
+            url1 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + '/' + hour + '/gfs.t' + hour + 'z.pgrb2.0p25.f' + fcst
             url2 = 'https://nomads.ncdc.noaa.gov/data/gfs4/' + wtfile_dwnl
             print('Checking if ' + wtfile + ' exists')
             if os.path.isfile(wtfile_path):

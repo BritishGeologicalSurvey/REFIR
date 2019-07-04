@@ -348,7 +348,8 @@ def safe_exit():
 def automatic_weather():
     sys.path.insert(0, './weather')
     from weather import retrieve_data
-    from retrieve_data import era_interim_retrieve
+    #from retrieve_data import era_interim_retrieve
+    from retrieve_data import era5_retrieve
     from retrieve_data import gfs_forecast_retrieve
     from retrieve_data import gfs_past_forecast_retrieve
     import os
@@ -371,8 +372,10 @@ def automatic_weather():
             folder = 'raw_reanalysis_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
         else:
             print('GFS data not available.')
-            print('Retrieving ERA Interim data')
-            era_interim_retrieve(volc_lon[vulkan], volc_lat[vulkan], eruption_start, eruption_stop)
+            #print('Retrieving ERA Interim data')
+            #era_interim_retrieve(volc_lon[vulkan], volc_lat[vulkan], eruption_start, eruption_stop)
+            print('Retrieving ERA5 data')
+            era5_retrieve(volc_lon[vulkan], volc_lat[vulkan], eruption_start, eruption_stop)
             folder = 'raw_reanalysis_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
     if not os.path.isdir(folder):
         os.makedirs(folder)
