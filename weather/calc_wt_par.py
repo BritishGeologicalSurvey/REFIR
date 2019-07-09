@@ -36,6 +36,7 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
     global N_avg
     global V_H_top
     global Ws
+
     u = []
     v = []
     wind = []
@@ -136,9 +137,9 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
     # Woodhouse (2013) Ws parameter
     Ws = (1.44 * V_H_top) / (N_avg * H_top)
     # Open file to store weather parameter needed for calculating MER
-    wt_par = 'weather_parameters_' + validity + '.txt'
+    wt_par = 'weather_parameters_' + validity + '_' + str(int(H_plume)) + '.txt'
     fwt_par = open(wt_par, 'w',encoding="utf-8", errors="surrogateescape")
     fwt_par.write(
-        'Atmospheric pressure at the source [Pa] = %8.5e\nAtmospheric temperature at the source [K] = %8.5e\n\nData needed for Degruyter & Bonadonna (2012) model\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nPlume height-averaged wind speed [m/s] = %8.5e\n\nData needed for Woodhouse et al. (2013) model\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nWind speed at top plume height [m/s] = %8.5e\nWs = %8.5e\n' % (
-        P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws))
+        'Atmospheric pressure at the source [Pa] = %8.5e\nAtmospheric temperature at the source [K] = %8.5e\nTop plume height a.s.l. [m] = %8.5e\nTop plume height above vent [m] = %8.5e\n\nData needed for Degruyter & Bonadonna (2012) model\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nPlume height-averaged wind speed [m/s] = %8.5e\n\nData needed for Woodhouse et al. (2013) model\nPlume height-averaged buoyancy frequency [1/s] = %8.5e\nWind speed at top plume height [m/s] = %8.5e\nWs = %8.5e\n' % (
+        P_H_source, T_H_source, H_top, H_plume, N_avg, V_avg, N_avg, V_H_top, Ws))
     return(P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws)

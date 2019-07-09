@@ -455,7 +455,7 @@ def elaborate_weather(plume_height):
         #profile_data_file_full = folder_name+"\\"+profile_data_file
         profile_data_file_full = os.path.join(folder_name,profile_data_file)
         if os.path.exists(profile_data_file_full):
-            print("Elaborating "+profile_data_file)
+            print("Elaborating " + profile_data_file)
             [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals,month_vals,day_vals,abs_validity,profile_data_file_full,plume_height,vent_h)
         else:
             print("File " + profile_data_file + " not present")
@@ -3215,7 +3215,7 @@ while 1:
                     maxPlRadius = float(Mwood[4])
                     if Mwood[4]==0:
                         plh_correction = 0
-                        logger5.warning("*** Height of centerline cannot be estimated ***\n*** => modified Degruyter-Bonadonna model can't be considered! ***")
+                        logger5.warning("*** Height of centerline cannot be estimated ***\n*** => Degruyter-Bonadonna model running with top plume height! ***")
                         minPlRadius = 0
                         maxPlRadius = 0
                 else:
@@ -3715,6 +3715,45 @@ while 1:
             FILE3.write(
                 str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(hbe) + "\t" + str(hbe_max) + "\n")
             FILE3.close()
+
+            # Save only "weather_parameters" files with average, maximum and minimum plume height
+            path = os.getcwd()
+            for file in os.listdir(path):
+                filename = os.fsdecode(file)
+                if filename.endswith('Havg.txt') or filename.endswith('Hmax.txt') or filename.endswith('Hmin.txt'):
+                    continue
+                if filename.startswith('weather_parameters_'):
+                    filename_pieces = filename.split('_')
+                    file_ending = filename_pieces[3]
+                    H_from_filename = int(file_ending.split('.')[0])
+                    if H_from_filename == int(hbe_min):
+                        filename_pieces[3] = str(timin) + '_Hmin.txt'
+                        filename_new = filename_pieces[0] + '_' + filename_pieces[1] + '_' + filename_pieces[2] + '_' + \
+                                           filename_pieces[3]
+                        if os.path.isfile(filename_new):
+                            continue
+                        else:
+                            os.rename(filename, filename_new)
+
+                    elif H_from_filename == int(hbe_max):
+                        filename_pieces[3] = str(timin) + '_Hmax.txt'
+                        filename_new = filename_pieces[0] + '_' + filename_pieces[1] + '_' + filename_pieces[2] + '_' + \
+                                           filename_pieces[3]
+                        if os.path.isfile(filename_new):
+                            continue
+                        else:
+                            os.rename(filename, filename_new)
+                    elif H_from_filename == int(hbe):
+                        filename_pieces[3] = str(timin) + '_Havg.txt'
+                        filename_new = filename_pieces[0] + '_' + filename_pieces[1] + '_' + filename_pieces[2] + '_' + \
+                                           filename_pieces[3]
+                        if os.path.isfile(filename_new):
+                            continue
+                        else:
+                            os.rename(filename, filename_new)
+                    else:
+                        os.remove(filename)
+
 
 # Time averaged variables
             if NAME_out_on == 1 and PM_TAV == 0:
@@ -4665,11 +4704,10 @@ while 1:
                 tibalabel = "30 min"
                 MERmaxNowiHmin = min(max(mer_stack30[1][0],mer_stack30[2][0],mer_stack30[3][0]),min(mer_stack30[1][1],mer_stack30[2][1],mer_stack30[3][1]))
                 hbe_min = result30_stack[0]
-                hbe_max = result30_stack[2] 
+                hbe_max = result30_stack[2]
                 save_mer_logfile(N30min,result30_stack[1],MER_Stat30,mer_stack30[1][1],mer_stack30[2][1],mer_stack30[3][1],mer_stack30[5][1],30)
                 save_current_mer(N30min,MER_Stat30,30)
 
-                
             elif TIMEBASE == 60:
                 tibalabel = "60 min"
                 MERmaxNowiHmin = min(max(mer_stack1h[1][0],mer_stack1h[2][0],mer_stack1h[3][0]),min(mer_stack1h[1][1],mer_stack1h[2][1],mer_stack1h[3][1]))

@@ -372,8 +372,6 @@ def automatic_weather():
             folder = 'raw_reanalysis_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
         else:
             print('GFS data not available.')
-            #print('Retrieving ERA Interim data')
-            #era_interim_retrieve(volc_lon[vulkan], volc_lat[vulkan], eruption_start, eruption_stop)
             print('Retrieving ERA5 data')
             era5_retrieve(volc_lon[vulkan], volc_lat[vulkan], eruption_start, eruption_stop)
             folder = 'raw_reanalysis_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
