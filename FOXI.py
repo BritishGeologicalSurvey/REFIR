@@ -410,6 +410,15 @@ NAME_file_writer = csv.writer(NAME_file_min,delimiter = ',',quotechar='"', quoti
 NAME_file_writer.writerow(['Sources:'])
 NAME_file_writer.writerow(['Name','Z','dZ','Source Strength','Start Time','Stop Time'])
 NAME_file_min.close()
+weather_file_avg = open(out_txt+ "_weather_data_avg.txt", "a",encoding="utf-8", errors="surrogateescape")
+weather_file_avg.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'H a.s.l. (m)'+"\t"+'H above vent (m)'+"\t"+'Navg (1/s)' + "\t" + 'V (m/s)' + "\t" + 'V(H) (m/s)'+ "\t" + 'Ws (-)' +"\n")
+weather_file_avg.close()
+weather_file_max = open(out_txt+ "_weather_data_max.txt", "a",encoding="utf-8", errors="surrogateescape")
+weather_file_max.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'H a.s.l. (m)'+"\t"+'H above vent (m)'+"\t"+'Navg (1/s)' + "\t" + 'V (m/s)' + "\t" + 'V(H) (m/s)'+ "\t" + 'Ws (-)' +"\n")
+weather_file_max.close()
+weather_file_min = open(out_txt+ "_weather_data_min.txt", "a",encoding="utf-8", errors="surrogateescape")
+weather_file_min.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'H a.s.l. (m)'+"\t"+'H above vent (m)'+"\t"+'Navg (1/s)' + "\t" + 'V (m/s)' + "\t" + 'V(H) (m/s)'+ "\t" + 'Ws (-)' +"\n")
+weather_file_min.close()
 
 # Elaborate automatically retrieved weather data
 def elaborate_weather(plume_height):
@@ -3658,8 +3667,6 @@ while 1:
             cur_Qlower = mer_stat[1]
             cur_PlumeRadiusMin = PlumeRadiusMin
             cur_PlumeRadiusMax = PlumeRadiusMax
-
-
             FILE1 = open(out_txt+"_mer_LOG.txt", "a",encoding="utf-8", errors="surrogateescape")
             FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(hbe)+"\t"\
             +str(mer_stat[0])+"\t"+str(mer_stat[1])\
@@ -3716,6 +3723,30 @@ while 1:
                 str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(hbe) + "\t" + str(hbe_max) + "\n")
             FILE3.close()
 
+            def read_weather_summary(file):
+                with open(file, 'r+', encoding="utf-8", errors="surrogateescape") as weatherfile:
+                    for line in weatherfile:
+                        if line.startswith('Top plume height a.s.l.'):
+                            line_new = line.split('\n')
+                            Habv = line_new[0].split(' = ')[1]
+                        elif line.startswith('Top plume height above'):
+                            line_new = line.split('\n')
+                            Hasl = line_new[0].split(' = ')[1]
+                        elif line.startswith('Plume height-averaged buoyancy'):
+                            line_new = line.split('\n')
+                            Navg = line_new[0].split(' = ')[1]
+                        elif line.startswith('Plume height-averaged wind'):
+                            line_new = line.split('\n')
+                            Vavg = line_new[0].split(' = ')[1]
+                        elif line.startswith('Wind'):
+                            line_new = line.split('\n')
+                            VH = line_new[0].split(' = ')[1]
+                        elif line.startswith('Ws'):
+                            line_new = line.split('\n')
+                            WS = line_new[0].split(' = ')[1]
+                return(Habv,Hasl,Navg,Vavg,VH,WS)
+
+
             # Save only "weather_parameters" files with average, maximum and minimum plume height
             path = os.getcwd()
             for file in os.listdir(path):
@@ -3734,6 +3765,12 @@ while 1:
                             continue
                         else:
                             os.rename(filename, filename_new)
+                            [Habv, Hasl, Navg, Vavg, VH, WS] = read_weather_summary(filename_new)
+                            weather_file_min = open(out_txt + "_weather_data_hmin.txt", "a", encoding="utf-8",
+                                                    errors="surrogateescape")
+                            weather_file_min.write(
+                                str(TimeNOW) + "\t" + str(timin) + "\t" + Habv + "\t" + Hasl + "\t" + Navg + "\t" + Vavg + "\t" + VH + "\t" + WS + "\n")
+                            weather_file_min.close()
 
                     elif H_from_filename == int(hbe_max):
                         filename_pieces[3] = str(timin) + '_Hmax.txt'
@@ -3743,6 +3780,13 @@ while 1:
                             continue
                         else:
                             os.rename(filename, filename_new)
+                            [Habv, Hasl, Navg, Vavg, VH, WS] = read_weather_summary(filename_new)
+                            weather_file_max = open(out_txt + "_weather_data_hmax.txt", "a", encoding="utf-8",
+                                        errors="surrogateescape")
+                            weather_file_max.write(
+                                str(TimeNOW) + "\t" + str(timin) + "\t" + Habv + "\t" + Hasl + "\t" + Navg + "\t" + Vavg + "\t" + VH + "\t" + WS + "\n")
+                            weather_file_max.close()
+
                     elif H_from_filename == int(hbe):
                         filename_pieces[3] = str(timin) + '_Havg.txt'
                         filename_new = filename_pieces[0] + '_' + filename_pieces[1] + '_' + filename_pieces[2] + '_' + \
@@ -3751,6 +3795,12 @@ while 1:
                             continue
                         else:
                             os.rename(filename, filename_new)
+                            [Habv, Hasl, Navg, Vavg, VH, WS] = read_weather_summary(filename_new)
+                            weather_file_avg = open(out_txt + "_weather_data_havg.txt", "a", encoding="utf-8",
+                                                    errors="surrogateescape")
+                            weather_file_avg.write(
+                                str(TimeNOW) + "\t" + str(timin) + "\t" + Habv + "\t" + Hasl + "\t" + Navg + "\t" + Vavg + "\t" + VH + "\t" + WS + "\n")
+                            weather_file_avg.close()
                     else:
                         os.remove(filename)
 
