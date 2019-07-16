@@ -384,16 +384,34 @@ except EnvironmentError:
     lead_Time =24*60*lead_Time_d + 60*lead_Time_h+lead_Time_m
 
 fMER_file = open(out_txt + "_FMER.txt", "a",encoding="utf-8", errors="surrogateescape")
-fMER_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'FMER min'+"\t"+'FMER avg'+"\t"+'FMER max'+"\n")
+fMER_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'FMER min (kg/s)'+"\t"+'FMER avg (kg/s)'+"\t"+'FMER max (kg/s)'+"\n")
 fMER_file.close()
+MER_Gudmundsson_file = open(out_txt + "_MER_Gudmundsson.txt", "a",encoding="utf-8", errors="surrogateescape")
+MER_Gudmundsson_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'H (m)'+"\t"+'MER (kg/s)'+"\n")
+MER_Gudmundsson_file.close()
+MER_WilsonWalker_file = open(out_txt + "_MER_WilsonWalker.txt", "a",encoding="utf-8", errors="surrogateescape")
+MER_WilsonWalker_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'Hmin (m)' + "\t" + 'MERmin (kg/s)'+"\t" + 'Havg (m)' + "\t" +'MERavg (kg/s)' + "\t" + 'Hmax (m)' + "\t"+'MERmax (kg/s)'+"\n")
+MER_WilsonWalker_file.close()
+MER_Sparks_file = open(out_txt + "_MER_Sparks.txt", "a",encoding="utf-8", errors="surrogateescape")
+MER_Sparks_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'Hmin (m)' + "\t" + 'MERmin (kg/s)'+"\t" + 'Havg (m)' + "\t" +'MERavg (kg/s)' + "\t" + 'Hmax (m)' + "\t"+'MERmax (kg/s)'+"\n")
+MER_Sparks_file.close()
+MER_Mastin_file = open(out_txt + "_MER_Mastin.txt", "a",encoding="utf-8", errors="surrogateescape")
+MER_Mastin_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'Hmin (m)' + "\t" + 'MERmin (kg/s)'+"\t" + 'Havg (m)' + "\t" +'MERavg (kg/s)' + "\t" + 'Hmax (m)' + "\t"+'MERmax (kg/s)'+"\n")
+MER_Mastin_file.close()
+MER_DegBon_file = open(out_txt + "_MER_DegBon.txt", "a",encoding="utf-8", errors="surrogateescape")
+MER_DegBon_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'Hmin (m)' + "\t" + 'MERmin (kg/s)'+"\t" + 'Havg (m)' + "\t" +'MERavg (kg/s)' + "\t" + 'Hmax (m)' + "\t"+'MERmax (kg/s)'+"\n")
+MER_DegBon_file.close()
+MER_Wood0D_file = open(out_txt + "_MER_Wood0D.txt", "a",encoding="utf-8", errors="surrogateescape")
+MER_Wood0D_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'Hmin (m)' + "\t" + 'MERmin (kg/s)'+"\t" + 'Havg (m)' + "\t" +'MERavg (kg/s)' + "\t" + 'Hmax (m)' + "\t"+'MERmax (kg/s)'+"\n")
+MER_Wood0D_file.close()
 PLH_file = open(out_txt + "_PLH.txt", "a",encoding="utf-8", errors="surrogateescape")
-PLH_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'PLH min'+"\t"+'PLH avg'+"\t"+'PLH max'+"\n")
+PLH_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'PLH min (m)'+"\t"+'PLH avg (m)'+"\t"+'PLH max (m)'+"\n")
 PLH_file.close()
 PLH_avg_file = open(out_txt + "_tavg_PLH.txt", "a",encoding="utf-8", errors="surrogateescape")
-PLH_avg_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'PLH min'+"\t"+'PLH avg'+"\t"+'PLH max'+"\n")
+PLH_avg_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'PLH min (m)'+"\t"+'PLH avg (m)'+"\t"+'PLH max (m)'+"\n")
 PLH_avg_file.close()
 FMER_avg_file = open(out_txt + "_tavg_FMER.txt", "a",encoding="utf-8", errors="surrogateescape")
-FMER_avg_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'FMER min'+"\t"+'FMER avg'+"\t"+'FMER max'+"\n")
+FMER_avg_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'FMER min (kg/s)'+"\t"+'FMER avg (kg/s)'+"\t"+'FMER max (kg/s)'+"\n")
 FMER_avg_file.close()
 NAME_file_avg = open(out_txt + "_NAME_sources_avg.txt", "a",encoding="utf-8", errors="surrogateescape")
 NAME_file_writer = csv.writer(NAME_file_avg,delimiter = ',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -1205,7 +1223,6 @@ while 1:
 
     def plot_src_analysis(l_c,l_cm,l_x,l_xm,l_cam,l_air,l_gr,l_other):
         """plots the results of the statistical plume height input data analyses"""
-    
     # data to plot
         n_groups = 21
         data_auto = (l_c[0],l_c[1],l_c[2],l_c[3],l_c[4],l_c[5],l_x[0],l_x[1],l_x[2],\
@@ -1254,7 +1271,6 @@ while 1:
 
     def plot_src_totalcount(npl_c,npl_cm,npl_x,npl_xm,npl_cam,npl_air,npl_gr,npl_other):
         """plots the total amount of plume height input data by source"""
-    
     # data to plot
         n_groups = 21
         data_auto = (npl_c[0],npl_c[1],npl_c[2],npl_c[3],npl_c[4],npl_c[5],npl_x[0],npl_x[1],npl_x[2],\
@@ -2144,8 +2160,7 @@ while 1:
                 logger3.warning("------------data set seems to be from future!\n")
             else:
                 indiv_plh_stack(timediff,plh,unc,qf,source,onoff)
-                
-                
+
                 if timediff<16:
                     src_analysis1(5,source)
                 elif timediff<31:
@@ -2160,11 +2175,10 @@ while 1:
                 huj=0
                 if analysis == 0:
                     huj = 1
-                else:
-                    plot_src_totalcount(N_PLH_C,N_PLH_Cm,N_PLH_X,N_PLH_Xm,N_PLH_Cam,N_plh_air,N_plh_gr,N_plh_other) 
-                                        
-                                        
-                    plot_src_analysis(LATE_C,LATE_Cm,LATE_X,LATE_Xm,LATE_Cam,Latest_plh_air,Latest_plh_gr,Latest_plh_other) 
+                # Commented since it blocks the computation when using analysis mode
+                #else:
+                #    plot_src_totalcount(N_PLH_C,N_PLH_Cm,N_PLH_X,N_PLH_Xm,N_PLH_Cam,N_plh_air,N_plh_gr,N_plh_other)
+                 #   plot_src_analysis(LATE_C,LATE_Cm,LATE_X,LATE_Xm,LATE_Cam,Latest_plh_air,Latest_plh_gr,Latest_plh_other)
 
                 if timediff<181:
                     input_allphfile(timediff, hmin,plh,hmax,qf,source,onoff)
@@ -3632,9 +3646,10 @@ while 1:
 +str(mer_stat[9])+"\t"+str(Qf_absmin)+"\t"\
 +str(Qf_absmax)+"\t"+str(Qfmer_min)+"\t"+str(Qfmer)+"\t"+str(Qfmer_max)+"\t"+str(tiba)+"\n")
             FILE1.close()
-        
+        # PROVA
+        def save_mer_logfile(n,hbe,mer_stat,MER,tiba):
+        #def save_mer_logfile(n,hbe,mer_stat,MERww,MERsp,MERma,MERwood0d,tiba):
 
-        def save_mer_logfile(n,hbe,mer_stat,MERww,MERsp,MERma,MERwood0d,tiba):
             """ logs continously statistic summary of MER in a file"""
             global cur_hbe,cur_hbe_min,cur_hbe_max,cur_MERMIN_hmin,cur_MERMAX_hmin,\
     cur_MERWE,cur_MERMAX_PLUS,cur_MaxMERhmax,cur_MERww,cur_MERsp,cur_MERma,\
@@ -3643,6 +3658,24 @@ while 1:
             global Qf_absmin,Qf_absmax,a_man,Qfmer_min,Qfmer_max,Qfmer
             global dt_sec, timin_sec_cum
             global hbe_min_sum, hbe_sum, hbe_max_sum, Qfmer_min_sum, Qfmer_sum, Qfmer_max_sum, ndata, nsources, NAME_out_on
+            # PROVA #
+            MERgud = MER[0]
+            MERww = MER[1][1]
+            MERsp = MER[2][1]
+            MERma = MER[3][1]
+            MERdb = MER[4][1]
+            MERwood0d = MER[5][1]
+            MERww_min = MER[1][0]
+            MERsp_min = MER[2][0]
+            MERma_min = MER[3][0]
+            MERdb_min = MER[4][0]
+            MERwood0d_min = MER[5][0]
+            MERww_max = MER[1][2]
+            MERsp_max = MER[2][2]
+            MERma_max = MER[3][2]
+            MERdb_max = MER[4][2]
+            MERwood0d_max = MER[5][2]
+            # FINE PROVA #
             cur_N = n
             cur_hbe = int(hbe) # current b.e. plume height
             cur_hbe_min = int(hbe_min)
@@ -3718,10 +3751,33 @@ while 1:
             FILE2.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min) + "\t" + str(Qfmer) + "\t" + str(
                 Qfmer_max) + "\n")
             FILE2.close()
+            FILE2a = open(out_txt + "_MER_Gudmundsson.txt", "a",encoding="utf-8", errors="surrogateescape")
+            FILE2a.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe) + "\t" + str(MERgud) + "\n")
+            FILE2a.close()
+            FILE2b = open(out_txt + "_MER_WilsonWalker.txt", "a",encoding="utf-8", errors="surrogateescape")
+            FILE2b.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERww_min) + "\t" + str(hbe) + "\t" + str(MERww) + "\t" + str(hbe_max) + "\t" + str(MERww_max) + "\n")
+            FILE2b.close()
+            FILE2c = open(out_txt + "_MER_Sparks.txt", "a", encoding="utf-8", errors="surrogateescape")
+            FILE2c.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERsp_min) + "\t" + str(
+            hbe) + "\t" + str(MERsp) + "\t" + str(hbe_max) + "\t" + str(MERsp_max) + "\n")
+            FILE2c.close()
+            FILE2d = open(out_txt + "_MER_Mastin.txt", "a", encoding="utf-8", errors="surrogateescape")
+            FILE2d.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERma_min) + "\t" + str(
+            hbe) + "\t" + str(MERma) + "\t" + str(hbe_max) + "\t" + str(MERma_max) + "\n")
+            FILE2d.close()
+            FILE2e = open(out_txt + "_MER_DegBon.txt", "a", encoding="utf-8", errors="surrogateescape")
+            FILE2e.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERdb_min) + "\t" + str(
+            hbe) + "\t" + str(MERdb) + "\t" + str(hbe_max) + "\t" + str(MERdb_max) + "\n")
+            FILE2e.close()
+            FILE2f = open(out_txt + "_MER_Wood0D.txt", "a", encoding="utf-8", errors="surrogateescape")
+            FILE2f.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERwood0d_min) + "\t" + str(
+            hbe) + "\t" + str(MERwood0d) + "\t" + str(hbe_max) + "\t" + str(MERwood0d_max) + "\n")
+            FILE2f.close()
             FILE3 = open(out_txt + "_PLH.txt", "a",encoding="utf-8", errors="surrogateescape")
             FILE3.write(
                 str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(hbe) + "\t" + str(hbe_max) + "\n")
             FILE3.close()
+
 
             def read_weather_summary(file):
                 with open(file, 'r+', encoding="utf-8", errors="surrogateescape") as weatherfile:
@@ -3745,7 +3801,6 @@ while 1:
                             line_new = line.split('\n')
                             WS = line_new[0].split(' = ')[1]
                 return(Habv,Hasl,Navg,Vavg,VH,WS)
-
 
             # Save only "weather_parameters" files with average, maximum and minimum plume height
             path = os.getcwd()
@@ -4755,7 +4810,9 @@ while 1:
                 MERmaxNowiHmin = min(max(mer_stack30[1][0],mer_stack30[2][0],mer_stack30[3][0]),min(mer_stack30[1][1],mer_stack30[2][1],mer_stack30[3][1]))
                 hbe_min = result30_stack[0]
                 hbe_max = result30_stack[2]
-                save_mer_logfile(N30min,result30_stack[1],MER_Stat30,mer_stack30[1][1],mer_stack30[2][1],mer_stack30[3][1],mer_stack30[5][1],30)
+                # PROVA
+                save_mer_logfile(N30min,result30_stack[1],MER_Stat30,mer_stack30,30)
+                #save_mer_logfile(N30min,result30_stack[1],MER_Stat30,mer_stack30[1][1],mer_stack30[2][1],mer_stack30[3][1],mer_stack30[5][1],30)
                 save_current_mer(N30min,MER_Stat30,30)
 
             elif TIMEBASE == 60:
