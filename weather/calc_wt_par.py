@@ -89,7 +89,6 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
         print('Warning! Plume height > maximum height of the weather data domain')
     elif hgt[nlines - 1] > H_top:
         print('Warning! Plume height < surface level')
-
     # Calculate average N and V over the plume height (from the source to the top)
     for i in range(i_H_source, -1, -1):
         if hgt[i] > H_top:
@@ -130,9 +129,13 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
 
             N_avg = N_avg + 0.5 * (N[i - 1] + N_H_source) * abs(hgt[i - 1] - H_source)
             V_avg = V_avg + 0.5 * (wind[i - 1] + V_H_source) * abs(hgt[i - 1] - H_source)
-    N_avg = N_avg / (H_top - H_source)
-    N_avg = N_avg ** 0.5
-    V_avg = V_avg / (H_top - H_source)
+    if H_plume == 1:
+        N_avg = N_H_source ** 0.5
+        V_avg = V_H_source
+    else:
+        N_avg = N_avg / (H_top - H_source)
+        N_avg = N_avg ** 0.5
+        V_avg = V_avg / (H_top - H_source)
 
     # Woodhouse (2013) Ws parameter
     Ws = (1.44 * V_H_top) / (N_avg * H_top)
