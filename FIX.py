@@ -448,7 +448,7 @@ def read_sensors():
                     sens_IP[x] = ""
                     sens_dir[x] = ""
     except  EnvironmentError:
-        print("Error - \".ini\" sensor file not found!\n")
+        print("Warning - \".ini\" C-band radar sensor file not found!\n")
 
     try:
         # X-band
@@ -475,7 +475,7 @@ def read_sensors():
                     sens_IP[x + 6] = ""
                     sens_dir[x + 6] = ""
     except  EnvironmentError:
-        print("Error - \".ini\" sensor file not found!\n")
+        print("Warning - \".ini\" X-band radar sensor file not found!\n")
     try:
         # Cams
         fnCam = os.path.join(dir1 + '/refir_config', 'Cam.ini')
@@ -501,7 +501,7 @@ def read_sensors():
                     sens_dir[x + 12] = ""
 
     except  EnvironmentError:
-        print("Error - \".ini\" sensor file not found!\n")
+        print("Warning - \".ini\" Webcam sensor file not found!\n")
 
 
 read_sensors()  # ID: array with sensor IDs [0-5]:Cband, [6-11]:Xband, [12-17]Cam

@@ -822,7 +822,7 @@ def read_sensors():
                     FocS[x+12] = int(Cse[x+1][4])            
     except  EnvironmentError:
         print("Error - \".ini\" sensor file not found!\n")
-        sys.exit()
+        #sys.exit()
 
 def create_vdbheader():
     """generates header of volc_database.ini file"""

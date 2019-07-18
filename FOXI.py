@@ -3658,7 +3658,6 @@ while 1:
             global Qf_absmin,Qf_absmax,a_man,Qfmer_min,Qfmer_max,Qfmer
             global dt_sec, timin_sec_cum
             global hbe_min_sum, hbe_sum, hbe_max_sum, Qfmer_min_sum, Qfmer_sum, Qfmer_max_sum, ndata, nsources, NAME_out_on
-            # PROVA #
             MERgud = MER[0]
             MERww = MER[1][1]
             MERsp = MER[2][1]
@@ -3675,7 +3674,6 @@ while 1:
             MERma_max = MER[3][2]
             MERdb_max = MER[4][2]
             MERwood0d_max = MER[5][2]
-            # FINE PROVA #
             cur_N = n
             cur_hbe = int(hbe) # current b.e. plume height
             cur_hbe_min = int(hbe_min)
