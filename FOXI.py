@@ -1139,32 +1139,33 @@ while 1:
         from radar_converter import retrieve_icelandic_radar,process_radar_file
         # radar_converter module download the radar data for the volcano of interest and create the radar files in the
         # format that REFIR is used to. Any future user should create his own radar_converter module
-        if idsrc == 'ISKEF' or idsrc == 'ISEGS' or idsrc == 'ISX1' or idsrc == 'ISX2':
-            retrieve_icelandic_radar(vulkan)
-            process_radar_file()
-        else:
-            s_filetxt = s_file +".txt"
-            if s_url !="":
-                #www retrieval
-                try:
-                    if sys.version_info[0] >= 3:
-                        from urllib.request import urlretrieve
-                    else:
-                        # Not Python 3
-                        from urllib import urlretrieve
-                    logger3.info("url >>> "+str(idsrc)+" >>> connected!")
-                    urlretrieve(s_url, s_filetxt)
-                    logger3.info("OK - file transferred!")
-                except  EnvironmentError:
-                    print("Error - url "+str(s_url)+" could not be opened!\n")
-                    #adjusting the waiting period to delays caused by offline sites
-                    if verz > 239:
-                        verz = 240 #maximum 240s
-                    else:
-                        verz = verz+20
+        if ISKEF_on == 1 or ISEGS_on == 1 or ISX1_on == 1 or ISX2_on == 1:
+            if idsrc == 'ISKEF' or idsrc == 'ISEGS' or idsrc == 'ISX1' or idsrc == 'ISX2':
+                retrieve_icelandic_radar(vulkan)
+                process_radar_file()
             else:
-                #FTP
-                ftp_import(onoroff,s_IP,idsrc,s_dir,s_file)
+                s_filetxt = s_file +".txt"
+                if s_url !="":
+                    #www retrieval
+                    try:
+                        if sys.version_info[0] >= 3:
+                            from urllib.request import urlretrieve
+                        else:
+                            # Not Python 3
+                            from urllib import urlretrieve
+                        logger3.info("url >>> "+str(idsrc)+" >>> connected!")
+                        urlretrieve(s_url, s_filetxt)
+                        logger3.info("OK - file transferred!")
+                    except  EnvironmentError:
+                        print("Error - url "+str(s_url)+" could not be opened!\n")
+                        #adjusting the waiting period to delays caused by offline sites
+                        if verz > 239:
+                            verz = 240 #maximum 240s
+                        else:
+                            verz = verz+20
+                else:
+                    #FTP
+                    ftp_import(onoroff,s_IP,idsrc,s_dir,s_file)
             
     for x in range (0,18):
         if ID[x]=="n.a.":
@@ -4800,7 +4801,7 @@ while 1:
                 MERmaxNowiHmin = min(max(mer_stack15[1][0],mer_stack15[2][0],mer_stack15[3][0]),min(mer_stack15[1][1],mer_stack15[2][1],mer_stack15[3][1]))
                 hbe_min = result15_stack[0]
                 hbe_max = result15_stack[2] 
-                save_mer_logfile(N15min,result15_stack[1],MER_Stat15,mer_stack15[1][1],mer_stack15[2][1],mer_stack15[3][1],mer_stack15[5][1],15)
+                save_mer_logfile(N15min,result15_stack[1],MER_Stat15,mer_stack15,15)
                 save_current_mer(N15min,MER_Stat15,15)    
             
             elif TIMEBASE == 30:
@@ -4818,7 +4819,7 @@ while 1:
                 MERmaxNowiHmin = min(max(mer_stack1h[1][0],mer_stack1h[2][0],mer_stack1h[3][0]),min(mer_stack1h[1][1],mer_stack1h[2][1],mer_stack1h[3][1]))
                 hbe_min = result1h_stack[0]
                 hbe_max = result1h_stack[2] 
-                save_mer_logfile(N1h,result1h_stack[1],MER_Stat1h,mer_stack1h[1][1],mer_stack1h[2][1],mer_stack1h[3][1],mer_stack1h[5][1],60)
+                save_mer_logfile(N1h,result1h_stack[1],MER_Stat1h,mer_stack1h,60)
                 save_current_mer(N1h,MER_Stat1h,60)
                 
             else:
@@ -4826,7 +4827,7 @@ while 1:
                 MERmaxNowiHmin = min(max(mer_stack3h[1][0],mer_stack3h[2][0],mer_stack3h[3][0]),min(mer_stack3h[1][1],mer_stack3h[2][1],mer_stack3h[3][1]))
                 hbe_min = result3h_stack[0]
                 hbe_max = result3h_stack[2] 
-                save_mer_logfile(N3h,result3h_stack[1],MER_Stat3h,mer_stack3h[1][1],mer_stack3h[2][1],mer_stack3h[3][1],mer_stack3h[5][1],180)
+                save_mer_logfile(N3h,result3h_stack[1],MER_Stat3h,mer_stack3h,180)
                 save_current_mer(N3h,MER_Stat3h,180)   
             logger7.info(" Log files recorded. \n ")
             logger7.info("***** step 7 successful *****")

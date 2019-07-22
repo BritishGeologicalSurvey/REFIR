@@ -821,7 +821,7 @@ def read_sensors():
                     TypS[x+12] = int(Cse[x+1][3])            
                     FocS[x+12] = int(Cse[x+1][4])            
     except  EnvironmentError:
-        print("Error - \".ini\" sensor file not found!\n")
+        print("Warning - \".ini\" sensor file not found!\n")
         #sys.exit()
 
 def create_vdbheader():

@@ -389,7 +389,7 @@ if weather == 1:
 
 qf_OBS = 4
 
-timebase = -1
+#timebase = -1
 
 ID = ["n.a.", "n.a.", "n.a.", "n.a.", "n.a.", "n.a.", "n.a.", "n.a.", "n.a.", "n.a.", "n.a.", "n.a.", "n.a.", "n.a.",
       "n.a.", "n.a.", "n.a.", "n.a."]
@@ -646,16 +646,16 @@ def defaultvalues(venth):
 
     time_OBS = datetime.datetime(1979, 4, 30)
     analysis = 0
-    timebase = -1
+    timebase = 30 #-1
 
-    ISKEF_on = 1
-    ISEGS_on = 1
-    ISX1_on = 1
-    ISX2_on = 1
-    ISKEFm_on = 1
-    ISEGSm_on = 1
-    ISX1m_on = 1
-    ISX2m_on = 1
+    ISKEF_on = 0
+    ISEGS_on = 0
+    ISX1_on = 0
+    ISX2_on = 0
+    ISKEFm_on = 0
+    ISEGSm_on = 0
+    ISX1m_on = 0
+    ISX2m_on = 0
     GFZ1_on = 0
     GFZ2_on = 0
     GFZ3_on = 0
