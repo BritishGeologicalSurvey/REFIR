@@ -4556,17 +4556,20 @@ while 1:
                     saveEMER(180)
         
         # MANUAL MER
-        
-        
-        Qman_stack3h = [[0,0,0,0,0,0,0]]
-        Qman_stack1h = [[0,0,0,0,0,0,0]]
-        Qman_stack30 = [[0,0,0,0,0,0,0]]
-        Qman_stack15 = [[0,0,0,0,0,0,0]]
+
+        #Qman_stack3h = [[0,0,0,0,0,0,0]]
+        #Qman_stack1h = [[0,0,0,0,0,0,0]]
+        #Qman_stack30 = [[0,0,0,0,0,0,0]]
+        #Qman_stack15 = [[0,0,0,0,0,0,0]]
+        Qman_stack3h = []
+        Qman_stack1h = []
+        Qman_stack30 = []
+        Qman_stack15 = []
         
         def Qman_stacksort(timdiff,mmer_min, mmer_max,wf,man_src,man_onoff):
             """sorts data according to up-to-dateness"""
             mmer = (mmer_min+mmer_max)/2
-            
+
             if timdiff<181:
                 Qman_stack3h.append([timdiff, mmer_min,mmer,mmer_max,wf,man_src,man_onoff])
                 
@@ -4634,7 +4637,7 @@ while 1:
         mN30min=0
         for x in range(0,len(Qman_stack30)):
             mN30min = int(mN30min + Qman_stack30[x][-1])
-        
+
         mN15min=0
         for x in range(0,len(Qman_stack15)):
             mN15min = int(mN15min + Qman_stack15[x][-1])
