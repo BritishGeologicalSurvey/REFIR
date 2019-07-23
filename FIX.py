@@ -549,7 +549,6 @@ def defaultvalues(venth):
     global wtf_mtg
     global wtf_deg
     global wtf_wood0d
-
     global rho_dre
     global Vmax
     global ki
@@ -613,6 +612,7 @@ def defaultvalues(venth):
     global cal_Cband3a, cal_Cband3b, cal_Cband4a, cal_Cband4b, cal_Cband5a, cal_Cband5b, \
         cal_Cband6a, cal_Cband6b, cal_Xband3a, cal_Xband3b, cal_Xband4a, cal_Xband4b, \
         cal_Xband5a, cal_Xband5b, cal_Xband6a, cal_Xband6b
+    global ESPs_data_on
 
     P0 = 101325  # default ambient pressure at sea level
     P_0_in_default = P0 * math.exp(-venth / 7990)  # def. ambient pressure at vent
@@ -709,6 +709,7 @@ def defaultvalues(venth):
     StatusR_oo = 1
     NAME_out_on = 0
     PI_THRESH = 5.0
+    ESPs_data_on = 0
 
     Cband3_on, Cband4_on, Cband5_on, Cband6_on, Xband3_on, Xband4_on, \
     Xband5_on, Xband6_on, Cam4_on, Cam5_on, Cam6_on, Cband3m_on, Cband4m_on, Cband5m_on, \
@@ -1078,6 +1079,7 @@ def get_last_data():
         PM_TAV = int(configlines3[169])
         NAME_out_on = int(configlines3[170])
         PI_THRESH = float(configlines3[171])
+        ESPs_data_on = int(configlines3[172])
         get_last_time()
 
     except EnvironmentError:
@@ -1149,7 +1151,7 @@ def save_default_file():
                        + "\n" + str(loc_GFZ1) + "\n" + str(loc_GFZ2) + "\n" + str(loc_GFZ3) \
                        + "\n" + str(loc_Cam4) + "\n" + str(loc_Cam5) + "\n" + str(loc_Cam6) + "\n" + str(defsetup) \
                        + "\n" + str(run_type) + "\n" + str(weather) + "\n" + str(wtf_wood0d) + "\n" + str(time_start) \
-                       + "\n" + str(time_stop)  + "\n" + str(exit_param) + "\n" + str(PM_TAV) + "\n" + str(NAME_out_on) + "\n" + str(PI_THRESH))  # New variables in the config files for the run type, weather and time averaging options
+                       + "\n" + str(time_stop)  + "\n" + str(exit_param) + "\n" + str(PM_TAV) + "\n" + str(NAME_out_on) + "\n" + str(PI_THRESH) + "\n" + str(ESPs_data_on))  # New variables in the config files for the run type, weather and time averaging options
     default_FILE.close()
 
 defaultvalues(vent_h)
@@ -3165,6 +3167,7 @@ def add_plhobs():
         global sourceOBSdata
         global comment_obs
         global Min_DiaOBS, Max_DiaOBS
+        global ESPs_data_on
 
         list_S = sensorliste()
 
@@ -3382,6 +3385,9 @@ def add_plhobs():
 
     Label(plhobs, text="Include data?", font=("Verdana", 8), fg="red").grid(row=9, column=11, columnspan=3, sticky=W)
     Checkbutton(plhobs, variable=OBSdata_on).grid(row=9, column=10, sticky=E)
+
+    Label(plhobs, text="Use ESPs database", font=("Verdana", 8), fg="red").grid(row=10, column=11, columnspan=3, sticky=W)
+    Checkbutton(plhobs, variable=ESPs_on).grid(row=10, column=10, sticky=E)
 
     Button(plhobs, text="Update observed plume height", font=("Verdana", 8, \
                                                               "bold"), bg="dim gray", fg="yellow",
@@ -4053,6 +4059,9 @@ def fmer_modeF():
 
 
 def operation_control():
+    global ESPs_on
+    ESPs_on = IntVar()
+    ESPs_on.set(False)
     masterklick.title("Operation Control Board - REFIR FIX")
     Label(masterklick, text="Operation Control Board", font=("Verdana", 14, \
                                                              "bold"), fg="navy").grid(row=0, column=0, columnspan=3)
@@ -4121,7 +4130,9 @@ def operation_control():
     Button(masterklick, text="Add MER Estimate", \
            font=("Verdana", 8), fg="red", bg="light steel blue", width=18, height=2, \
            command=man_MERF).grid(row=8, column=0)
-    Label(masterklick, text="   ", font=("Verdana", 8)).grid(row=9, column=0)
+    #Label(masterklick, text="   ", font=("Verdana", 8)).grid(row=9, column=0)
+    Label(masterklick, text="Use ESPs database", font=("Verdana", 8), fg="red").grid(row=9, column=0, sticky = E, padx=35)
+    Checkbutton(masterklick, variable=ESPs_on).grid(row=9, column=0,sticky=W,padx=25)
     Label(masterklick, text="Status Overview:", font=("Verdana", 8)).grid(row=10, column=0)
     label3 = Label(masterklick, textvariable=sdefault_txt, bg=bgcol.get())
     label3.grid(row=11, column=0, columnspan=3)
@@ -4132,5 +4143,6 @@ def operation_control():
                                                                                   columnspan=3)
     masterklick.mainloop()
 
-
 operation_control()
+ESPs_data_on = int(ESPs_on.get())
+save_default_file()

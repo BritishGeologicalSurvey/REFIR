@@ -54,7 +54,7 @@ import csv
 #import matplotlib.image as image
 
 """ settings START """
-global PI_THRESH, TimeOLD
+global PI_THRESH, TimeOLD, ESPs_data_on
 
 scenario = "     +++ EXERCISE! +++ " # change into " " in real eruption
 FOXIversion ="19.0"
@@ -808,6 +808,7 @@ while 1:
     PM_TAV = int(configlines[169])
     NAME_out_on = int(configlines[170])
     PI_THRESH = float(configlines[171])
+    ESPs_data_on = int(configlines[172])
 
     if exit_param == 1:
         refir_end()
