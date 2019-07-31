@@ -620,13 +620,11 @@ while 1:
     #     timin = int((TimeNOW-time_tveir).total_seconds()/60)
 
     try:
-        
         configfile = open("fix_config.txt", "r",encoding="utf-8", errors="surrogateescape")
         configlines = configfile.readlines()
         configfile.close()
         checkfile = 1
         logger2.info("***** step 2 successful *****")
-    
     
     except EnvironmentError:
         checkfile = 0
@@ -845,7 +843,7 @@ while 1:
             print("Eruption ended")
             refir_end()
         lead_Time = 0
-
+# INSERIRE QUI LA GENERAZIONE DEL FILE FIX_OBSIN DA EPS DATABASE. VERRÁ AGGIORNATO AD OGNI TIME STEP
     if run_type == 1:
         if run == 1:
 #            timin = lead_Time

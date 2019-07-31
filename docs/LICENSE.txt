@@ -1,11 +1,20 @@
-REFIR 18.1 software package 
-Copyright (C) 2018 Tobias Dürig
+REFIR 19.0 software package 
+Copyright (C) 2019 Tobias Dürig and Fabio Dioguardi
 
-REFIR 18.1 contains the following programs:
-- FIX.py (version 18.1)
-- FOXI.py (version 18.1)
-- FoxSet.py (version 18.1)
-- REFIR_monitor.py (version 18.1)
+REFIR 19.0 contains the following programs:
+- FIX.py (version 19.0)
+- FOXI.py (version 19.0)
+- FoxScrren.py (version 19.0)
+- REFIR.py (version 19.0)
+- radar_converter.py (version 19.0)
+- refir_config/FoxSet.py (version 19.0)
+- weather/calc_wt_par.py (version 19.0)
+- weather/read.py (version 19.0)
+- weather/retrieve_data.py (version 19.0)
+- REFIR_monitor.py (version 19.0)
+
+and the following dataset:
+- refir_config/SI_volcano_list.xlsx
 
 These programs are free software: you can redistribute them and/or modify them under the terms of the GNU
 General Public License as published by the Free Software Foundation, either version 3 of the
