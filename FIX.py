@@ -56,6 +56,8 @@ run_type = 1  # Default is real_time mode
 quit_refir = IntVar()
 #quit_refir.set(0) # FOXI continues until exit_param = 0
 exit_param = 0
+esps_dur = 0
+esps_plh = 0
 
 def calculate_position(self,x, y):
 # Function that control the position of the widget in the screen
@@ -1151,7 +1153,8 @@ def save_default_file():
                        + "\n" + str(loc_GFZ1) + "\n" + str(loc_GFZ2) + "\n" + str(loc_GFZ3) \
                        + "\n" + str(loc_Cam4) + "\n" + str(loc_Cam5) + "\n" + str(loc_Cam6) + "\n" + str(defsetup) \
                        + "\n" + str(run_type) + "\n" + str(weather) + "\n" + str(wtf_wood0d) + "\n" + str(time_start) \
-                       + "\n" + str(time_stop)  + "\n" + str(exit_param) + "\n" + str(PM_TAV) + "\n" + str(NAME_out_on) + "\n" + str(PI_THRESH) + "\n" + str(ESPs_data_on))  # New variables in the config files for the run type, weather and time averaging options
+                       + "\n" + str(time_stop)  + "\n" + str(exit_param) + "\n" + str(PM_TAV) + "\n" + str(NAME_out_on) \
+                       + "\n" + str(PI_THRESH) + "\n" + str(ESPs_data_on) + "\n" + str(esps_dur) + "\n" + str(esps_plh))  # New variables in the config files for the run type, weather and time averaging options
     default_FILE.close()
 
 defaultvalues(vent_h)
@@ -4143,6 +4146,30 @@ def operation_control():
                                                                                   columnspan=3)
     masterklick.mainloop()
 
+def read_esps_database():
+    import pandas as pd
+    import numpy as np
+    import os
+    global esps_plh,esps_dur
+
+    file_path = os.path.join('C:/','Users','fabiod','ESP_database.xlsx')
+    database = pd.read_excel(file_path, sheetname='volcanoes')
+    nrows = database.shape[0]
+    row = 0
+    while True:
+        if database['SMITHSONIAN_ID'][row] == np.int64(kurzvulk[vulkan]):
+            esps_dur = database['DURATION_hour'][row]
+            esps_plh = database['HEIGHT_ABOVE_VENT_km'][row]
+            break
+        else:
+            row +=1
+            if row >= nrows:
+                print('ID not found')
+                break
+
 operation_control()
 ESPs_data_on = int(ESPs_on.get())
+if ESPs_data_on == 1:
+    read_esps_database()
+
 save_default_file()
