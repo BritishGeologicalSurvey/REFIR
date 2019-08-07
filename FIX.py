@@ -4149,11 +4149,9 @@ def operation_control():
 def read_esps_database():
     import pandas as pd
     import numpy as np
-    import os
     global esps_plh,esps_dur
 
-    file_path = os.path.join('C:/','Users','fabiod','ESP_database.xlsx')
-    database = pd.read_excel(file_path, sheetname='volcanoes')
+    database = pd.read_excel('http://nercbgskwicms:81/research/volcanoes/esp/volcanoExport.xlsx', sheetname='volcanoes')
     nrows = database.shape[0]
     row = 0
     while True:
