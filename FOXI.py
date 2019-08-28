@@ -54,7 +54,7 @@ import csv
 #import matplotlib.image as image
 
 """ settings START """
-global PI_THRESH, TimeOLD, ESPs_data_on
+global PI_THRESH, TimeOLD, ESPs_data_on, esps_plh
 
 scenario = "     +++ EXERCISE! +++ " # change into " " in real eruption
 FOXIversion ="19.0"
@@ -807,6 +807,7 @@ while 1:
     NAME_out_on = int(configlines[170])
     PI_THRESH = float(configlines[171])
     ESPs_data_on = int(configlines[172])
+    esps_plh = float(configlines[174])
 
     if exit_param == 1:
         refir_end()
@@ -2645,7 +2646,17 @@ while 1:
                 logger3.warning("No "+ID[z+12]+" data found - check connection!")
                 logger3.info("Continuing with next sensor")
 
-    
+    if ESPs_data_on == 1:
+        logger3.info("")
+        logger3.info("")
+        logger3.info("******************************************")
+        logger3.info("Continuing with ESPs database data")
+        logger3.info("******************************************")
+        logger3.info("")
+        logger3.info("")
+        stacksort(1, esps_plh, 1000, 1, 1, 1)
+
+
     logger3.info("-------------------------------------")
     logger3.info("PLUME HEIGHT DATA SUMMARY REPORT:")
     

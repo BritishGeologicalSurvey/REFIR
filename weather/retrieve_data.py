@@ -27,14 +27,32 @@ Contact: tobi@hi.is, fabiod@bgs.ac.uk
 RNZ170318FS
 """
 
-def gfs_forecast_retrieve(lon_source,lat_source):
+
+def gfs_forecast_retrieve(lon_source,lat_source,nfcst):
     import urllib.request
     import urllib.error
-    #	import urllib2
     from datetime import datetime, date, timedelta
     from read import extract_data_gfs
     import os
     from shutil import copyfile
+    from pathos.multiprocessing import Pool, ThreadingPool
+
+    def wtfile_download(url, wtfile_dwnl):
+        import urllib.request
+        import urllib.error
+        print('Downloading forecast file ' + url)
+        urllib.request.urlretrieve(url, wtfile_dwnl)
+
+    def elaborate_wtfiles(wtfile,wtfile_int,wtfile_prof,abs_validity):
+        import os
+        os.system(
+            'wgrib2 ' + wtfile + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':100:0.01 ' + lat_corner + ':100:0.01 ' +
+            wtfile_int)
+        print('Saving weather data along the vertical at the vent location')
+        os.system('wgrib2 ' + wtfile_int + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
+        # Extract and elaborate weather data
+        extract_data_gfs(year, month, day, abs_validity, wtfile_prof)
+
     cwd = os.getcwd()
     if(lon_source < 0):
         lon_source = 360 + lon_source
@@ -48,6 +66,11 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     year_yst = yesterday[0:4]
     month_yst = yesterday[5:7]
     day_yst = yesterday[8:10]
+    urls = []
+    wtfiles = []
+    wtfiles_int = []
+    wtfiles_prof = []
+    abs_validities = []
 
     # Find last GFS analysis
     ihour = int(hour)
@@ -92,97 +115,114 @@ def gfs_forecast_retrieve(lon_source,lat_source):
     url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl
     print('Most up to date GFS analysis: ' + url)
 
+    data_folder = os.path.join(cwd,'raw_forecast_weather_data_'+ year + month + day + '/')
     # Retrieve weather data that best matches current time
     ifcst = ihour - ianl
     if ianl < 0:
         ianl = 18
         ifcst = ihour + 6
-
-    if ifcst < 10:
-        fcst = 'f00' + str(ifcst)
-    elif 10 < ifcst < 100:
-        fcst = 'f0' + str(ifcst)
-    else:
-        fcst = 'f' + str(ifcst)
-    wtfile = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
-    url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile
+    # Check all forecast files are available
+    max_ifcst = ifcst + nfcst
+    while ifcst < max_ifcst:
+        if ifcst < 10:
+            fcst = 'f00' + str(ifcst)
+        elif 10 <= ifcst < 100:
+            fcst = 'f0' + str(ifcst)
+        else:
+            fcst = 'f' + str(ifcst)
+        wtfile_dwnl = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
+        url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile_dwnl
+        try:
+            # urllib2.urlopen(url)
+            urllib.request.urlopen(url)
+        # except urllib2.HTTPError:
+        except urllib.error.HTTPError as e:
+            #       checksLogger.error('HTTPError = ' + str(e.code))
+            ianl = ianl - 6
+            ifcst = ifcst + 6
+            print('Forecast file ' + wtfile_dwnl + ' not yet available. Retrieving the equivalent from the previous forecast')
+            urls = []
+            wtfiles = []
+            max_ifcst = ifcst + nfcst
+        except urllib.error.URLError as e:
+            # except urllib2.URLError:
+            #      checksLogger.error('URLError = ' + str(e.reason))
+            ianl = ianl - 6
+            ifcst = ifcst + 6
+            print('Forecast file ' + wtfile_dwnl + ' not yet available. Retrieving the equivalent from the previous forecast')
+            urls = []
+            wtfiles = []
+            max_ifcst = ifcst + nfcst
+        if ianl < 0:
+            ianl = 18
+            year_anl = year_yst
+            month_anl = month_yst
+            day_anl = day_yst
+            anl = str(ianl)
+        elif 0 <= ianl < 10:
+            anl = '0' + str(ianl)
+        else:
+            anl = str(ianl)
+        ival = ianl + ifcst
+        if ival < 10:
+            validity = '0' + str(ival)
+        elif ival >= 24:
+            ival = ival - 24
+            validity = '0' + str(ival)
+        else:
+            validity = str(ival)
+        if ifcst < 10:
+            fcst = 'f00' + str(ifcst)
+        elif 10 <= ifcst < 100:
+            fcst = 'f0' + str(ifcst)
+        else:
+            fcst = 'f' + str(ifcst)
+        wtfile_dwnl = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
+        abs_validity = year + month + day + validity
+        elaborated_prof_file = 'profile_data_' + abs_validity + '.txt'
+        elaborated_prof_file_path = os.path.join(data_folder, elaborated_prof_file)
+        print('Checking if ' + elaborated_prof_file + ' exists in ' + data_folder)
+        if os.path.isfile(elaborated_prof_file_path):
+            print('File ' + elaborated_prof_file + ' already available in ' + data_folder)
+            ifcst += 1
+        else:
+            abs_validities.append(abs_validity)
+            wtfile = 'weather_data_' + year_anl + month_anl + day_anl + anl + '_' + fcst
+            wtfile_int = 'weather_data_interpolated_' + year_anl + month_anl + day_anl + anl + '_' + fcst
+            wtfile_prof = 'profile_' + year + month + day + anl + validity + '.txt'
+            url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile_dwnl
+            print('Checking if ' + wtfile + ' exists in ' + data_folder)
+            if os.path.isfile(data_folder + wtfile):
+                print('File ' + wtfile + ' found')
+                copyfile('raw_forecast_weather_data_' + year + month + day + '/' + wtfile, wtfile)
+                ifcst += 1
+            else:
+                urls.append(url)
+                ifcst += 1
+            wtfiles.append(wtfile)
+            wtfiles_int.append(wtfile_int)
+            wtfiles_prof.append(wtfile_prof)
     try:
-        # urllib2.urlopen(url)
-        urllib.request.urlopen(url)
-    # except urllib2.HTTPError:
-    except urllib.error.HTTPError as e:
-        #       checksLogger.error('HTTPError = ' + str(e.code))
-        ianl = ianl - 6
-        ifcst = ifcst + 6
-        print('Forecast file ' + wtfile + ' not yet available. Retrieving the equivalent from the previous forecast')
-    except urllib.error.URLError as e:
-        # except urllib2.URLError:
-        #      checksLogger.error('URLError = ' + str(e.reason))
-        ianl = ianl - 6
-        ifcst = ifcst + 6
-        print('Forecast file ' + wtfile + ' not yet available. Retrieving the equivalent from the previous forecast')
-
-    if ianl < 0:
-        ianl = 18
-        year_anl = year_yst
-        month_anl = month_yst
-        day_anl = day_yst
-        anl = str(ianl)
-    elif 0 <= ianl < 10:
-        anl = '0' + str(ianl)
-    else:
-        anl = str(ianl)
-
+        pool = ThreadingPool(nfcst)
+        pool.map(wtfile_download,urls,wtfiles)
+    except:
+        print('No new weather data downloaded')
     slon_source = str(lon_source)
     slat_source = str(lat_source)
     lon_corner = str(int(lon_source))
     lat_corner = str(int(lat_source))
 
-    #data_folder = 'raw_forecast_weather_data_'+ year + month + day + '/'
-    data_folder = os.path.join(cwd,'raw_forecast_weather_data_'+ year + month + day + '/')
-
-    ival = ianl + ifcst
-    if ival < 10:
-        validity = '0' + str(ival)
-    elif ival >= 24:
-        ival = ival - 24
-        validity = '0' + str(ival)
-    else:
-        validity = str(ival)
-    if ifcst < 10:
-        fcst = 'f00' + str(ifcst)
-    elif 10 <= ifcst < 100:
-        fcst = 'f0' + str(ifcst)
-    else:
-        fcst = 'f' + str(ifcst)
-    abs_validity = year + month + day + validity
-    elaborated_prof_file = 'profile_data_' + abs_validity + '.txt'
-    elaborated_prof_file_path = os.path.join(data_folder,elaborated_prof_file)
-    print('Checking if ' + elaborated_prof_file + ' exists in ' + data_folder)
-    #if os.path.isfile(data_folder + elaborated_prof_file):
-    if os.path.isfile(elaborated_prof_file_path):
-        print('File ' + elaborated_prof_file + ' already available in ' + data_folder)
-    else:
-        wtfile_dwnl = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
-        wtfile = 'weather_data_' + year_anl + month_anl + day_anl + anl + '_' + fcst
-        wtfile_int = 'weather_data_interpolated_' + year_anl + month_anl + day_anl + anl + '_' + fcst
-        wtfile_prof = 'profile_' + year + month + day + anl + validity + '.txt'
-        url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile_dwnl
-        print('Checking if ' + wtfile + ' exists in ' + data_folder)
-        if os.path.isfile(data_folder + wtfile):
-            print('File ' + wtfile + ' found')
-            copyfile('raw_forecast_weather_data_' + year + month + day + '/' + wtfile, wtfile)
-        else:
-            print('Downloading forecast file ' + url)
-            urllib.request.urlretrieve(url, wtfile)
-        # Interpolate data to a higher resolution grid
-        print('Interpolating weather data to a finer grid around the source')
-        os.system(
-            'wgrib2 ' + wtfile + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':100:0.01 ' + lat_corner + ':100:0.01 ' + wtfile_int)
-        print('Saving weather data along the vertical at the vent location')
-        os.system('wgrib2 ' + wtfile_int + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
-        # Extract and elaborate weather data
-        extract_data_gfs(year, month, day, abs_validity, wtfile_prof)
+    pool_1 = ThreadingPool(len(wtfiles))
+    pool_1.map(elaborate_wtfiles,wtfiles,wtfiles_int,wtfiles_prof,abs_validities)
+    #for i in range(0,len(wtfiles)-1):
+    #    # Interpolate data to a higher resolution grid
+    #    print('Interpolating weather data to a finer grid around the source')
+    #    os.system(
+    #        'wgrib2 ' + wtfiles[i] + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':100:0.01 ' + lat_corner + ':100:0.01 ' + wtfiles_int[i])
+    #    print('Saving weather data along the vertical at the vent location')
+    #    os.system('wgrib2 ' + wtfiles_int[i] + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfiles_prof[i])
+    #    # Extract and elaborate weather data
+    #    extract_data_gfs(year, month, day, abs_validities[i], wtfiles_prof[i])
 
 def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     from ecmwfapi import ECMWFDataServer
@@ -458,14 +498,27 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
         count += 1
     input.close()
     dest.close()
+    validities = []
+    years = []
+    months = []
+    days = []
+    wtfiles_prof_step = []
     for validity in steps:
+        validities.append(validity)
         year = validity[0:4]
+        years.append(year)
         month = validity[4:6]
+        months.append(month)
         day = validity[6:8]
+        days.append(day)
         hour = validity[8:10]
         wtfile_prof_step = 'profile_' + validity + '.txt'
-        # Extract and elaborate weather data
-        extract_data_erain(year, month, day, validity, wtfile_prof_step)
+        wtfiles_prof_step.append(wtfile_prof_step)
+        #extract_data_erain(year, month, day, validity, wtfile_prof_step)
+
+    # Extract and elaborate weather data
+    pool = ThreadingPool(len(validities))
+    pool.map(elaborate_data_erain, years, months, days, validities, wtfiles_prof_step)
 
 def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     import urllib.request

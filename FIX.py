@@ -347,6 +347,104 @@ def safe_exit():
     sys.exit()
     return(exit_param)
 
+def read_esps_database():
+    import pandas as pd
+    import numpy as np
+    global esps_plh,esps_dur
+
+    database = pd.read_excel('http://nercbgskwicms:81/research/volcanoes/esp/volcanoExport.xlsx', sheetname='volcanoes')
+    nrows = database.shape[0]
+    row = 0
+    while True:
+        if database['SMITHSONIAN_ID'][row] == np.int64(kurzvulk[vulkan]):
+            summit = database['ELEVATION_m'][row]
+            esps_dur = database['DURATION_hour'][row]
+            esps_plh = database['HEIGHT_ABOVE_VENT_km'][row] * 1000
+            esps_plh += summit
+            break
+        else:
+            row +=1
+            if row >= nrows:
+                print('ID not found')
+                break
+
+def esps_database():
+    sys.path.insert(0, './weather')
+    from weather import retrieve_data
+    from retrieve_data import gfs_forecast_retrieve
+    import os
+    global ESPs_data_on, run_type
+    global time_start, time_stop, eruption_start, eruption_stop
+    global Y_eru_start_s, MO_eru_start_s, D_eru_start_s
+    global Y_eru_start, MO_eru_start, D_eru_start, H_eru_start
+    global Y_eru_stop, MO_eru_stop, D_eru_stop, H_eru_stop
+    ESPs_data_on = 1
+    run_type = 2
+    read_esps_database()
+    #if ISKEF_on  !=  1 and ISEGS_on  !=  1  and ISX1_on  !=  1  and ISX2_on  !=  1  and ISKEFm_on  !=  1  and ISEGSm_on  !=  1  and ISX1m_on  !=  1  \
+    #    and ISX2m_on  !=  1  and GFZ1_on  !=  1  and GFZ2_on  !=  1  and GFZ3_on  !=  1  and Cband3_on  !=  1  and Cband4_on  !=  1  and Cband5_on  !=  1  and Cband6_on  !=  1  and Xband3_on  !=  1  and Xband4_on  !=  1  and \
+    #    Xband5_on  !=  1  and Xband6_on  !=  1  and Cam4_on  !=  1  and Cam5_on  !=  1  and Cam6_on  !=  1 :
+    time_start = datetime.datetime.utcnow()
+    time_stop = time_start + datetime.timedelta(hours=esps_dur)
+    time_start  = datetime.datetime.strftime(time_start, "%Y-%m-%d %H:%M:%S")
+    time_stop = datetime.datetime.strftime(time_stop, "%Y-%m-%d %H:%M:%S")
+    year_start = time_start[0:4]
+    month_start = time_start[5:7]
+    day_start = time_start[8:10]
+    hour_start = time_start[11:13]
+    Y_eru_start = int(year_start)
+    MO_eru_start = int(month_start)
+    D_eru_start = int(day_start)
+    H_eru_start = int(hour_start)
+    Y_eru_stop = int(time_stop[0:4])
+    MO_eru_stop = int(time_stop[5:7])
+    D_eru_stop = int(time_stop[8:10])
+    H_eru_stop = int(time_stop[11:13])
+    Y_eru_start_s = str(Y_eru_start)
+    if MO_eru_start < 10:
+        MO_eru_start_s = '0' + str(MO_eru_start)
+    else:
+        MO_eru_start_s = str(MO_eru_start)
+    print(D_eru_start)
+    if D_eru_start < 10:
+        D_eru_start_s = '0' + str(D_eru_start)
+    else:
+        D_eru_start_s = str(D_eru_start)
+    if H_eru_start < 10:
+        H_eru_start_s = '0' + str(H_eru_start)
+    else:
+        H_eru_start_s = str(H_eru_start)
+        Y_eru_stop_s = str(Y_eru_stop)
+    if MO_eru_stop < 10:
+        MO_eru_stop_s = '0' + str(MO_eru_stop)
+    else:
+        MO_eru_stop_s = str(MO_eru_stop)
+    if D_eru_stop < 10:
+        D_eru_stop_s = '0' + str(D_eru_stop)
+    else:
+        D_eru_stop_s = str(D_eru_stop)
+    if H_eru_stop < 10:
+        H_eru_stop_s = '0' + str(H_eru_stop)
+    else:
+        H_eru_stop_s = str(H_eru_stop)
+    eruption_start = Y_eru_start_s + MO_eru_start_s + D_eru_start_s + H_eru_start_s
+    eruption_stop = Y_eru_stop_s + MO_eru_stop_s + D_eru_stop_s + H_eru_stop_s
+    time_start = datetime.datetime(Y_eru_start, MO_eru_start, D_eru_start, H_eru_start)
+    time_stop = datetime.datetime(Y_eru_stop, MO_eru_stop, D_eru_stop, H_eru_stop)
+    save_default_file()
+    nfcst = int(esps_dur)
+    if weather == 1 and run_type == 2:
+        print('Retrieving GFS forecasts for the ongoing eruption')
+        gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan], nfcst)
+        folder = 'raw_forecast_weather_data_' + year_start + month_start + day_start
+        if not os.path.isdir(folder):
+            os.makedirs(folder)
+        current = os.getcwd()
+        files = os.listdir(current)
+        for file in files:
+            if file.startswith('weather_') or file.startswith('profile_') or file.startswith('pressure_level'):
+                move(os.path.join(current,file),os.path.join(folder,file))
+
 def automatic_weather():
     sys.path.insert(0, './weather')
     from weather import retrieve_data
@@ -358,22 +456,24 @@ def automatic_weather():
     from datetime import datetime, date, timedelta
     from shutil import move
     if run_type == 1:
+        print('Retrieving GFS forecasts for the ongoing eruption')
         now = str(datetime.utcnow())
         year = now[0:4]
         month = now[5:7]
         day = now[8:10]
-        gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan])
+        nfcst = 6
+        gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan], nfcst)
         folder = 'raw_forecast_weather_data_' + year + month + day
     elif run_type == 2:
         print('Retrieving past GFS forecasts for the eruption interval')
         eruption_start_datetime = datetime(Y_eru_start, MO_eru_start, D_eru_start, H_eru_start)
         eruption_stop_datetime = datetime(Y_eru_stop, MO_eru_stop, D_eru_stop, H_eru_stop)
         response = gfs_past_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan], eruption_start_datetime,
-                                   eruption_stop_datetime)
+                                       eruption_stop_datetime)
         if response == True:
             folder = 'raw_reanalysis_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
         else:
-            print('GFS data not available.')
+            print('GFS data not available')
             print('Retrieving ERA5 data')
             era5_retrieve(volc_lon[vulkan], volc_lat[vulkan], eruption_start, eruption_stop)
             folder = 'raw_reanalysis_weather_data_' + Y_eru_start_s + MO_eru_start_s + D_eru_start_s
@@ -383,7 +483,6 @@ def automatic_weather():
     files = os.listdir(current)
     for file in files:
         if file.startswith('weather_') or file.startswith('profile_') or file.startswith('pressure_level'):
-            print(file,folder)
             move(os.path.join(current,file),os.path.join(folder,file))
 
 if weather == 1:
@@ -3170,7 +3269,6 @@ def add_plhobs():
         global sourceOBSdata
         global comment_obs
         global Min_DiaOBS, Max_DiaOBS
-        global ESPs_data_on
 
         list_S = sensorliste()
 
@@ -3388,9 +3486,6 @@ def add_plhobs():
 
     Label(plhobs, text="Include data?", font=("Verdana", 8), fg="red").grid(row=9, column=11, columnspan=3, sticky=W)
     Checkbutton(plhobs, variable=OBSdata_on).grid(row=9, column=10, sticky=E)
-
-    Label(plhobs, text="Use ESPs database", font=("Verdana", 8), fg="red").grid(row=10, column=11, columnspan=3, sticky=W)
-    Checkbutton(plhobs, variable=ESPs_on).grid(row=10, column=10, sticky=E)
 
     Button(plhobs, text="Update observed plume height", font=("Verdana", 8, \
                                                               "bold"), bg="dim gray", fg="yellow",
@@ -4135,7 +4230,8 @@ def operation_control():
            command=man_MERF).grid(row=8, column=0)
     #Label(masterklick, text="   ", font=("Verdana", 8)).grid(row=9, column=0)
     Label(masterklick, text="Use ESPs database", font=("Verdana", 8), fg="red").grid(row=9, column=0, sticky = E, padx=35)
-    Checkbutton(masterklick, variable=ESPs_on).grid(row=9, column=0,sticky=W,padx=25)
+    #Checkbutton(masterklick, variable=ESPs_on).grid(row=9, column=0,sticky=W,padx=25)
+    Checkbutton(masterklick, command=esps_database).grid(row=9, column=0, sticky=W, padx=25)
     Label(masterklick, text="Status Overview:", font=("Verdana", 8)).grid(row=10, column=0)
     label3 = Label(masterklick, textvariable=sdefault_txt, bg=bgcol.get())
     label3.grid(row=11, column=0, columnspan=3)
@@ -4146,28 +4242,9 @@ def operation_control():
                                                                                   columnspan=3)
     masterklick.mainloop()
 
-def read_esps_database():
-    import pandas as pd
-    import numpy as np
-    global esps_plh,esps_dur
-
-    database = pd.read_excel('http://nercbgskwicms:81/research/volcanoes/esp/volcanoExport.xlsx', sheetname='volcanoes')
-    nrows = database.shape[0]
-    row = 0
-    while True:
-        if database['SMITHSONIAN_ID'][row] == np.int64(kurzvulk[vulkan]):
-            esps_dur = database['DURATION_hour'][row]
-            esps_plh = database['HEIGHT_ABOVE_VENT_km'][row]
-            break
-        else:
-            row +=1
-            if row >= nrows:
-                print('ID not found')
-                break
-
 operation_control()
-ESPs_data_on = int(ESPs_on.get())
-if ESPs_data_on == 1:
-    read_esps_database()
 
+
+#if weather == 1:
+#    automatic_weather()
 save_default_file()
