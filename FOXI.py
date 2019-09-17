@@ -458,6 +458,7 @@ def elaborate_weather(plume_height):
     month_vals = MonthNOWs
     day_vals = DayNOWs
     hour_vals = HourNOWs
+
     if run_type == 1:
         #folder_name=cwd+"\\raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
         folder_name = os.path.join(cwd,"raw_forecast_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs)
@@ -474,7 +475,6 @@ def elaborate_weather(plume_height):
         #month_vals = MonthNOWs
         #day_vals = DayNOWs
         #hour_vals = HourNOWs
-
     abs_validity = year_vals + month_vals + day_vals + hour_vals
 
     if os.path.exists(folder_name):

@@ -379,15 +379,17 @@ def esps_database():
     global Y_eru_start, MO_eru_start, D_eru_start, H_eru_start
     global Y_eru_stop, MO_eru_stop, D_eru_stop, H_eru_stop
     ESPs_data_on = 1
-    run_type = 2
+    if run_type == 1:
+        time_start = datetime.datetime.utcnow()
+        time_stop = time_start + datetime.timedelta(hours=esps_dur)
+        run_type = 2
+    time_start = datetime.datetime.strftime(time_start, "%Y-%m-%d %H:%M:%S")
+    time_stop = datetime.datetime.strftime(time_stop, "%Y-%m-%d %H:%M:%S")
     read_esps_database()
     #if ISKEF_on  !=  1 and ISEGS_on  !=  1  and ISX1_on  !=  1  and ISX2_on  !=  1  and ISKEFm_on  !=  1  and ISEGSm_on  !=  1  and ISX1m_on  !=  1  \
     #    and ISX2m_on  !=  1  and GFZ1_on  !=  1  and GFZ2_on  !=  1  and GFZ3_on  !=  1  and Cband3_on  !=  1  and Cband4_on  !=  1  and Cband5_on  !=  1  and Cband6_on  !=  1  and Xband3_on  !=  1  and Xband4_on  !=  1  and \
     #    Xband5_on  !=  1  and Xband6_on  !=  1  and Cam4_on  !=  1  and Cam5_on  !=  1  and Cam6_on  !=  1 :
-    time_start = datetime.datetime.utcnow()
-    time_stop = time_start + datetime.timedelta(hours=esps_dur)
-    time_start  = datetime.datetime.strftime(time_start, "%Y-%m-%d %H:%M:%S")
-    time_stop = datetime.datetime.strftime(time_stop, "%Y-%m-%d %H:%M:%S")
+
     year_start = time_start[0:4]
     month_start = time_start[5:7]
     day_start = time_start[8:10]
@@ -401,6 +403,7 @@ def esps_database():
     D_eru_stop = int(time_stop[8:10])
     H_eru_stop = int(time_stop[11:13])
     Y_eru_start_s = str(Y_eru_start)
+    Y_eru_stop_s = str(Y_eru_stop)
     if MO_eru_start < 10:
         MO_eru_start_s = '0' + str(MO_eru_start)
     else:
@@ -433,7 +436,7 @@ def esps_database():
     time_stop = datetime.datetime(Y_eru_stop, MO_eru_stop, D_eru_stop, H_eru_stop)
     save_default_file()
     nfcst = int(esps_dur)
-    if weather == 1 and run_type == 2:
+    if weather == 1 and run_type == 1:
         print('Retrieving GFS forecasts for the ongoing eruption')
         gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan], nfcst)
         folder = 'raw_forecast_weather_data_' + year_start + month_start + day_start

@@ -326,6 +326,7 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     import os
     from shutil import copyfile
     from datetime import timedelta as td, datetime
+    from pathos.multiprocessing import Pool, ThreadingPool
 
     def era5_request(index):
         import cdsapi
@@ -374,6 +375,10 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
                 str(index) + '.grib')
         except:
             print('Unable to retrieve ERA5 data')
+
+    def elaborate_data_era5(year, month, day, validity, wtfile_prof_step):
+        # Extract and elaborate weather data
+        extract_data_erain(year, month, day, validity, wtfile_prof_step)
 
     cwd = os.getcwd()
     year_start = eruption_start[0:4]
@@ -518,7 +523,7 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
 
     # Extract and elaborate weather data
     pool = ThreadingPool(len(validities))
-    pool.map(elaborate_data_erain, years, months, days, validities, wtfiles_prof_step)
+    pool.map(elaborate_data_era5, years, months, days, validities, wtfiles_prof_step)
 
 def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     import urllib.request
