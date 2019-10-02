@@ -3476,10 +3476,12 @@ while 1:
             wtf_spa+wtf_mas+wtf_deg+wtf_wood0d)
             
             mermax_hmax =max(mtg_on*stack_mer[0],wil_on*stack_mer[1][2],spa_on*stack_mer[2][2],mas_on*stack_mer[3][2],deg_on*stack_mer[4][2],wood0d_on*stack_mer[5][2])
-            
-            Rmer = (QmaxNowiHmin + mermaxplus + merwe)/3.0
-            if QmaxNowiHmin == 0:
-                Rmer = (mermaxplus + merwe) / 2.0
+
+            Rmer = (mermax_hmin + mermaxplus + merwe) / 3.0
+
+            #Rmer = (QmaxNowiHmin + mermaxplus + merwe)/3.0
+            #if QmaxNowiHmin == 0:
+            #    Rmer = (mermaxplus + merwe) / 2.0
             logger6.info("RMER >>> "+str(Rmer))
             
             mer_stat= [0,0,0,0,0,0,0,0,0,0,0]
@@ -3570,8 +3572,10 @@ while 1:
             
             mermax_hmax =max(mtg_on*stack_mer[0],wil_on*stack_mer[1][2],spa_on*stack_mer[2][2],mas_on*stack_mer[3][2], \
                              deg_on *stack_mer[4][2],wood0d_on*stack_mer[5][2],wood_on*float(Mwood[2]))
-            
-            Rmer = (QmaxNowiHmin + mermaxplus + merwe)/3.0 #Note that this "Rmer" is now in fact Cmer
+
+            Rmer = (mermax_hmin + mermaxplus + merwe) / 3.0
+
+            #Rmer = (QmaxNowiHmin + mermaxplus + merwe)/3.0 #Note that this "Rmer" is now in fact Cmer
             logger6.info("CMER >>> "+str(Rmer))
             
             mer_stat= [0,0,0,0,0,0,0,0,0,0,0]
