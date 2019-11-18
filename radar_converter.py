@@ -187,19 +187,23 @@ def process_radar_file():
 
         for j in range(0, max(nrecords_iskef,nrecords_isx1,nrecords_isx2,nrecords_isegs)):
             if j < nrecords_iskef and nrecords_iskef != 0:
-                H_avg_iskef.append(0.5 * (H1_iskef[j] + H2_iskef[j]))
+                #H_avg_iskef.append(0.5 * (H1_iskef[j] + H2_iskef[j]))
+                H_avg_iskef.append((0.5 * (H1_iskef[j] + H2_iskef[j]))/1000)
                 hour_iskef.append(time_iskef[j][0:2])
                 minute_iskef.append(time_iskef[j][3:5])
             if j < nrecords_isx1 and nrecords_isx1 != 0:
-                H_avg_isx1.append(0.5 * (H1_isx1[j] + H2_isx1[j]))
+                #H_avg_isx1.append(0.5 * (H1_isx1[j] + H2_isx1[j]))
+                H_avg_isx1.append((0.5 * (H1_isx1[j] + H2_isx1[j]))/1000)
                 hour_isx1.append(time_isx1[j][0:2])
                 minute_isx1.append(time_isx1[j][3:5])
             if j < nrecords_isx2 and nrecords_isx2 != 0:
-                H_avg_isx2.append(0.5 * (H1_isx2[j] + H2_isx2[j]))
+                #H_avg_isx2.append(0.5 * (H1_isx2[j] + H2_isx2[j]))
+                H_avg_isx2.append((0.5 * (H1_isx2[j] + H2_isx2[j]))/1000)
                 hour_isx2.append(time_isx2[j][0:2])
                 minute_isx2.append(time_isx2[j][3:5])
             if j < nrecords_isegs and nrecords_isegs != 0:
-                H_avg_isegs.append(0.5 * (H1_isegs[j] + H2_isegs[j]))
+                #H_avg_isegs.append(0.5 * (H1_isegs[j] + H2_isegs[j]))
+                H_avg_isegs.append((0.5 * (H1_isegs[j] + H2_isegs[j]))/1000)
                 hour_isegs.append(time_isegs[j][0:2])
                 minute_isegs.append(time_isegs[j][3:5])
 
