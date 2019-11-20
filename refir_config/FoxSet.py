@@ -208,7 +208,7 @@ def newvolc_setup():
     volc_exist = 0
     print("... setting up volcanoes of interest!")
     print("Up to 10 volcanoes can be added to the list")
-    df = pd.read_excel('SI_volcanoes_list.xlsx', sheetname='volcanoes')
+    df = pd.read_excel('SI_volcanoes_list.xlsx', sheet_name='volcanoes')
     nrow = df.shape[0]
     i = 0
     z = 0
