@@ -716,7 +716,7 @@ def defaultvalues(venth):
     global cal_Cband3a, cal_Cband3b, cal_Cband4a, cal_Cband4b, cal_Cband5a, cal_Cband5b, \
         cal_Cband6a, cal_Cband6b, cal_Xband3a, cal_Xband3b, cal_Xband4a, cal_Xband4b, \
         cal_Xband5a, cal_Xband5b, cal_Xband6a, cal_Xband6b
-    global ESPs_data_on
+    global ESPs_data_on, oo_satellite, qf_satellite
 
     P0 = 101325  # default ambient pressure at sea level
     P_0_in_default = P0 * math.exp(-venth / 7990)  # def. ambient pressure at vent
@@ -788,6 +788,8 @@ def defaultvalues(venth):
     wtf_pulsan = 0
     oo_scatter = 0
     wtf_scatter = 0
+    oo_satellite = 0
+    qf_satellite = 1
 
     cal_ISKEF_a = 0
     cal_ISKEF_b = 1
@@ -1013,6 +1015,7 @@ def get_last_data():
     global loc_ISKEF, loc_ISEGS, loc_Cband3, loc_Cband5, loc_Cband6, loc_ISX1, loc_ISX2, loc_Xband3, loc_Xband4, \
         loc_Xband5, loc_Xband6, loc_GFZ1, loc_GFZ2, loc_GFZ3, loc_Cam4, loc_Cam5, loc_Cam6
     global defsetup, run_type, weather, exit_param, PI_THRESH
+    global oo_satellite, qf_satellite
 
     try:
 
@@ -1184,6 +1187,8 @@ def get_last_data():
         NAME_out_on = int(configlines3[170])
         PI_THRESH = float(configlines3[171])
         ESPs_data_on = int(configlines3[172])
+        oo_satellite = int(configlines3[175])
+        qf_satellite = float(configlines3[176])
         get_last_time()
 
     except EnvironmentError:
@@ -1256,7 +1261,8 @@ def save_default_file():
                        + "\n" + str(loc_Cam4) + "\n" + str(loc_Cam5) + "\n" + str(loc_Cam6) + "\n" + str(defsetup) \
                        + "\n" + str(run_type) + "\n" + str(weather) + "\n" + str(wtf_wood0d) + "\n" + str(time_start) \
                        + "\n" + str(time_stop)  + "\n" + str(exit_param) + "\n" + str(PM_TAV) + "\n" + str(NAME_out_on) \
-                       + "\n" + str(PI_THRESH) + "\n" + str(ESPs_data_on) + "\n" + str(esps_dur) + "\n" + str(esps_plh))  # New variables in the config files for the run type, weather and time averaging options
+                       + "\n" + str(PI_THRESH) + "\n" + str(ESPs_data_on) + "\n" + str(esps_dur) + "\n" + str(esps_plh) \
+                       + "\n" + str(oo_satellite) + "\n" + str(qf_satellite))  # Added satellite retrieval commands
     default_FILE.close()
 
 defaultvalues(vent_h)
@@ -3600,7 +3606,6 @@ logged").grid(row=1, column=0, sticky=W, columnspan=2)
 
     anam.mainloop()
 
-
 def tb_mode():
     global timebase
     get_last_data()
@@ -3652,7 +3657,6 @@ def tb_mode():
            command=tb_update).grid(row=2, column=0, columnspan=2)
 
     tb.mainloop()
-
 
 def calibF():
     global cal_ISKEF_a, cal_ISKEF_b, cal_ISEGS_a, cal_ISEGS_b  # radar calib. param.
@@ -3826,7 +3830,6 @@ def calibF():
 
     calibP.mainloop()
 
-
 def conv_fF():
     global Oo_wood, Oo_RMER, Wtf_wood, Wtf_RMER
     global oo_wood, oo_RMER, wtf_wood, wtf_RMER
@@ -3894,12 +3897,44 @@ def conv_fF():
 
     conv_f.mainloop()
 
+def exp_plh():
+    global oo_satellite, Oo_satellite, Qf_satellite, qf_satellite  # on/off satellite retrieval
+    get_last_data()
+
+    expe_PLH = Toplevel()
+    Oo_satellite = IntVar()
+    Oo_satellite.set(checkbox_oo(oo_satellite))
+    Label(expe_PLH, text="Experimental PLH systems", font=("Verdana", 11, "bold") \
+          , fg="purple").grid(row=0, column=0, columnspan=5)
+    Label(expe_PLH, text="    ").grid(row=1, column=1)
+    Label(expe_PLH, text="Consider").grid(row=2, column=1)
+    Label(expe_PLH, text="Quality factor").grid(row=2, column=2)
+    Label(expe_PLH, text="Satellite retrieval", font=("Verdana", 9)).grid(row=7, column=0)
+    Checkbutton(expe_PLH, variable=Oo_satellite).grid(row=7, column=1)
+    Qf_satellite = Entry(expe_PLH, width=7)
+    Qf_satellite.grid(row=7, column=2)
+    Qf_satellite.insert(10, str(qf_satellite))
+
+    def expe_PLH_update():
+        global oo_satellite, Oo_satellite, Qf_satellite, qf_satellite
+        oo_satellite = int(Oo_satellite.get())
+        print("Satellite retrieval: " + str(oo_satellite))
+        qf_satellite = float(Qf_satellite.get())
+        save_default_file()
+        print("*** settings updated! ***")
+        check_configfile()
+
+    Button(expe_PLH, text="Confirm", font=("Verdana", 10, "bold"), fg="red", width=18, height=2, \
+           command=expe_PLH_update).grid(row=8, column=0, columnspan=3)
+
+    expe_PLH.mainloop()
 
 def expe_MERF():
     global oo_isound, Oo_isound, Wtf_isound, wtf_isound  # on/off infrasound
     global oo_esens, Oo_esens, Wtf_esens, wtf_esens  # on/off E-sensors
     global oo_pulsan, Oo_pulsan, Wtf_pulsan, wtf_pulsan  # on/off pulse analysis
     global oo_scatter, Oo_scatter, Wtf_scatter, wtf_scatter  # on/off radar scatter
+
     get_last_data()
 
     expe_MER = Toplevel()
@@ -3914,7 +3949,7 @@ def expe_MERF():
 
     expe_MER.title("Experimental MER settings")
 
-    Label(expe_MER, text="Experimental systems", font=("Verdana", 11, "bold") \
+    Label(expe_MER, text="Experimental MER systems", font=("Verdana", 11, "bold") \
           , fg="purple").grid(row=0, column=0, columnspan=5)
     Label(expe_MER, text="    ").grid(row=1, column=1)
     Label(expe_MER, text="Consider").grid(row=2, column=1)
@@ -3944,13 +3979,14 @@ def expe_MERF():
     Wtf_scatter.grid(row=6, column=2)
     Wtf_scatter.insert(10, str(wtf_scatter))
 
-    Label(expe_MER, text="  ").grid(row=7, column=1)
+    Label(expe_MER, text="  ").grid(row=8, column=1)
 
     def expe_MER_update():
         global oo_isound, Oo_isound, Wtf_isound, wtf_isound
         global oo_esens, Oo_esens, Wtf_esens, wtf_esens
         global oo_pulsan, Oo_pulsan, Wtf_pulsan, wtf_pulsan
         global oo_scatter, Oo_scatter, Wtf_scatter, wtf_scatter
+        global oo_satellite, Oo_satellite, Qf_satellite, qf_satellite
         oo_isound = int(Oo_isound.get())
         print("Infrasound systems: " + str(oo_isound))
         oo_esens = int(Oo_esens.get())
@@ -3959,10 +3995,13 @@ def expe_MERF():
         print("Pulse analysis: " + str(oo_pulsan))
         oo_scatter = int(Oo_scatter.get())
         print("Radar scattering model: " + str(oo_scatter))
+        oo_satellite = int(Oo_satellite.get())
+        print("Satellite retrieval: " + str(oo_satellite))
         wtf_isound = float(Wtf_isound.get())
         wtf_esens = float(Wtf_esens.get())
         wtf_pulsan = float(Wtf_pulsan.get())
         wtf_scatter = float(Wtf_scatter.get())
+        qf_satellite = float(Qf_satellite.get())
         save_default_file()
         print("*** settings updated! ***")
         check_configfile()
@@ -3971,7 +4010,6 @@ def expe_MERF():
            command=expe_MER_update).grid(row=8, column=0, columnspan=3)
 
     expe_MER.mainloop()
-
 
 def man_MERF():
     global oo_manual, Oo_manual, Wtf_manual, wtf_manual  # on/off manual MER input
@@ -4106,7 +4144,6 @@ def man_MERF():
 
     man_MER.mainloop()
 
-
 def fmer_modeF():
     global Oo_exp, Oo_con, Wtf_exp, Wtf_con
     global oo_exp, oo_con, wtf_exp, wtf_con
@@ -4158,7 +4195,6 @@ def fmer_modeF():
 
     fmer_mode.mainloop()
 
-
 def operation_control():
     global ESPs_on
     ESPs_on = IntVar()
@@ -4209,13 +4245,17 @@ def operation_control():
            font=("Verdana", 8), fg="green yellow", bg="forest green", \
            width=18, height=2, command=tb_mode).grid(row=8, column=1)
 
+    Button(masterklick, text="Exp. H Systems", \
+           font=("Verdana", 8), fg="green yellow", bg="forest green", \
+           width=18, height=2, command=exp_plh).grid(row=6, column=1)
+
     Button(masterklick, text="Analysis Mode", \
            font=("Verdana", 8), fg="green yellow", bg="forest green", \
            width=18, height=2, command=analysis_mode).grid(row=7, column=1)
 
     Button(masterklick, text="Calibration", \
            font=("Verdana", 8), fg="green yellow", bg="forest green", \
-           width=18, height=2, command=calibF).grid(row=6, column=1)
+           width=18, height=2, command=calibF).grid(row=9, column=1)
 
     Button(masterklick, text="Set Model Parameters", \
            font=("Verdana", 8), fg="blue2", bg="light steel blue", width=18, height=2, \

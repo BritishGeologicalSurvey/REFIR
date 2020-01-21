@@ -51,6 +51,9 @@ import os
 import gc
 import shutil
 import csv
+sys.path.insert(0, './satellite')
+from satellite import satellite_radiance_refir
+from satellite_radiance_refir import satellite_radiance_refir
 #import matplotlib.image as image
 
 """ settings START """
@@ -477,6 +480,9 @@ def elaborate_weather(plume_height):
         #hour_vals = HourNOWs
     abs_validity = year_vals + month_vals + day_vals + hour_vals
 
+    if plume_height == -99999: # Flag to return the profile data file name for satellite retrieval
+        return folder_name
+
     if os.path.exists(folder_name):
         profile_data_file = "profile_data_" + abs_validity + ".txt"
         #profile_data_file_full = folder_name+"\\"+profile_data_file
@@ -494,8 +500,8 @@ def elaborate_weather(plume_height):
                 for file in files:
                     if file.startswith('weather_') or file.startswith('profile_'):
                         move(os.path.join(current, file), os.path.join(folder_name, file))
-                print("Elaborating " + profile_data_file)
-                [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals, month_vals,
+                    print("Elaborating " + profile_data_file)
+                    [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals, month_vals,
                                                                                                 day_vals, abs_validity,
                                                                                                 profile_data_file_full,
                                                                                                 plume_height, vent_h)
@@ -808,6 +814,8 @@ while 1:
     PI_THRESH = float(configlines[171])
     ESPs_data_on = int(configlines[172])
     esps_plh = float(configlines[174])
+    oo_satellite = int(configlines[175])
+    qf_satellite = float(configlines[176])
 
     if exit_param == 1:
         refir_end()
@@ -2336,6 +2344,78 @@ while 1:
                             return None
                     else:
                         logger3.info ("data set discarded")
+
+    if oo_satellite == 1:
+        if weather == 0:
+            print('Satellite retrieval can be used only if Automatic weather data retrieval is activated')
+            print('Skipping satellite retrieval')
+        else:
+            OBS_on == 1 #set this to 1 to read fix_OBSin.txt, which will contain the plume height from satellite
+            dummy_height = -99999
+            profile_data_file_path = elaborate_weather(dummy_height)
+            # Extract volcano coordinates from volcano_list.ini file
+            try:
+                volc_lat = []
+                volc_lon = []
+                dir1 = os.path.dirname(os.path.abspath(__file__))
+                fn = os.path.join(dir1 + '/refir_config', 'volcano_list.ini')
+                with open(fn, encoding="utf-8", errors="surrogateescape") as f:
+                    lines = f.readlines()
+                    Cse = []
+                    for l in lines:
+                        Cse.append(l.strip().split("\t"))
+                f.close()
+                N_env = len(Cse) - 1  # number of entries
+                if N_env < 1:
+                    print("\nNo volcano assigned!\n")
+                else:
+                    for y in range(0, N_env):
+                        volc_lat.append(0)
+                        volc_lon.append(0)
+                    for x in range(0, N_env):
+                        volc_lat[x] = float(Cse[x + 1][1])
+                        volc_lon[x] = float(Cse[x + 1][2])
+                # file exists
+            except  EnvironmentError:
+                # file does not exist yet
+                print("Error -file volcano_list.ini not found!")
+            HourNOW = int(HourNOWs)
+            year_now = int(TimeNOWs[:4])
+            month_now = int(TimeNOWs[5:7])
+            day_now = int(TimeNOWs[8:10])
+            hour_now = int(TimeNOWs[11:13])
+            minute_now = int(TimeNOWs[14:16])
+            try:
+                time_OBSdata, Havg_obs, Hmax_obs, Hmin_obs, obs_flag = satellite_radiance_refir(profile_data_file_path,year_now,month_now,day_now,hour_now,minute_now,volc_lat[vulkan],volc_lon[vulkan])
+            except:
+                print('Unable to process satellite data') #improve this exception
+                obs_flag = 0
+            if obs_flag == 1 and Havg_obs < vent_h:
+                obs_flag = 0
+                print('Satellite retrieval error: average plume height below volcano source level')
+            else:
+                if Hmin_obs < 0:
+                    Hmin_obs = 1
+                    print('Satellite retrieval warning: minimum plume height below volcano source level. Setting it to 1 m')
+            if obs_flag == 1:
+                #time_OBSdata = datetime.datetime(year_now, month_now, day_now, hour_now, minute_now)
+                #time_OBSdata = time_OBSdata.strftime("%m %d %Y %H:%M:%S")
+                OBSd_on = 1
+                sourceOBSdata = 850
+                inputEoZ = 1
+                Min_DiaOBS = 0
+                Max_DiaOBS = 0
+                time_OBSlog = datetime.datetime.utcnow()
+                time_OBSlog = time_OBSlog.strftime("%m %d %Y %H:%M:%S")
+                unc_OBS = 0.5 * ((Hmax_obs - Havg_obs) + (Havg_obs - Hmin_obs))
+                comment_obs = 'automatic satellite retrieval'
+                FILE_OBS = open("fix_OBSin.txt", "a", encoding="utf-8", errors="surrogateescape")
+                FILE_OBS.write(str(time_OBSdata) + "\t" + str(OBSd_on) + "\t" \
+                               + str(sourceOBSdata) + "\t" + str(Hmin_obs) + "\t" + str(Havg_obs) + "\t" + str(
+                    Hmax_obs) + "\t" + str(unc_OBS) + "\t" + str(qf_satellite) + "\t" + str(inputEoZ) + "\t" + "9" + "\t" + str(
+                    Min_DiaOBS) + "\t" + str(Max_DiaOBS) + "\t" + str(time_OBSlog) + "\t" + str(comment_obs) + "\n")
+                FILE_OBS.close()
+                print("***observed data stored!***")
 
     if OBS_on == 1:
         try:

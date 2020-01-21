@@ -51,7 +51,7 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst):
         print('Saving weather data along the vertical at the vent location')
         os.system('wgrib2 ' + wtfile_int + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
         # Extract and elaborate weather data
-        extract_data_gfs(year, month, day, abs_validity, wtfile_prof)
+        extract_data_gfs(abs_validity, wtfile_prof)
 
     cwd = os.getcwd()
     if(lon_source < 0):
@@ -319,7 +319,7 @@ def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
         hour = validity[8:10]
         wtfile_prof_step = 'profile_' + validity + '.txt'
         # Extract and elaborate weather data
-        extract_data_erain(year, month, day, validity, wtfile_prof_step)
+        extract_data_erain(validity, wtfile_prof_step)
 
 def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     from read import extract_data_erain
@@ -376,9 +376,9 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
         except:
             print('Unable to retrieve ERA5 data')
 
-    def elaborate_data_era5(year, month, day, validity, wtfile_prof_step):
+    def elaborate_data_era5(validity, wtfile_prof_step):
         # Extract and elaborate weather data
-        extract_data_erain(year, month, day, validity, wtfile_prof_step)
+        extract_data_erain(validity, wtfile_prof_step)
 
     cwd = os.getcwd()
     year_start = eruption_start[0:4]
@@ -523,7 +523,7 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
 
     # Extract and elaborate weather data
     pool = ThreadingPool(len(validities))
-    pool.map(elaborate_data_era5, years, months, days, validities, wtfiles_prof_step)
+    pool.map(elaborate_data_era5, validities, wtfiles_prof_step)
 
 def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     import urllib.request
@@ -641,7 +641,7 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
             print('Saving weather data along the vertical at the vent location')
             os.system('wgrib2 ' + wtfile + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
             # Extract and elaborate weather data
-            extract_data_gfs(year, month, day, abs_validity, wtfile_prof)
+            extract_data_gfs(abs_validity, wtfile_prof)
             ifcst = ifcst + 1
         ifcst = 0
 

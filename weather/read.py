@@ -28,18 +28,15 @@ RNZ170318FS
 """
 
 
-def extract_data_gfs(year, month, day, validity, wtfile_prof_step):
-    from calc_wt_par import weather_parameters
+def extract_data_gfs(validity, wtfile_prof_step):
     file = open(wtfile_prof_step, "r",encoding="utf-8", errors="surrogateescape")
     records1 = []
     records2 = []
-    values = []
     nrecords = 0
     for line in file:
         nrecords += 1
         records1.append(line.split(':'))
         records2.append(line.split('val='))
-    level = []
     u_tmp = []
     v_tmp = []
     hgt_tmp = []
@@ -54,29 +51,54 @@ def extract_data_gfs(year, month, day, validity, wtfile_prof_step):
     mb = []
     p = []
     i = 0
+    temp_level = '999'
     while i < nrecords - 1:
         level = records1[i][4]
         if level[-2:] == 'mb':
-            if records1[i][3] == 'UGRD':
-                u_tmp.append(records2[i][1])
-                mb_tmp.append(records1[i][4].split(' '))
-            elif records1[i][3] == 'VGRD':
-                v_tmp.append(records2[i][1])
-            elif records1[i][3] == 'HGT':
-                hgt_tmp.append(records2[i][1])
-            elif records1[i][3] == 'TMP':
-                tmp_k_tmp.append(records2[i][1])
-        elif level == '2 m above ground':
-            if records1[i][3] == 'TMP':
-                tmp_k_tmp.append(records2[i][1])
-                hgt_tmp.append('2')
-        elif level == '10 m above ground':
-            if records1[i][3] == 'UGRD':
-                u_tmp.append(records2[i][1])
-                mb_tmp.append(records1[i][4].split(' '))
-            elif records1[i][3] == 'VGRD':
-                v_tmp.append(records2[i][1])
+            if records1[i][4] == '0.4 mb':
+                i += 1
+                continue
+            else:
+                if records1[i][4].split(' ')[0] != temp_level and records1[i][3] != '5WAVH':
+                    if len(hgt_tmp) > len(u_tmp):
+                        hgt_tmp.pop()
+                        tmp_k_tmp.pop()
+                        mb_tmp.pop()
+                if records1[i][3] == 'HGT' and records1[i][4].split(' ')[0] != temp_level:
+                    temp_level = records1[i][4].split(' ')[0]
+                    hgt_tmp.append(records2[i][1])
+                    mb_tmp.append(records1[i][4].split(' '))
+                elif records1[i][3] == 'TMP' and records1[i][4].split(' ')[0] == temp_level:
+                    tmp_k_tmp.append(records2[i][1])
+                elif records1[i][3] == 'UGRD' and records1[i][4].split(' ')[0] == temp_level:
+                    u_tmp.append(records2[i][1])
+                elif records1[i][3] == 'VGRD' and records1[i][4].split(' ')[0] == temp_level:
+                    v_tmp.append(records2[i][1])
+            if records1[i][4] == '1000 mb':
+                if records1[i][3] == 'HGT':
+                    hgt_tmp.append(records2[i][1])
+                    mb_tmp.append(records1[i][4].split(' '))
+                elif records1[i][3] == 'TMP':
+                    tmp_k_tmp.append(records2[i][1])
+                elif records1[i][3] == 'UGRD':
+                    u_tmp.append(records2[i][1])
+                elif records1[i][3] == 'VGRD':
+                    v_tmp.append(records2[i][1])
+        # elif level == '2 m above ground':
+        #     if records1[i][3] == 'TMP':
+        #         tmp_k_tmp.append(records2[i][1])
+        #         hgt_tmp.append('2')
+        # elif level == '10 m above ground':
+        #     if records1[i][3] == 'UGRD':
+        #         u_tmp.append(records2[i][1])
+        #         #mb_tmp.append(records1[i][4].split(' '))
+        #     elif records1[i][3] == 'VGRD':
+        #         v_tmp.append(records2[i][1])
+        # elif level == 'mean sea level':
+        #     print(records2[i][1])
+        #     mb_tmp.append(records2[i][1])
         i += 1
+
     for i in range(0, len(u_tmp)):
         u.append(float(u_tmp[i]))
         v.append(float(v_tmp[i]))
@@ -86,6 +108,7 @@ def extract_data_gfs(year, month, day, validity, wtfile_prof_step):
         tmp_c.append(tmp_k[i] - 273.15)
         mb.append(float(mb_tmp[i][0]))
         p.append(mb[i] * 100)
+
     p[len(u_tmp) - 1] = 100000
     prof_file = 'profile_data_' + validity + '.txt'
     wt_output = open(prof_file, 'w',encoding="utf-8", errors="surrogateescape")
@@ -95,11 +118,9 @@ def extract_data_gfs(year, month, day, validity, wtfile_prof_step):
         wt_output.write('%8.2f %13.2f %10.2f %10.2f %10.2f %10.2f %10.2f\n' % (
         hgt[i], p[i], tmp_k[i], tmp_c[i], u[i], v[i], wind[i]))
     wt_output.close()
-    # Elaborate data and save relevant weather parameter
-    # weather_parameters(year, month, day, validity, prof_file) This call will be done by FOXI for each plume height value
 
 
-def extract_data_erain(year, month, day, validity, wtfile_prof_step):
+def extract_data_erain(validity, wtfile_prof_step):
     from calc_wt_par import weather_parameters
     file = open(wtfile_prof_step, "r",encoding="utf-8", errors="surrogateescape")
     records1 = []
