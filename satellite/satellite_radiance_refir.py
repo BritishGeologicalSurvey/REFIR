@@ -36,12 +36,79 @@ def satellite_radiance_refir(profile_data_files_path,year,month,day,hour,minute,
     import string
     import os
     import datetime
+    import math
 
     c1 = 1.19096e8 #W m-2 sr-1 um4
     c2 = 1.43879e4 #um K
     wave_length = 10.8 #um
 
     def extract_volc_position(volc_lat,volc_lon,header_file):
+
+        def vincenty(a, f, point1, point2, miles=False):
+            """
+            Vincenty's formula (inverse method) to calculate the distance (in
+            kilometers or miles) between two points on the surface of a spheroid
+            """
+            MILES_PER_KILOMETER = 0.621371
+            MAX_ITERATIONS = 200
+            CONVERGENCE_THRESHOLD = 1e-12
+            # Modified to get a and f as input and then calculate b
+            f = 1 / f
+            b = (1 - f) * a
+
+            # short-circuit coincident points
+            if point1[0] == point2[0] and point1[1] == point2[1]:
+                return 0.0
+
+            U1 = math.atan((1 - f) * math.tan(math.radians(point1[0])))
+            U2 = math.atan((1 - f) * math.tan(math.radians(point2[0])))
+            L = math.radians(point2[1] - point1[1])
+            Lambda = L
+
+            sinU1 = math.sin(U1)
+            cosU1 = math.cos(U1)
+            sinU2 = math.sin(U2)
+            cosU2 = math.cos(U2)
+
+            for iteration in range(MAX_ITERATIONS):
+                sinLambda = math.sin(Lambda)
+                cosLambda = math.cos(Lambda)
+                sinSigma = math.sqrt((cosU2 * sinLambda) ** 2 +
+                                     (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) ** 2)
+                if sinSigma == 0:
+                    return 0.0  # coincident points
+                cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda
+                sigma = math.atan2(sinSigma, cosSigma)
+                sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma
+                cosSqAlpha = 1 - sinAlpha ** 2
+                try:
+                    cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cosSqAlpha
+                except ZeroDivisionError:
+                    cos2SigmaM = 0
+                C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha))
+                LambdaPrev = Lambda
+                Lambda = L + (1 - C) * f * sinAlpha * (sigma + C * sinSigma *
+                                                       (cos2SigmaM + C * cosSigma *
+                                                        (-1 + 2 * cos2SigmaM ** 2)))
+                if abs(Lambda - LambdaPrev) < CONVERGENCE_THRESHOLD:
+                    break  # successful convergence
+            else:
+                return None  # failure to converge
+
+            uSq = cosSqAlpha * (a ** 2 - b ** 2) / (b ** 2)
+            A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)))
+            B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)))
+            deltaSigma = B * sinSigma * (cos2SigmaM + B / 4 * (cosSigma *
+                                                               (-1 + 2 * cos2SigmaM ** 2) - B / 6 * cos2SigmaM *
+                                                               (-3 + 4 * sinSigma ** 2) * (-3 + 4 * cos2SigmaM ** 2)))
+            s = b * A * (sigma - deltaSigma)
+
+            s /= 1000  # meters to kilometers
+            print(s)
+            if miles:
+                s *= MILES_PER_KILOMETER  # kilometers to miles
+            return round(s, 6)
+
         alphabet = string.ascii_uppercase
         alphabet_utm = []
         for i in range(len(alphabet)):
@@ -66,6 +133,11 @@ def satellite_radiance_refir(profile_data_files_path,year,month,day,hour,minute,
         pixel_size_y = float(records2[6])
         records3 = records1[map_info_line + 1][1].split('"')
         utm_zone_info = records3[1].split('_')[2]
+        spheroid_info = records3[8].split(']]')
+        spheroid_info = spheroid_info[0].split(',')
+        a = float(spheroid_info[1])
+        f = float(spheroid_info[2])
+
         if len(utm_zone_info) == 3:
             center_zone_number = int(utm_zone_info[:2])
             center_zone_letter = utm_zone_info[2:3]
@@ -74,100 +146,23 @@ def satellite_radiance_refir(profile_data_files_path,year,month,day,hour,minute,
             center_zone_letter = utm_zone_info[1:2]
 
         center_lat, center_lon = utm.to_latlon(center_x_utm,center_y_utm,center_zone_number,center_zone_letter)
-        dummy_x,dummy_y,center_zone_number,center_zone_letter = utm.from_latlon(center_lat,center_lon) #dummy utm coordinates to check if the center coordinates in the hdr files refer to another utm zone
-        if dummy_x != center_x_utm:
-            center_x_utm = dummy_x
+        distance = vincenty(a,f,(center_lat,center_lon),(volc_lat,volc_lon)) * 1000
+        lon_distance_vinc = vincenty(a,f,(volc_lat,center_lon),(volc_lat,volc_lon)) * 1000
+        if volc_lon < center_lon:
+            lon_distance_vinc = - lon_distance_vinc
+        #lat_distance_vinc = vincenty(a,f,(center_lat,volc_lon),(volc_lat,volc_lon)) * 1000
+        lat_distance_pitagora = math.sqrt(distance**2 - lon_distance_vinc ** 2)
+        if volc_lat > center_lat:
+            #lat_distance_vinc = - lat_distance_vinc
+            lat_distance_pitagora = -lat_distance_pitagora
 
-        volc_easting, volc_northing, volc_zone_number, volc_zone_letter = utm.from_latlon(volc_lat,volc_lon)
+        nx_pixels = lon_distance_vinc / pixel_size_x
+        #ny_pixels = lat_distance_vinc / pixel_size_y
+        ny_pixels_pitagora = lat_distance_pitagora / pixel_size_y
 
-        delta_x_m = 0
-        if volc_zone_number == center_zone_number:
-            delta_x_m = volc_easting - center_x_utm
-        else:
-            zone_new_number = center_zone_number
-            if volc_lon > center_lon:
-                while zone_new_number != volc_zone_number:
-                    utm_zone_east_boundary_lon = (zone_new_number * 6) - 180 - 0.000001
-                    #print('line 59',utm_zone_east_boundary_lon)
-                    east_boundary_easting, east_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(volc_lat,utm_zone_east_boundary_lon)
-                    #print('line 61',east_boundary_easting)
-                    if zone_new_number == center_zone_number:
-                        delta_x_m = delta_x_m + (east_boundary_easting - center_x_utm)
-                        #print('line 63',delta_x_m)
-                    else:
-                        utm_zone_west_boundary_lon = (zone_new_number * 6) - 180 - 6
-                        #print('line 67',utm_zone_west_boundary_lon)
-                        west_boundary_easting, west_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(volc_lat, utm_zone_west_boundary_lon)
-                        #print('line 69',west_boundary_easting)
-                        delta_x_m = delta_x_m + (east_boundary_easting - west_boundary_easting)
-                        #print('line 71', delta_x_m)
-                    zone_new_number += 1
-                utm_zone_west_boundary_lon = (zone_new_number * 6) - 180 - 6
-                #print('line 74',utm_zone_west_boundary_lon)
-                west_boundary_easting, west_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(volc_lat,utm_zone_west_boundary_lon)
-                #print('line 76',west_boundary_easting,volc_easting)
-                delta_x_m = delta_x_m + (volc_easting - west_boundary_easting)
-                #print('line 78', delta_x_m)
-            else:
-                while zone_new_number != volc_zone_number:
-                    utm_zone_west_boundary_lon = (zone_new_number * 6) - 180 - 6
-                    west_boundary_easting, west_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(volc_lat,utm_zone_west_boundary_lon)
-                    if zone_new_number == center_zone_number:
-                        delta_x_m = delta_x_m - (center_x_utm - west_boundary_easting)
-                    else:
-                        utm_zone_east_boundary_lon = (zone_new_number * 6) - 180 - 0.000001
-                        east_boundary_easting, east_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(volc_lat, utm_zone_east_boundary_lon)
-                        delta_x_m = delta_x_m - (east_boundary_easting - west_boundary_easting)
-                    zone_new_number -= 1
-                utm_zone_east_boundary_lon = (zone_new_number * 6) - 180 - 0.000001
-                east_boundary_easting, east_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(volc_lat,utm_zone_east_boundary_lon)
-                delta_x_m = delta_x_m - (east_boundary_easting - volc_easting)
+        i_volc = int(round(center_y_pixel)) + ny_pixels_pitagora
+        j_volc = int(round(center_x_pixel)) + nx_pixels
 
-        # delta_y_m = 0
-        # volc_zone_letter_index = alphabet_utm.index(volc_zone_letter)
-        # center_zone_letter_index = alphabet_utm.index(center_zone_letter)
-        # print(volc_zone_letter,volc_zone_letter_index,center_zone_letter,center_zone_letter_index)
-        # if volc_lat > 0: #for the moment it works only for positive latitude
-        #     if volc_zone_letter_index == center_zone_letter_index:
-        #         delta_y_m = volc_northing - center_y_utm
-        #     else:
-        #          zone_new_letter_index = center_zone_letter_index
-        #          if volc_lat > center_lat:
-        #              while zone_new_letter_index != volc_zone_letter_index:
-        #                  utm_zone_north_boundary_lat = (zone_new_letter_index - 12 + 1) * 8 + 7.9999
-        #                  north_boundary_easting, north_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(utm_zone_north_boundary_lat,center_lon)
-        #                  if zone_new_letter_index == center_zone_letter_index:
-        #                      delta_y_m = delta_y_m + (north_boundary_northing - center_y_utm)
-        #                  else:
-        #                      utm_zone_south_boundary_lat = (zone_new_letter_index - 12 + 1) * 8
-        #                      south_boundary_easting, south_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(utm_zone_south_boundary_lat, center_lon)
-        #                      delta_y_m = delta_y_m + (north_boundary_northing - south_boundary_northing)
-        #                  zone_new_letter_index += 1
-        #              utm_zone_south_boundary_lat = (zone_new_letter_index - 12 + 1) * 8
-        #              south_boundary_easting, south_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(utm_zone_south_boundary_lat,center_lon)
-        #              delta_y_m = delta_y_m + (volc_northing - south_boundary_northing)
-        #          else:
-        #              while zone_new_letter_index != volc_zone_letter_index:
-        #                  utm_zone_south_boundary_lat = (zone_new_letter_index - 12 + 1) * 8
-        #                  print(utm_zone_south_boundary_lat)
-        #                  south_boundary_easting, south_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(utm_zone_south_boundary_lat,center_lon)
-        #                  print(south_boundary_northing)
-        #                  if zone_new_letter_index == center_zone_letter_index:
-        #                      delta_y_m = delta_y_m - (center_y_utm - south_boundary_northing)
-        #                  else:
-        #                      utm_zone_north_boundary_lat = (zone_new_letter_index - 12 + 1) * 8 + 7.9999
-        #                      north_boundary_easting, north_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(utm_zone_north_boundary_lat, center_lon)
-        #                      delta_y_m = delta_y_m - (north_boundary_northing - south_boundary_northing)
-        #                  zone_new_letter_index -= 1
-        #              utm_zone_north_boundary_lat = (zone_new_letter_index - 12 + 1) * 8 + 7.9999
-        #              north_boundary_easting, north_boundary_northing, dummy_number, dummy_letter = utm.from_latlon(utm_zone_north_boundary_lat,center_lon)
-        #              delta_y_m = delta_y_m - (north_boundary_northing - volc_northing)
-
-        delta_y_m = center_y_utm - volc_northing
-        delta_x_pixels = round(delta_x_m/pixel_size_x)
-        delta_y_pixels = round(delta_y_m/pixel_size_y)
-        i_volc = int(round(center_y_pixel)) + delta_y_pixels
-        j_volc = int(round(center_x_pixel)) + delta_x_pixels
         return i_volc, j_volc
 
     def extract_min_rad(i_volc,j_volc,sat_file):
@@ -217,7 +212,6 @@ def satellite_radiance_refir(profile_data_files_path,year,month,day,hour,minute,
                 hgt.append(float(records1[i][0]))
                 tmp_k.append(float(records1[i][2]))
         for i in range(nlines -1, 0, -1):
-            print(i, tmp_k[i-1] , t_rad , tmp_k[i])
             if tmp_k[i-1] < t_rad < tmp_k[i]:
                 slope = (hgt[i-1] - hgt[i])/(tmp_k[i-1] - tmp_k[i])
                 q = hgt[i-1] - slope * tmp_k[i-1]
@@ -225,9 +219,7 @@ def satellite_radiance_refir(profile_data_files_path,year,month,day,hour,minute,
                 break
         t_rad_max = t_rad + 2
         for i in range(nlines -1, 0, -1):
-            print(i,tmp_k[i-1],t_rad_max,tmp_k[i])
             if tmp_k[i-1] < t_rad_max < tmp_k[i]:
-                print(tmp_k[i - 1], t_rad_max, tmp_k[i])
                 slope = (hgt[i - 1] - hgt[i]) / (tmp_k[i - 1] - tmp_k[i])
                 q = hgt[i-1] - slope * tmp_k[i-1]
                 height_min = slope * t_rad_max + q
@@ -302,7 +294,6 @@ def satellite_radiance_refir(profile_data_files_path,year,month,day,hour,minute,
     i = 0
     for time in sat_times:
         time_delta = (time_now_s - time).total_seconds()
-        print(time,time_now_s,time_delta)
         # Only extract heights and update fix_OBSin.txt when the time now coincides with the time of the satellite retrieval
         if 0 <= time_delta < 300:
             i_volc, j_volc = extract_volc_position(volc_lat, volc_lon, sat_hdr_files[i])
