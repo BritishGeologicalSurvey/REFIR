@@ -352,7 +352,8 @@ def read_esps_database():
     import numpy as np
     global esps_plh,esps_dur
 
-    database = pd.read_excel('http://nercbgskwicms:81/research/volcanoes/esp/volcanoExport.xlsx', sheetname='volcanoes')
+    #database = pd.read_excel('http://bgskwicms:81/research/volcanoes/esp/volcanoExport.xlsx', sheetname='volcanoes')
+    database = pd.read_excel('http://www.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx', sheetname='volcanoes')
     nrows = database.shape[0]
     row = 0
     while True:
@@ -379,13 +380,14 @@ def esps_database():
     global Y_eru_start, MO_eru_start, D_eru_start, H_eru_start
     global Y_eru_stop, MO_eru_stop, D_eru_stop, H_eru_stop
     ESPs_data_on = 1
+    read_esps_database()
     if run_type == 1:
         time_start = datetime.datetime.utcnow()
         time_stop = time_start + datetime.timedelta(hours=esps_dur)
         run_type = 2
     time_start = datetime.datetime.strftime(time_start, "%Y-%m-%d %H:%M:%S")
     time_stop = datetime.datetime.strftime(time_stop, "%Y-%m-%d %H:%M:%S")
-    read_esps_database()
+
     #if ISKEF_on  !=  1 and ISEGS_on  !=  1  and ISX1_on  !=  1  and ISX2_on  !=  1  and ISKEFm_on  !=  1  and ISEGSm_on  !=  1  and ISX1m_on  !=  1  \
     #    and ISX2m_on  !=  1  and GFZ1_on  !=  1  and GFZ2_on  !=  1  and GFZ3_on  !=  1  and Cband3_on  !=  1  and Cband4_on  !=  1  and Cband5_on  !=  1  and Cband6_on  !=  1  and Xband3_on  !=  1  and Xband4_on  !=  1  and \
     #    Xband5_on  !=  1  and Xband6_on  !=  1  and Cam4_on  !=  1  and Cam5_on  !=  1  and Cam6_on  !=  1 :
