@@ -463,21 +463,15 @@ def elaborate_weather(plume_height):
     hour_vals = HourNOWs
 
     if run_type == 1:
-        #folder_name=cwd+"\\raw_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs
         folder_name = os.path.join(cwd,"raw_forecast_weather_data_"+YearNUNAs+MonthNUNAs+DayNUNAs)
-
-        #abs_validity = YearNUNAs + MonthNUNAs + DayNUNAs + HourNUNAs
-        #year_vals = YearNUNAs
-        #month_vals = MonthNUNAs
-        #day_vals = DayNUNAs
-        #hour_vals = HourNUNAs
     else:
-        #folder_name = cwd + "\\raw_weather_data_" + eruption_start_year + eruption_start_month + eruption_start_day
-        folder_name = os.path.join(cwd,"raw_reanalysis_weather_data_"+ eruption_start_year + eruption_start_month + eruption_start_day)
-        #year_vals = YearNOWs
-        #month_vals = MonthNOWs
-        #day_vals = DayNOWs
-        #hour_vals = HourNOWs
+        if ESPs_data_on == 1:
+            if run_type_original == 1:
+                folder_name = os.path.join(cwd,"raw_forecast_weather_data_" + eruption_start_year + eruption_start_month + eruption_start_day)
+            else:
+                folder_name = os.path.join(cwd,"raw_reanalysis_weather_data_"+ eruption_start_year + eruption_start_month + eruption_start_day)
+        else:
+            folder_name = os.path.join(cwd,"raw_reanalysis_weather_data_" + eruption_start_year + eruption_start_month + eruption_start_day)
     abs_validity = year_vals + month_vals + day_vals + hour_vals
 
     if plume_height == -99999: # Flag to return the profile data file name for satellite retrieval
@@ -816,6 +810,7 @@ while 1:
     esps_plh = float(configlines[174])
     oo_satellite = int(configlines[175])
     qf_satellite = float(configlines[176])
+    run_type_original = int(configlines[177])
 
     if exit_param == 1:
         refir_end()

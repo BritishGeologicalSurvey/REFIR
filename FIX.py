@@ -53,6 +53,7 @@ else:
 runtype_weather = Tk()
 weather = 1  # Default is automatic weather data retrieval
 run_type = 1  # Default is real_time mode
+run_type_original = run_type
 quit_refir = IntVar()
 #quit_refir.set(0) # FOXI continues until exit_param = 0
 exit_param = 0
@@ -374,23 +375,20 @@ def esps_database():
     from weather import retrieve_data
     from retrieve_data import gfs_forecast_retrieve
     import os
-    global ESPs_data_on, run_type
+    global ESPs_data_on, run_type, run_type_original
     global time_start, time_stop, eruption_start, eruption_stop
     global Y_eru_start_s, MO_eru_start_s, D_eru_start_s
     global Y_eru_start, MO_eru_start, D_eru_start, H_eru_start
     global Y_eru_stop, MO_eru_stop, D_eru_stop, H_eru_stop
     ESPs_data_on = 1
     read_esps_database()
+    run_type_original = run_type
     if run_type == 1:
+        run_type = 2
         time_start = datetime.datetime.utcnow()
         time_stop = time_start + datetime.timedelta(hours=esps_dur)
-        run_type = 2
     time_start = datetime.datetime.strftime(time_start, "%Y-%m-%d %H:%M:%S")
     time_stop = datetime.datetime.strftime(time_stop, "%Y-%m-%d %H:%M:%S")
-
-    #if ISKEF_on  !=  1 and ISEGS_on  !=  1  and ISX1_on  !=  1  and ISX2_on  !=  1  and ISKEFm_on  !=  1  and ISEGSm_on  !=  1  and ISX1m_on  !=  1  \
-    #    and ISX2m_on  !=  1  and GFZ1_on  !=  1  and GFZ2_on  !=  1  and GFZ3_on  !=  1  and Cband3_on  !=  1  and Cband4_on  !=  1  and Cband5_on  !=  1  and Cband6_on  !=  1  and Xband3_on  !=  1  and Xband4_on  !=  1  and \
-    #    Xband5_on  !=  1  and Xband6_on  !=  1  and Cam4_on  !=  1  and Cam5_on  !=  1  and Cam6_on  !=  1 :
 
     year_start = time_start[0:4]
     month_start = time_start[5:7]
@@ -1191,6 +1189,7 @@ def get_last_data():
         ESPs_data_on = int(configlines3[172])
         oo_satellite = int(configlines3[175])
         qf_satellite = float(configlines3[176])
+        run_type_original = int(configlines3[177])
         get_last_time()
 
     except EnvironmentError:
@@ -1264,7 +1263,7 @@ def save_default_file():
                        + "\n" + str(run_type) + "\n" + str(weather) + "\n" + str(wtf_wood0d) + "\n" + str(time_start) \
                        + "\n" + str(time_stop)  + "\n" + str(exit_param) + "\n" + str(PM_TAV) + "\n" + str(NAME_out_on) \
                        + "\n" + str(PI_THRESH) + "\n" + str(ESPs_data_on) + "\n" + str(esps_dur) + "\n" + str(esps_plh) \
-                       + "\n" + str(oo_satellite) + "\n" + str(qf_satellite))  # Added satellite retrieval commands
+                       + "\n" + str(oo_satellite) + "\n" + str(qf_satellite)+ "\n" + str(run_type_original))  # Added satellite retrieval commands
     default_FILE.close()
 
 defaultvalues(vent_h)
@@ -4289,7 +4288,54 @@ def operation_control():
 
 operation_control()
 
-
 #if weather == 1:
 #    automatic_weather()
+
+if ESPs_data_on == 1:
+    # When using ESPS database data, de-activate all automatic data retrieval since merging these two types of data is questionable
+    if ISKEF_on == 1:
+        ISKEF_on = 0
+    if ISEGS_on == 1:
+        ISEGS_on = 0
+    if ISX1_on == 1:
+        ISX1_on = 0
+    if ISX2_on == 1:
+        ISX2_on = 0
+    if ISKEFm_on == 1:
+        ISKEFm_on = 0
+    if ISEGSm_on == 1:
+        ISEGSm_on = 0
+    if ISX1m_on == 1:
+        ISX1m_on = 0
+    if ISX2m_on == 1:
+        ISX2m_on = 0
+    if GFZ1_on == 1:
+        GFZ1_on = 0
+    if GFZ2_on == 1:
+        GFZ2_on = 0
+    if GFZ3_on == 1:
+        GFZ3_on = 0
+    if Cband3_on == 1:
+        Cband3_on = 0
+    if Cband4_on == 1:
+        Cband4_on = 0
+    if Cband5_on == 1:
+        Cband5_on = 0
+    if Cband6_on == 1:
+        Cband6_on = 0
+    if Xband3_on == 1:
+        Xband3_on = 0
+    if Xband4_on == 1:
+        Xband4_on = 0
+    if Xband5_on == 1:
+        Xband5_on = 0
+    if Xband6_on == 1:
+        Xband6_on = 0
+    if Cam4_on == 1:
+        Cam4_on = 0
+    if Cam5_on == 1:
+        Cam5_on = 0
+    if Cam6_on == 1:
+        Cam6_on = 0
+
 save_default_file()
