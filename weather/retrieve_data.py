@@ -45,15 +45,24 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst):
 
     def elaborate_wtfiles(wtfile,wtfile_int,wtfile_prof,abs_validity):
         import os
-        os.system(
-            'wgrib2 ' + wtfile + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':100:0.01 ' + lat_corner + ':100:0.01 ' +
-            wtfile_int)
+        cwd = os.getcwd()
+        if zoom:
+            os.system(
+                'wgrib2 ' + wtfile + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':400:0.01 ' + lat_corner + ':400:0.01 ' +
+                wtfile_int)
+        else:
+            copyfile(os.path.join(cwd,wtfile),os.path.join(cwd,wtfile_int))
         print('Saving weather data along the vertical at the vent location')
         os.system('wgrib2 ' + wtfile_int + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
         # Extract and elaborate weather data
         extract_data_gfs(abs_validity, wtfile_prof)
 
     cwd = os.getcwd()
+    slon_source_left = str(lon_source - 2)
+    slon_source_right = str(lon_source + 2)
+    slat_source_bottom = str(lat_source - 2)
+    slat_source_top = str(lat_source + 2)
+
     if(lon_source < 0):
         lon_source = 360 + lon_source
 
@@ -190,7 +199,14 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst):
             wtfile = 'weather_data_' + year_anl + month_anl + day_anl + anl + '_' + fcst
             wtfile_int = 'weather_data_interpolated_' + year_anl + month_anl + day_anl + anl + '_' + fcst
             wtfile_prof = 'profile_' + year + month + day + anl + validity + '.txt'
-            url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile_dwnl
+            try:
+                url = 'https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25_1hr.pl?file=' + wtfile_dwnl + '&all_lev=on&var_HGT=on&var_TMP=on&var_UGRD=on&var_VGRD=on&subregion=&leftlon=' + slon_source_left + '&rightlon=' + slon_source_right + '&toplat=' + slat_source_top + '&bottomlat=' + slat_source_bottom + '&dir=%2Fgfs.' + year_anl + month_anl + day_anl + '%2F' + anl
+                urllib.request.urlopen(url)
+                zoom = False
+            except:
+                url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile_dwnl
+                urllib.request.urlopen(url)
+                zoom = True
             print('Checking if ' + wtfile + ' exists in ' + data_folder)
             if os.path.isfile(data_folder + wtfile):
                 print('File ' + wtfile + ' found')
@@ -209,8 +225,8 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst):
         print('No new weather data downloaded')
     slon_source = str(lon_source)
     slat_source = str(lat_source)
-    lon_corner = str(int(lon_source))
-    lat_corner = str(int(lat_source))
+    lon_corner = str(int(lon_source - 2))
+    lat_corner = str(int(lat_source - 2))
 
     pool_1 = ThreadingPool(len(wtfiles))
     pool_1.map(elaborate_wtfiles,wtfiles,wtfiles_int,wtfiles_prof,abs_validities)
