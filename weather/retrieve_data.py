@@ -228,17 +228,9 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst):
     lon_corner = str(int(lon_source - 2))
     lat_corner = str(int(lat_source - 2))
 
-    pool_1 = ThreadingPool(len(wtfiles))
-    pool_1.map(elaborate_wtfiles,wtfiles,wtfiles_int,wtfiles_prof,abs_validities)
-    #for i in range(0,len(wtfiles)-1):
-    #    # Interpolate data to a higher resolution grid
-    #    print('Interpolating weather data to a finer grid around the source')
-    #    os.system(
-    #        'wgrib2 ' + wtfiles[i] + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':100:0.01 ' + lat_corner + ':100:0.01 ' + wtfiles_int[i])
-    #    print('Saving weather data along the vertical at the vent location')
-    #    os.system('wgrib2 ' + wtfiles_int[i] + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfiles_prof[i])
-    #    # Extract and elaborate weather data
-    #    extract_data_gfs(year, month, day, abs_validities[i], wtfiles_prof[i])
+    if len(wtfiles) > 0:
+        pool_1 = ThreadingPool(len(wtfiles))
+        pool_1.map(elaborate_wtfiles,wtfiles,wtfiles_int,wtfiles_prof,abs_validities)
 
 def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     from ecmwfapi import ECMWFDataServer

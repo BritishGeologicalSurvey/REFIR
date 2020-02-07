@@ -486,16 +486,19 @@ def elaborate_weather(plume_height):
             [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals,month_vals,day_vals,abs_validity,profile_data_file_full,plume_height,vent_h)
         else:
             print("File " + profile_data_file + " not present")
-            if run_type == 1:
+            if run_type == 1 or (run_type_original == 1 and ESPs_data_on == 1):
                 print('Retrieving new GFS forecast data')
-                gfs_forecast_retrieve(volcLON, volcLAT)
+                nfcst = 6
+                gfs_forecast_retrieve(volcLON, volcLAT, nfcst)
                 current = os.getcwd()
                 files = os.listdir(current)
+                print(files)
                 for file in files:
+                    print(file)
                     if file.startswith('weather_') or file.startswith('profile_'):
                         move(os.path.join(current, file), os.path.join(folder_name, file))
-                    print("Elaborating " + profile_data_file)
-                    [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals, month_vals,
+                print("Elaborating " + profile_data_file)
+                [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals, month_vals,
                                                                                                 day_vals, abs_validity,
                                                                                                 profile_data_file_full,
                                                                                                 plume_height, vent_h)
