@@ -203,69 +203,105 @@ def icelandvolc_default():
 def newvolc_setup():
     import pandas as pd
     import numpy as np
-    from pandas import ExcelFile
     global volc_exist
+    global volc, N_volc
     volc_exist = 0
     print("... setting up volcanoes of interest!")
     print("Up to 10 volcanoes can be added to the list")
-    df = pd.read_excel('SI_volcanoes_list.xlsx', sheet_name='volcanoes')
-    nrow = df.shape[0]
-    i = 0
+    #df = pd.read_excel('SI_volcanoes_list.xlsx', sheet_name='volcanoes')
+    try:
+        df = pd.read_excel('http://www.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx', sheet_name='volcanoes')
+        ESPs_database = True
+    except:
+        print('Unable to retrieve data from the ESPs database. Please provide inputs manually')
+        ESPs_database = False
     z = 0
-    global volc, N_volc
-    volc=[0,0,0,0,0,""]
-    vrun = 0
-    create_volcheader()
-    while z!=2 :
-        lencheck = 0
-        vrun = vrun + 1
-        print("----------------")
-        print("Volcano No. "+ str(vrun)+": \n")
-        # volc[5] = input("Name of volcano .. ")
-        # assert isinstance(volc[5], str)
-        volc[0] = input("Specify Smithsonian Institute ID for the volcano: ")
-        row=0
-        while True:
-            volc[4] = 0
-            if df['SMITHSONIAN_ID'][row] == np.int64(volc[0]):
-            #if df['VOLCANO_ID'][row] == volc[0]:
-                volc[1] = df['LATITUDE'][row]
-                volc[2] = df['LONGITUDE'][row]
-                volc[3] = df['ELEVATION_m'][row]
-                volc[5] = df['VOLCANO_NAME'][row]
-                volcentry(volc)
-                break
-            else:
-                row += 1
-                if row >= nrow:
-                    print('ID not found')
+    volc = [0, 0, 0, 0, 0, ""]
+    if ESPs_database:
+        nrow = df.shape[0]
+        vrun = 0
+        create_volcheader()
+        while z!=2 :
+            vrun = vrun + 1
+            print("----------------")
+            print("Volcano No. "+ str(vrun)+": \n")
+            volc[0] = input("Specify Smithsonian Institute ID for the volcano: ")
+            row=0
+            while True:
+                volc[4] = 0
+                if df['SMITHSONIAN_ID'][row] == np.int64(volc[0]):
+                    volc[1] = df['LATITUDE'][row]
+                    volc[2] = df['LONGITUDE'][row]
+                    volc[3] = df['ELEVATION_m'][row]
+                    volc[5] = df['VOLCANO_NAME'][row]
+                    volcentry(volc)
                     break
+                else:
+                    row += 1
+                    if row >= nrow:
+                        print('ID not found')
+                        break
 
-        print("Data saved!")
-        print("-------------")
-        if vrun == 10:
-            N_volc = 10
-            print ("\nList completed!")
-            print("Check in file \"volcano_list.ini\" if all data are correct and modify accordingly!")
-            #raw_input("\n....confirm by any key! ")
-            name = input('\n....confirm by any key! ')
-            assert isinstance(name, str)    # native str on Py2 and Py3            
-        else:
-            print("\nWant to add another volcano of interest?")
-            print("[1]: yes")
-            print("[2]: no")
-            another = input(".. ")
-            an = int (another)
-            if an == 1:
-                z = 0
-            else:
-                z = 2
-                N_volc = vrun
+            print("Data saved!")
+            print("-------------")
+            if vrun == 10:
+                N_volc = 10
                 print ("\nList completed!")
                 print("Check in file \"volcano_list.ini\" if all data are correct and modify accordingly!")
-                #raw_input("\n....confirm by any key! ")
                 name = input('\n....confirm by any key! ')
-                assert isinstance(name, str)    # native str on Py2 and Py3                     
+                assert isinstance(name, str)    # native str on Py2 and Py3
+            else:
+                print("\nWant to add another volcano of interest?")
+                print("[1]: yes")
+                print("[2]: no")
+                another = input(".. ")
+                an = int (another)
+                if an == 1:
+                    z = 0
+                else:
+                    z = 2
+                    N_volc = vrun
+                    print ("\nList completed!")
+                    print("Check in file \"volcano_list.ini\" if all data are correct and modify accordingly!")
+                    name = input('\n....confirm by any key! ')
+                    assert isinstance(name, str)    # native str on Py2 and Py3
+    else:
+        vrun = 0
+        create_volcheader()
+        while z != 2:
+            vrun = vrun + 1
+            print("----------------")
+            print("Volcano No. " + str(vrun) + ": \n")
+            volc[0] = input("Specify volcano ID: ")
+            volc[5] = input("Specify volcano Name: ")
+            volc[1] = input("Specify volcano latitude")
+            volc[2] = input("Specify volcano longitude")
+            volc[4] = 0
+            volc[3] = input("Specify volcano elevation in m")
+            volcentry(volc)
+            print("Data saved!")
+            print("-------------")
+            if vrun == 10:
+                N_volc = 10
+                print("\nList completed!")
+                print("Check in file \"volcano_list.ini\" if all data are correct and modify accordingly!")
+                name = input('\n....confirm by any key! ')
+                assert isinstance(name, str)  # native str on Py2 and Py3
+            else:
+                print("\nWant to add another volcano of interest?")
+                print("[1]: yes")
+                print("[2]: no")
+                another = input(".. ")
+                an = int(another)
+                if an == 1:
+                    z = 0
+                else:
+                    z = 2
+                    N_volc = vrun
+                    print("\nList completed!")
+                    print("Check in file \"volcano_list.ini\" if all data are correct and modify accordingly!")
+                    name = input('\n....confirm by any key! ')
+                    assert isinstance(name, str)  # native str on Py2 and Py3
 
 def create_sensorheadersC():
     
