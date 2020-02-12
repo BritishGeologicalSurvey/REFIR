@@ -4134,8 +4134,12 @@ def control_ESPs():
             global esps_plh, esps_dur
 
             # database = pd.read_excel('http://bgskwicms:81/research/volcanoes/esp/volcanoExport.xlsx', sheetname='volcanoes')
-            database = pd.read_excel('http://www.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx',
+            try:
+                database = pd.read_excel('http://www.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx',
                                      sheetname='volcanoes')
+            except:
+                database = pd.read_excel('http://www.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx',
+                                         sheet_name='volcanoes')
             nrows = database.shape[0]
             row = 0
             while True:

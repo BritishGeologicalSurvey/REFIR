@@ -68,7 +68,10 @@ time_axis = 1 #0: inverted for pl.h. sector plots; 1: always same
 
 """ settings END """
 
-command = sys.argv[1]
+try:
+    command = sys.argv[1]
+except:
+    command = ''
 
 time_st = datetime.datetime.utcnow()         
 time_stamp = time_st.strftime("%Y%m%d_%H%M") 
