@@ -55,6 +55,7 @@ sys.path.insert(0, './satellite')
 from satellite import satellite_radiance_refir
 from satellite_radiance_refir import satellite_radiance_refir
 #import matplotlib.image as image
+import sys
 
 """ settings START """
 global PI_THRESH, TimeOLD, ESPs_data_on, esps_plh
@@ -66,6 +67,8 @@ operator = "User"
 time_axis = 1 #0: inverted for pl.h. sector plots; 1: always same
 
 """ settings END """
+
+command = sys.argv[1]
 
 time_st = datetime.datetime.utcnow()         
 time_stamp = time_st.strftime("%Y%m%d_%H%M") 
@@ -289,102 +292,122 @@ def read_sensors():
     
 read_sensors()
 
-try:
-    if sys.version_info[0] < 3:
-        from Tkinter import *
-    
-    else:
-        from tkinter import *
-
-#GUI INITIALIZING
-    
+if command == 'background':
+    out_txt = sys.argv[2]
     TimeNUNA = datetime.datetime.utcnow()
     TimeNUNAs = str(TimeNUNA)
-    YearNUNAs = TimeNUNAs[:4] 
-    MonthNUNAs =TimeNUNAs[5:7]
-    DayNUNAs =TimeNUNAs[8:10]
-    HourNUNAs =TimeNUNAs[11:13]
-    MinuteNUNAs =TimeNUNAs[14:16]
-    
-    masterout = Tk()
-    out=StringVar()
-    time_lead = IntVar()
-    
-    masterout.title("Initiate FOXI")
-    Label(masterout, text="Specify output file and start of eruption",\
-     font = "Helvetica 12", fg="blue").grid(row=0, column=0, columnspan=6)
-    
-    Label(masterout, text=" ", font = "Helvetica 10").grid(row=2, column=0)
-    Label(masterout, text="Output file: ", font = "Helvetica 10").grid(row=3, column=0, columnspan=2,sticky=E)
-    
-    Label(masterout, text="Start of eruption: ", \
-    font = "Helvetica 11", fg="green").grid(row=5, column=0, columnspan =2, sticky=W)
-    Label(masterout, text="Year: ", font = "Helvetica 10").grid(row=5, column=2)
-    Label(masterout, text="Month: ", font = "Helvetica 10").grid(row=6, column=2)
-    Label(masterout, text="Day: ", font = "Helvetica 10").grid(row=6, column=0)
-    Label(masterout, text="Hour: ", font = "Helvetica 10").grid(row=7, column=0)
-    Label(masterout, text="Minute: ", font = "Helvetica 10").grid(row=7, column=2)
+    YearNUNAs = TimeNUNAs[:4]
+    MonthNUNAs = TimeNUNAs[5:7]
+    DayNUNAs = TimeNUNAs[8:10]
+    HourNUNAs = TimeNUNAs[11:13]
+    MinuteNUNAs = TimeNUNAs[14:16]
+    Y_eru = int(YearNUNAs)
+    MO_eru = int(MonthNUNAs)
+    D_eru = int(DayNUNAs)
+    H_eru = int(HourNUNAs)
+    M_eru = int(MinuteNUNAs)
+    time_tveir = datetime.datetime(Y_eru, MO_eru, D_eru, H_eru, M_eru)
+    time_einn = datetime.datetime(int(YearNUNAs), int(MonthNUNAs), int(DayNUNAs), int(HourNUNAs), int(MinuteNUNAs))
+    lead_Time = int((time_einn - time_tveir).total_seconds() / 60)
+    logging.info("Time since eruption start: " + str(lead_Time) + "min")
+    logging.info("Configuration completed!")
+    logging.info("Waiting for Initiation")
+else:
+    try:
+        if sys.version_info[0] < 3:
+            from Tkinter import *
+        else:
+            from tkinter import *
 
-    Label(masterout, text=".txt", font = "Helvetica 10").grid(row=3,column=4, sticky=W)
-    Label(masterout, text=" ", font = "Helvetica 10").grid(row=4, column=0)
-    Label(masterout, text=" ", font = "Helvetica 10").grid(row=8, column=0)
-    Label(masterout, text="IMPORTANT! Program starts not before window is closed!",\
-    fg="red", bg="yellow").grid(row=9,column=0, sticky=W, columnspan=5)
-    Label(masterout, text=" ", font = "Helvetica 10").grid(row=10, column=0)
-    
-    out = Entry(masterout)
-    out.grid(row=3, column=2, columnspan=2, sticky=W)
-    
-    time_ERU_y = Entry(masterout,width=4)
-    time_ERU_y.grid(row=5, column=3, sticky=W)
-    time_ERU_mo = Entry(masterout,width=2)
-    time_ERU_mo.grid(row=6, column=3, sticky=W)
-    time_ERU_d = Entry(masterout,width=2)
-    time_ERU_d.grid(row=6, column=1, sticky=W)
-    time_ERU_h = Entry(masterout,width=2)
-    time_ERU_h.grid(row=7, column=1, sticky=W)
-    time_ERU_m = Entry(masterout,width=2)
-    time_ERU_m.grid(row=7, column=3, sticky=W)
-    
-    time_ERU_y.insert(10,YearNUNAs)
-    time_ERU_mo.insert(10,MonthNUNAs)
-    time_ERU_d.insert(10,DayNUNAs)
-    time_ERU_h.insert(10,HourNUNAs)
-    time_ERU_m.insert(10,MinuteNUNAs)
-    
-    def on_button():
-        global out_txt,lead_Time, time_tveir
-        out_txt = str(out.get())
-        Y_eru = int(time_ERU_y.get())
-        MO_eru = int(time_ERU_mo.get())
-        D_eru = int(time_ERU_d.get())
-        H_eru = int(time_ERU_h.get())
-        M_eru = int(time_ERU_m.get())
-        time_tveir = datetime.datetime(Y_eru,MO_eru,D_eru,H_eru,M_eru)
-        time_einn = datetime.datetime(int(YearNUNAs), int(MonthNUNAs), int(DayNUNAs), int(HourNUNAs),int(MinuteNUNAs))
-        lead_Time = int((time_einn-time_tveir).total_seconds()/60)
-        logging.info("Time since eruption start: " + str(lead_Time)+"min")
-        logging.info("Configuration completed!")
-        logging.info("Waiting for Initiation")
-    
-    Button(masterout, text = "Initiate!",font = "Helvetica 11", fg="yellow",bg="red",\
-    width =24, height=2, command = on_button).grid(row=11, column=0, columnspan=5)
-    x_screen_fr = 0.6
-    y_screen_fr = 0.2
-    size_x = 310
-    size_y = 300
-    pos_x, pos_y = calculate_position(masterout,x_screen_fr, y_screen_fr)
-    masterout.geometry('%dx%d+%d+%d' % (size_x, size_y, pos_x, pos_y))
-    masterout.mainloop()
+    #GUI INITIALIZING
 
-#END GUI
+        TimeNUNA = datetime.datetime.utcnow()
+        TimeNUNAs = str(TimeNUNA)
+        YearNUNAs = TimeNUNAs[:4]
+        MonthNUNAs =TimeNUNAs[5:7]
+        DayNUNAs =TimeNUNAs[8:10]
+        HourNUNAs =TimeNUNAs[11:13]
+        MinuteNUNAs =TimeNUNAs[14:16]
 
-except EnvironmentError:
-    out_txt = input ("Enter name of output file (without .txt): ")
-    lead_Time_d = input ("Days since start of eruption: ")
-    lead_Time_h = input ("Hours since start of eruption: ")
-    lead_Time_m = input ("Minutes since start of eruption: ")
-    lead_Time =24*60*lead_Time_d + 60*lead_Time_h+lead_Time_m
+        masterout = Tk()
+        out=StringVar()
+        time_lead = IntVar()
+
+        masterout.title("Initiate FOXI")
+        Label(masterout, text="Specify output file and start of eruption",\
+         font = "Helvetica 12", fg="blue").grid(row=0, column=0, columnspan=6)
+
+        Label(masterout, text=" ", font = "Helvetica 10").grid(row=2, column=0)
+        Label(masterout, text="Output file: ", font = "Helvetica 10").grid(row=3, column=0, columnspan=2,sticky=E)
+
+        Label(masterout, text="Start of eruption: ", \
+        font = "Helvetica 11", fg="green").grid(row=5, column=0, columnspan =2, sticky=W)
+        Label(masterout, text="Year: ", font = "Helvetica 10").grid(row=5, column=2)
+        Label(masterout, text="Month: ", font = "Helvetica 10").grid(row=6, column=2)
+        Label(masterout, text="Day: ", font = "Helvetica 10").grid(row=6, column=0)
+        Label(masterout, text="Hour: ", font = "Helvetica 10").grid(row=7, column=0)
+        Label(masterout, text="Minute: ", font = "Helvetica 10").grid(row=7, column=2)
+
+        Label(masterout, text=".txt", font = "Helvetica 10").grid(row=3,column=4, sticky=W)
+        Label(masterout, text=" ", font = "Helvetica 10").grid(row=4, column=0)
+        Label(masterout, text=" ", font = "Helvetica 10").grid(row=8, column=0)
+        Label(masterout, text="IMPORTANT! Program starts not before window is closed!",\
+        fg="red", bg="yellow").grid(row=9,column=0, sticky=W, columnspan=5)
+        Label(masterout, text=" ", font = "Helvetica 10").grid(row=10, column=0)
+
+        out = Entry(masterout)
+        out.grid(row=3, column=2, columnspan=2, sticky=W)
+
+        time_ERU_y = Entry(masterout,width=4)
+        time_ERU_y.grid(row=5, column=3, sticky=W)
+        time_ERU_mo = Entry(masterout,width=2)
+        time_ERU_mo.grid(row=6, column=3, sticky=W)
+        time_ERU_d = Entry(masterout,width=2)
+        time_ERU_d.grid(row=6, column=1, sticky=W)
+        time_ERU_h = Entry(masterout,width=2)
+        time_ERU_h.grid(row=7, column=1, sticky=W)
+        time_ERU_m = Entry(masterout,width=2)
+        time_ERU_m.grid(row=7, column=3, sticky=W)
+
+        time_ERU_y.insert(10,YearNUNAs)
+        time_ERU_mo.insert(10,MonthNUNAs)
+        time_ERU_d.insert(10,DayNUNAs)
+        time_ERU_h.insert(10,HourNUNAs)
+        time_ERU_m.insert(10,MinuteNUNAs)
+
+        def on_button():
+            global out_txt,lead_Time, time_tveir
+            out_txt = str(out.get())
+            Y_eru = int(time_ERU_y.get())
+            MO_eru = int(time_ERU_mo.get())
+            D_eru = int(time_ERU_d.get())
+            H_eru = int(time_ERU_h.get())
+            M_eru = int(time_ERU_m.get())
+            time_tveir = datetime.datetime(Y_eru,MO_eru,D_eru,H_eru,M_eru)
+            time_einn = datetime.datetime(int(YearNUNAs), int(MonthNUNAs), int(DayNUNAs), int(HourNUNAs),int(MinuteNUNAs))
+            lead_Time = int((time_einn-time_tveir).total_seconds()/60)
+            logging.info("Time since eruption start: " + str(lead_Time)+"min")
+            logging.info("Configuration completed!")
+            logging.info("Waiting for Initiation")
+
+        Button(masterout, text = "Initiate!",font = "Helvetica 11", fg="yellow",bg="red",\
+        width =24, height=2, command = on_button).grid(row=11, column=0, columnspan=5)
+        x_screen_fr = 0.6
+        y_screen_fr = 0.2
+        size_x = 310
+        size_y = 300
+        pos_x, pos_y = calculate_position(masterout,x_screen_fr, y_screen_fr)
+        masterout.geometry('%dx%d+%d+%d' % (size_x, size_y, pos_x, pos_y))
+        masterout.mainloop()
+
+    #END GUI
+
+    except EnvironmentError:
+        out_txt = input ("Enter name of output file (without .txt): ")
+        lead_Time_d = input ("Days since start of eruption: ")
+        lead_Time_h = input ("Hours since start of eruption: ")
+        lead_Time_m = input ("Minutes since start of eruption: ")
+        lead_Time =24*60*lead_Time_d + 60*lead_Time_h+lead_Time_m
 
 fMER_file = open(out_txt + "_FMER.txt", "a",encoding="utf-8", errors="surrogateescape")
 fMER_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'FMER min (kg/s)'+"\t"+'FMER avg (kg/s)'+"\t"+'FMER max (kg/s)'+"\n")
