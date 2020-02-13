@@ -191,9 +191,11 @@ def icelandvolc_default():
     volcentry(volc)
     volc = ["373060",65.05,-16.783, 1516,1,"Askja"]
     volcentry(volc)
+    volc = ["371020", 63.883, -22.5, 230, 1, "Reykjanes"]
+    volcentry(volc)
     volc = ["ovaent",65.00,-17.00, 99,1,"Óvæntfjöll"]
     volcentry(volc)
-    N_volc = 10
+    N_volc = 11
     print("\nDefault Icelandic volcano list was generated!")
     print("Check in file \"volcano_list.ini\" if all data are correct and modify accordingly!")
     #raw_input("\n....confirm by any key! ")
