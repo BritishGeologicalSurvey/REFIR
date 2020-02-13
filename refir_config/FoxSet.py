@@ -64,11 +64,11 @@ LatS = ["","","","","","","","","","","","","","","","","",""]
 LonS = ["","","","","","","","","","","","","","","","","",""]
 TypS =["","","","","","","","","","","","","","","","","",""]
 FocS =["","","","","","","","","","","","","","","","","",""]
-VolcID = ["n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a."]
-LatV = ["","","","","","","","","",""]
-LonV = ["","","","","","","","","",""]
-VolcH= ["","","","","","","","","",""]
-DBline =["","","","","","","","","","","","","","","","","","","","","",""]
+VolcID = ["n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a."]
+LatV = ["","","","","","","","","","",""]
+LonV = ["","","","","","","","","","",""]
+VolcH= ["","","","","","","","","","",""]
+DBline =["","","","","","","","","","","","","","","","","","","","","","",""]
 N_Volc = 0
 ID0 = ["n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a."]
 volc_exist=0
@@ -195,7 +195,7 @@ def icelandvolc_default():
     volcentry(volc)
     volc = ["ovaent",65.00,-17.00, 99,1,"Óvæntfjöll"]
     volcentry(volc)
-    N_volc = 11
+    N_Volc = 11
     print("\nDefault Icelandic volcano list was generated!")
     print("Check in file \"volcano_list.ini\" if all data are correct and modify accordingly!")
     #raw_input("\n....confirm by any key! ")
@@ -794,12 +794,13 @@ def read_volcanoes():
         f.close()
         N_et = len(vulk)-1 #number of entries
         for x in range(0,N_et):
-                VolcID[x] = str(vulk[x+1][0])
-                LatV[x] = float(vulk[x+1][1])
-                LonV[x] = float(vulk[x+1][2])
-                VolcH[x] = int(float(vulk[x+1][3]))            
+            print(vulk[x+1])
+            VolcID[x] = str(vulk[x+1][0])
+            LatV[x] = float(vulk[x+1][1])
+            LonV[x] = float(vulk[x+1][2])
+            VolcH[x] = int(float(vulk[x+1][3]))
         N_Volc = N_et
-    except  EnvironmentError:
+    except EnvironmentError:
         print("Error - File \"volcano_list.ini\" not found!\n")
         sys.exit()
 
