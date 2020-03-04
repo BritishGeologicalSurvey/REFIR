@@ -2370,7 +2370,7 @@ while 1:
                         logger3.info ("data set discarded")
 
     if oo_satellite == 1:
-        if weather == 0:
+        if weather != 1:
             print('Satellite retrieval can be used only if Automatic weather data retrieval is activated')
             print('Skipping satellite retrieval')
         else:
