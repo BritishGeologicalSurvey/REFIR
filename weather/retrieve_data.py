@@ -552,8 +552,8 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
         lon_source = 360 + lon_source
     slon_source = str(lon_source)
     slat_source = str(lat_source)
-    lon_corner = str(int(lon_source))
-    lat_corner = str(int(lat_source))
+    lon_corner = str(int(lon_source - 2))
+    lat_corner = str(int(lat_source - 2))
 
     if eruption_start.hour < 6:
         dt = eruption_start.hour
@@ -645,7 +645,7 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
             # Interpolate data to a higher resolution grid
             print('Interpolating weather data to a finer grid around the source')
             os.system(
-                'wgrib2 ' + wtfile + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':100:0.01 ' + lat_corner + ':100:0.01 ' + wtfile_int)
+                'wgrib2 ' + wtfile + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':400:0.01 ' + lat_corner + ':400:0.01 ' + wtfile_int)
             print('Saving weather data along the vertical at the vent location')
             os.system('wgrib2 ' + wtfile + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
             # Extract and elaborate weather data

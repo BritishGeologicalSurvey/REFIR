@@ -518,16 +518,14 @@ def elaborate_weather(plume_height):
                 gfs_forecast_retrieve(volcLON, volcLAT, nfcst)
                 current = os.getcwd()
                 files = os.listdir(current)
-                print(files)
                 for file in files:
-                    print(file)
                     if file.startswith('weather_') or file.startswith('profile_'):
                         move(os.path.join(current, file), os.path.join(folder_name, file))
                 print("Elaborating " + profile_data_file)
                 [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals, month_vals,
-                                                                                                day_vals, abs_validity,
-                                                                                                profile_data_file_full,
-                                                                                                plume_height, vent_h)
+                                                                                                        day_vals, abs_validity,
+                                                                                                        profile_data_file_full,
+                                                                                                        plume_height, vent_h)
             else:
                 for itstep in range(1,6):
                     Time_updated = TimeNOW - datetime.timedelta(hours=itstep)
@@ -559,10 +557,32 @@ def elaborate_weather(plume_height):
                     else:
                         print("File " + profile_data_file + " not present")
                         continue
-                else:
-                    print("No weather data available. Please run FIX")
     else:
-        print("No weather data available. Please run FIX")
+        if run_type == 1 or (run_type_original == 1 and ESPs_data_on == 1):
+            if hour_vals == '00':
+                time_temp = TimeNOW - datetime.timedelta(hours=6)
+                time_temps = str(time_temp)
+                year_vals_temp = time_temps[:4]
+                month_vals_temp = time_temps[5:7]
+                day_vals_temp = time_temps[8:10]
+                folder_name = os.path.join(cwd,
+                                           "raw_forecast_weather_data_" + year_vals_temp + month_vals_temp + day_vals_temp)
+                profile_data_file = "profile_data_" + abs_validity + ".txt"
+                profile_data_file_full = os.path.join(folder_name, profile_data_file)
+                if os.path.exists(folder_name):
+                    try:
+                        print("Elaborating " + profile_data_file)
+                        [P_H_source, T_H_source, N_avg, V_avg, N_avg, V_H_top, Ws] = weather_parameters(year_vals,
+                                                                                                        month_vals,
+                                                                                                        day_vals,
+                                                                                                        abs_validity,
+                                                                                                        profile_data_file_full,
+                                                                                                        plume_height,
+                                                                                                        vent_h)
+                    except:
+                        print("No weather data available. Please run FIX")
+        else:
+            print("No weather data available. Please run FIX")
 
 Mwood = [0,0,0,0,0] 
 wemer_min=0
