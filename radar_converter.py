@@ -1,9 +1,9 @@
 """
 *** radar_converter v1.0 ***
-- component of REFIR 19.0 -
+- component of REFIR 20.0 -
 - Script to convert IMO radar files into REFIR-readable files -
 
-Copyright (C) 2018 Tobias Dürig, Fabio Dioguardi
+Copyright (C) 2020 Tobias Dürig, Fabio Dioguardi
 ==============                     ===================
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

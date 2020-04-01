@@ -1,9 +1,9 @@
 """
 *** satellite_radiance v1.0 ***
-- component of the weather package included in REFIR 19.0 -
+- component of the weather package included in REFIR 20.0 -
 - Script to estimate top plume height from radiance in the channel 10.8 micron
 
-Copyright (C) 2019 Tobias Dürig, Fabio Dioguardi
+Copyright (C) 2020 Tobias Dürig, Fabio Dioguardi
 ==============                     ===================
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

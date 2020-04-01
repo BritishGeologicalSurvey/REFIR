@@ -1,9 +1,9 @@
 """
-*** FoxSet v19.0 ***                                                                          
-- component of REFIR 19.0 -
--Program to                                         set up the instruments for REFIR -
+*** FoxSet v20.0 ***
+- component of REFIR 20.0 -
+-Program to set up the instruments for REFIR -
  
-Copyright (C) 2018 Tobias Dürig, Fabio Dioguardi
+Copyright (C) 2020 Tobias Dürig, Fabio Dioguardi
 ==============                     ===================
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,11 +24,8 @@ the software, please write an email to me.
 Contact: tobi@hi.is, fabiod@bgs.ac.uk
 
 
-RNZ170318FS                                                                                      
+RNZ170318FS
 """
-#tested on 02/05/17
-
-# IMPORTANT NOTE: when working with Windows 7+ and Python 2.7: replace input with raw_input
 
 from __future__ import division
 from __future__ import with_statement

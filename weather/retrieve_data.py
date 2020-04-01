@@ -1,9 +1,9 @@
 """
-*** retrieve_data v1.0 ***
-- component of the weather package included in REFIR 19.0 -
-- Script to weather data from GFS and ERA-Interim datasets -
+*** retrieve_data v2.0 ***
+- component of the weather package included in REFIR 20.0 -
+- Script to weather data from GFS and ERA5 datasets -
 
-Copyright (C) 2018 Tobias Dürig, Fabio Dioguardi
+Copyright (C) 2020 Tobias Dürig, Fabio Dioguardi
 ==============                     ===================
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
