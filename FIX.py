@@ -4324,7 +4324,7 @@ def operation_control():
     Label(masterklick, text="   ", font=("Verdana", 8)).grid(row=12, column=0)
     Label(masterklick, text="For citation contact:", font=("Verdana", 8)).grid(row=12, column=0, sticky=W, )
 
-    Label(masterklick, text="Tobias Dürig, tobias.durig@otago.ac.nz; Fabio Dioguardi, fabiod@bgs.ac.uk", font=("Verdana", 8)).grid(row=13, column=0, sticky=W,
+    Label(masterklick, text="Tobias Dürig, tobi@hi.is; Fabio Dioguardi, fabiod@bgs.ac.uk", font=("Verdana", 8)).grid(row=13, column=0, sticky=W,
                                                                                   columnspan=3)
     masterklick.mainloop()
 
