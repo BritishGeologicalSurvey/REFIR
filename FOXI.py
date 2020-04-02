@@ -3885,28 +3885,34 @@ while 1:
             FILE2.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(Qfmer_min) + "\t" + str(Qfmer) + "\t" + str(
                 Qfmer_max) + "\n")
             FILE2.close()
-            FILE2a = open(out_txt + "_MER_Gudmundsson.txt", "a",encoding="utf-8", errors="surrogateescape")
-            FILE2a.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe) + "\t" + str(MERgud) + "\n")
-            FILE2a.close()
-            FILE2b = open(out_txt + "_MER_WilsonWalker.txt", "a",encoding="utf-8", errors="surrogateescape")
-            FILE2b.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERww_min) + "\t" + str(hbe) + "\t" + str(MERww) + "\t" + str(hbe_max) + "\t" + str(MERww_max) + "\n")
-            FILE2b.close()
-            FILE2c = open(out_txt + "_MER_Sparks.txt", "a", encoding="utf-8", errors="surrogateescape")
-            FILE2c.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERsp_min) + "\t" + str(
-            hbe) + "\t" + str(MERsp) + "\t" + str(hbe_max) + "\t" + str(MERsp_max) + "\n")
-            FILE2c.close()
-            FILE2d = open(out_txt + "_MER_Mastin.txt", "a", encoding="utf-8", errors="surrogateescape")
-            FILE2d.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERma_min) + "\t" + str(
-            hbe) + "\t" + str(MERma) + "\t" + str(hbe_max) + "\t" + str(MERma_max) + "\n")
-            FILE2d.close()
-            FILE2e = open(out_txt + "_MER_DegBon.txt", "a", encoding="utf-8", errors="surrogateescape")
-            FILE2e.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERdb_min) + "\t" + str(
-            hbe) + "\t" + str(MERdb) + "\t" + str(hbe_max) + "\t" + str(MERdb_max) + "\n")
-            FILE2e.close()
-            FILE2f = open(out_txt + "_MER_Wood0D.txt", "a", encoding="utf-8", errors="surrogateescape")
-            FILE2f.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERwood0d_min) + "\t" + str(
-            hbe) + "\t" + str(MERwood0d) + "\t" + str(hbe_max) + "\t" + str(MERwood0d_max) + "\n")
-            FILE2f.close()
+            if wtf_mtg != 0.0:
+                FILE2a = open(out_txt + "_MER_Gudmundsson.txt", "a",encoding="utf-8", errors="surrogateescape")
+                FILE2a.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe) + "\t" + str(MERgud) + "\n")
+                FILE2a.close()
+            if wtf_wil != 0.0:
+                FILE2b = open(out_txt + "_MER_WilsonWalker.txt", "a",encoding="utf-8", errors="surrogateescape")
+                FILE2b.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERww_min) + "\t" + str(hbe) + "\t" + str(MERww) + "\t" + str(hbe_max) + "\t" + str(MERww_max) + "\n")
+                FILE2b.close()
+            if wtf_spa != 0.0:
+                FILE2c = open(out_txt + "_MER_Sparks.txt", "a", encoding="utf-8", errors="surrogateescape")
+                FILE2c.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERsp_min) + "\t" + str(
+                hbe) + "\t" + str(MERsp) + "\t" + str(hbe_max) + "\t" + str(MERsp_max) + "\n")
+                FILE2c.close()
+            if wtf_mas != 0.0:
+                FILE2d = open(out_txt + "_MER_Mastin.txt", "a", encoding="utf-8", errors="surrogateescape")
+                FILE2d.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERma_min) + "\t" + str(
+                hbe) + "\t" + str(MERma) + "\t" + str(hbe_max) + "\t" + str(MERma_max) + "\n")
+                FILE2d.close()
+            if wtf_deg != 0.0:
+                FILE2e = open(out_txt + "_MER_DegBon.txt", "a", encoding="utf-8", errors="surrogateescape")
+                FILE2e.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERdb_min) + "\t" + str(
+                hbe) + "\t" + str(MERdb) + "\t" + str(hbe_max) + "\t" + str(MERdb_max) + "\n")
+                FILE2e.close()
+            if wtf_wood0d != 0.0:
+                FILE2f = open(out_txt + "_MER_Wood0D.txt", "a", encoding="utf-8", errors="surrogateescape")
+                FILE2f.write(str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(MERwood0d_min) + "\t" + str(
+                hbe) + "\t" + str(MERwood0d) + "\t" + str(hbe_max) + "\t" + str(MERwood0d_max) + "\n")
+                FILE2f.close()
             FILE3 = open(out_txt + "_PLH.txt", "a",encoding="utf-8", errors="surrogateescape")
             FILE3.write(
                 str(TimeNOW) + "\t" + str(timin) + "\t" + str(hbe_min) + "\t" + str(hbe) + "\t" + str(hbe_max) + "\n")

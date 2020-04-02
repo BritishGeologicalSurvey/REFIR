@@ -282,14 +282,11 @@ def satellite_radiance_refir(profile_data_files_path,year,month,day,hour,minute,
         if file[-3:] == 'hdr':
             file_full_path = os.path.join(satellite_folder, file)
             sat_hdr_files.append(file_full_path)
-        elif file[0:26] == 'NEuropaUTM_MSG3_8bit_VISIR': # This will need to be adapted to the real world...
+        elif file[0:7] == 'SEVIRI_':
             file_full_path = os.path.join(satellite_folder,file)
             sat_files.append(file_full_path)
             sat_time_i = file[-15:-7]+file[-6:-2]
             sat_time_s = datetime.datetime.strptime(sat_time_i, '%Y%m%d%H%M')
-            #sat_time = datetime.datetime.strftime(sat_time_s, '%m %d %Y %H:%M:%S')
-            #sat_time_s.strftime("%m %d %Y %H:%M:%S")
-            #sat_times.append(datetime.datetime.strptime(sat_time_s, '%Y%m%d%H%M'))
             sat_times.append(sat_time_s)
     i = 0
     for time in sat_times:

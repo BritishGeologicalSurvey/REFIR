@@ -514,7 +514,6 @@ read_sensors()  # ID: array with sensor IDs [0-5]:Cband, [6-11]:Xband, [12-17]Ca
 def get_last_time():
     global time_OBS
     try:
-
         config2file = open("fix_config.txt", "r",encoding="utf-8", errors="surrogateescape")
         config2lines = config2file.readlines()
         config2file.close()
@@ -522,7 +521,6 @@ def get_last_time():
         time_OBS_str = time_OBS_str0[0:19]
         time_OBS = datetime.datetime.strptime(time_OBS_str, "%Y-%m-%d %H:%M:%S")
         checkfile = 11
-
 
     except EnvironmentError:
         checkfile = 10
@@ -4161,12 +4159,13 @@ def control_ESPs():
                 run_type = 2
             if run_type_original == 1:
                 time_start = datetime.datetime.utcnow()
-                if ESPs_duration_read == 1 and weather == 1:  # Activate the whole duration only if realisting varying weather conditions are considered
+                if ESPs_duration_read == 1 and weather == 1 and (wtf_deg != 0.0 or wtf_wood0d != 0.0):  # Activate the whole duration only if realisting varying weather conditions are considered
                     time_stop = time_start + datetime.timedelta(hours=esps_dur)
                 else:
                     time_stop = time_start + datetime.timedelta(minutes=5)
+
             else:
-                if weather != 1:
+                if weather != 1 or (weather == 1 and wtf_deg == 0.0 and wtf_wood0d == 0.0):
                     time_stop = time_start + datetime.timedelta(minutes=5) # Activate the whole duration only if realisting varying weather conditions are considered
             time_start = datetime.datetime.strftime(time_start, "%Y-%m-%d %H:%M:%S")
             time_stop = datetime.datetime.strftime(time_stop, "%Y-%m-%d %H:%M:%S")
