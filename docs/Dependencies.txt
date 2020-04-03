@@ -6,7 +6,7 @@
   Linux: Install eccodes
   In both cases, add the binaries folder to the system PATH
 - Additional python packages needed
-  pandas, ecmwfapi, xlrd, pillow
+  pandas xlrd future pillow cdsapi pathos gdal utm
 - ECMWF client key
   The user needs to register to: https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5
   Once the registration is approved, to get the data follow the instructions here: https://confluence.ecmwf.int/display/WEBAPI/Accessing+ECMWF+data+servers+in+batch
@@ -19,11 +19,9 @@ Instructions for setting the Conda environment:
 1) create the environment with all the needed additional packages:
 	conda create --name name_of_environment python=3.7 basemap pandas xlrd future pillow cdsapi pathos gdal utm
 2) activate the environment with:
-	source activate name_of_environment (Linux)
-	conda activate name_of_environment (Windows)
+	conda activate name_of_environment
 3) install ecmwfapi
 	pip install --user https://software.ecmwf.int/wiki/download/attachments/56664858/ecmwf-api-client-python.tgz
 4) to exit from the environment:
-	source deactivate (Linux)
-	conda deactivate (Windows)
+	conda deactivate
    
