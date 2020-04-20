@@ -53,6 +53,7 @@ from satellite import satellite_radiance_refir
 from satellite_radiance_refir import satellite_radiance_refir
 #import matplotlib.image as image
 import sys
+plt.use('Agg')
 
 """ settings START """
 global PI_THRESH, TimeOLD, ESPs_data_on, esps_plh
