@@ -30,8 +30,9 @@ RNZ170318FS
 from __future__ import division
 from __future__ import with_statement
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
 from matplotlib import figure
 import datetime
 import math
@@ -53,7 +54,7 @@ from satellite import satellite_radiance_refir
 from satellite_radiance_refir import satellite_radiance_refir
 #import matplotlib.image as image
 import sys
-plt.use('Agg')
+
 
 """ settings START """
 global PI_THRESH, TimeOLD, ESPs_data_on, esps_plh
@@ -646,7 +647,7 @@ def refir_end():
         if os.path.isfile(file_to_move):
 #            if (file_to_move.startswith("fix_config")):
 #                shutil.copy(file_to_move, rundir_path)
-            if (file_to_move.endswith(".txt") or file_to_move.endswith(".png") or file_to_move.endswith(".svg")):
+            if file_to_move.endswith(".txt") or file_to_move.endswith(".png") or file_to_move.endswith(".svg") and not (file_to_move.startswith('LICENSE') or file_to_move.startswith('README')):
                 shutil.move(file_to_move, rundir_path)
         elif os.path.isdir(file_to_move):
             if (file_to_move.startswith("raw")):
