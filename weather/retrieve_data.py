@@ -28,7 +28,7 @@ RNZ170318FS
 """
 
 
-def gfs_forecast_retrieve(lon_source,lat_source,nfcst):
+def gfs_forecast_retrieve(lon_source,lat_source,nfcst, time_in):
     import urllib.request
     import urllib.error
     from datetime import datetime, date, timedelta
@@ -66,7 +66,11 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst):
     if(lon_source < 0):
         lon_source = 360 + lon_source
 
-    now = str(datetime.utcnow())
+    if time_in != '999':
+        now = str(time_in)
+    else:
+        now = str(datetime.utcnow())
+
     yesterday = str(datetime.utcnow().today() - timedelta(1))
     year= now[0:4]
     month = now[5:7]

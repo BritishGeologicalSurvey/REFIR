@@ -365,7 +365,7 @@ def automatic_weather():
         month = now[5:7]
         day = now[8:10]
         nfcst = 6
-        gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan], nfcst)
+        gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan], nfcst, 999)
         folder = 'raw_forecast_weather_data_' + year + month + day
     elif run_type == 2:
         print('Retrieving past GFS forecasts for the eruption interval')
@@ -4222,7 +4222,7 @@ def control_ESPs():
             nfcst = int(esps_dur)
             if weather == 1 and run_type == 1:
                 print('Retrieving GFS forecasts for the ongoing eruption')
-                gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan], nfcst)
+                gfs_forecast_retrieve(volc_lon[vulkan], volc_lat[vulkan], nfcst, '999')
                 folder = 'raw_forecast_weather_data_' + year_start + month_start + day_start
                 if not os.path.isdir(folder):
                     os.makedirs(folder)

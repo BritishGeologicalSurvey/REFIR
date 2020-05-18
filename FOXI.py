@@ -54,23 +54,33 @@ from satellite import satellite_radiance_refir
 from satellite_radiance_refir import satellite_radiance_refir
 #import matplotlib.image as image
 import sys
+import argparse
 
 
 """ settings START """
 global PI_THRESH, TimeOLD, ESPs_data_on, esps_plh
-
-scenario = "     +++ EXERCISE! +++ " # change into " " in real eruption
-FOXIversion ="19.0"
+FOXIversion ="20.0"
 operator = "User"
-#PI_THRESH = 5.0
 time_axis = 1 #0: inverted for pl.h. sector plots; 1: always same
 
 """ settings END """
 
-try:
-    command = sys.argv[1]
-except:
-    command = ''
+parser = argparse.ArgumentParser(description='Input data')
+parser.add_argument('-M','--mode',default='GUI',help='FOXI mode of operation. Possible options are "GUI" and "background"')
+parser.add_argument('-N','--run_name',default='default',help='Run name.')
+parser.add_argument('-S','--scenario',default='exercise',help='Specify the scenario description of the application (e.g. EXERCISE)')
+parser.add_argument('-T','--start_time',default='now',help='Start time of the simulation in real time mode. Options: "now" and "eruption_start". \n Option "now": the simulation start time coincides with the time when FOXI is initiated. \n Option "eruption_start": the start time coincides with the eruption start time specified by the user')
+parser.add_argument('-E','--eruption_start',default='999',help='Eruption start date and time. Accepted format: DD/MM/YYYY-HH:MM')
+args = parser.parse_args()
+mode = args.mode
+run_name = args.run_name
+scenario = args.scenario
+start_time = args.start_time
+eruption_start_user = args.eruption_start
+
+if mode != 'GUI' and mode != 'background':
+    print('Wrong entry for argument -M --mode')
+    sys.exit()
 
 time_st = datetime.datetime.utcnow()         
 time_stamp = time_st.strftime("%Y%m%d_%H%M") 
@@ -294,8 +304,8 @@ def read_sensors():
     
 read_sensors()
 
-if command == 'background':
-    out_txt = sys.argv[2]
+if mode == 'background':
+    out_txt = run_name
     TimeNUNA = datetime.datetime.utcnow()
     TimeNUNAs = str(TimeNUNA)
     YearNUNAs = TimeNUNAs[:4]
@@ -411,6 +421,17 @@ else:
         lead_Time_m = input ("Minutes since start of eruption: ")
         lead_Time =24*60*lead_Time_d + 60*lead_Time_h+lead_Time_m
 
+if mode == 'background' and start_time == 'eruption_start':
+    try:
+        eruption_start_user_datetime = datetime.datetime.strptime(eruption_start_user,'%d/%m/%Y-%H:%M')
+    except:
+        print('Please specify a valid start date and time of the eruption')
+        sys.exit()
+elif mode == 'GUI' and start_time == 'eruption_start':
+    eruption_start_user_datetime = time_tveir
+if start_time == 'eruption_start':
+    time_difference = TimeNUNA - eruption_start_user_datetime
+
 fMER_file = open(out_txt + "_FMER.txt", "a",encoding="utf-8", errors="surrogateescape")
 fMER_file.write('Time UTC'+"\t" + 'Minutes since t0' + "\t" + 'FMER min (kg/s)'+"\t"+'FMER avg (kg/s)'+"\t"+'FMER max (kg/s)'+"\n")
 fMER_file.close()
@@ -514,7 +535,7 @@ def elaborate_weather(plume_height):
             if run_type == 1 or (run_type_original == 1 and ESPs_data_on == 1):
                 print('Retrieving new GFS forecast data')
                 nfcst = 6
-                gfs_forecast_retrieve(volcLON, volcLAT, nfcst)
+                gfs_forecast_retrieve(volcLON, volcLAT, nfcst, eruption_start_user_datetime)
                 current = os.getcwd()
                 files = os.listdir(current)
                 for file in files:
@@ -866,6 +887,8 @@ while 1:
     mins = mins + steptime
     if run_type == 1:
         TimeNOW = datetime.datetime.utcnow()
+        if start_time == 'eruption_start':
+            TimeNOW -= time_difference
         TimeNOWs = str(TimeNOW)
         YearNOWs = TimeNOWs[:4]
         MonthNOWs = TimeNOWs[5:7]
