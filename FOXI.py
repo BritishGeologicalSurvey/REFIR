@@ -897,7 +897,15 @@ while 1:
         MinuteNOWs = TimeNOWs[14:16]
         HourNOW = int(HourNOWs)
     else:
-        eruption_start = datetime.datetime.strptime(time_start, "%Y-%m-%d %H:%M:%S\n")
+        if start_time == 'eruption_start' and run_type_original == 1:
+            eruption_start_original = datetime.datetime.strptime(time_start, "%Y-%m-%d %H:%M:%S\n")
+            eruption_stop_original = datetime.datetime.strptime(time_stop, "%Y-%m-%d %H:%M:%S\n")
+            eruption_duration_original = eruption_stop_original - eruption_start_original
+            eruption_start = eruption_start_user_datetime
+            eruption_stop = eruption_start + eruption_duration_original
+        else:
+            eruption_start = datetime.datetime.strptime(time_start, "%Y-%m-%d %H:%M:%S\n")
+            eruption_stop = datetime.datetime.strptime(time_stop, "%Y-%m-%d %H:%M:%S\n")
         eruption_start_year = str(eruption_start.year)
         eruption_start_month = str(eruption_start.month)
         if len(eruption_start_month) == 1:
@@ -905,7 +913,6 @@ while 1:
         eruption_start_day = str(eruption_start.day)
         if len(eruption_start_day) == 1:
             eruption_start_day = '0' + eruption_start_day
-        eruption_stop = datetime.datetime.strptime(time_stop, "%Y-%m-%d %H:%M:%S\n")
         TimeNOW = eruption_start + datetime.timedelta(minutes=mins)
         TimeNOWs = str(TimeNOW)
         YearNOWs = TimeNOWs[:4]
