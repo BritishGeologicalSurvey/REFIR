@@ -66,7 +66,7 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst, time_in):
     if(lon_source < 0):
         lon_source = 360 + lon_source
 
-    if time_in != '999':
+    if time_in != 999:
         now = str(time_in)
     else:
         now = str(datetime.utcnow())
