@@ -2807,7 +2807,7 @@ while 1:
         logger3.info("******************************************")
         logger3.info("")
         logger3.info("")
-        stacksort(1, esps_plh, 1000, 1, 1, 1)
+        stacksort(1, esps_plh - vent_h, 1000, 1, 1, 1)
 
 
     logger3.info("-------------------------------------")
