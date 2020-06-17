@@ -3028,13 +3028,25 @@ HourNUNAs = TimeNUNAs[11:13]
 MinuteNUNAs = TimeNUNAs[14:16]
 
 
-def save_OBSfile(inputEoZ):
+def save_OBSfile(inputEoZ, time_OBSdata_start, time_OBSdata_stop):
     """stores input data into fix_OBSin file"""
     FILE_OBS = open("fix_OBSin.txt", "a",encoding="utf-8", errors="surrogateescape")
-    FILE_OBS.write(str(time_OBSdata) + "\t" + str(OBSd_on) + "\t" \
-                   + str(sourceOBSdata) + "\t" + str(Hmin_obs) + "\t" + str(Havg_obs) + "\t" + str(
-        Hmax_obs) + "\t" + str(unc_OBS) + "\t" + str(qf_OBS) + "\t" + str(inputEoZ) + "\t" + "9" + "\t" + str(
-        Min_DiaOBS) + "\t" + str(Max_DiaOBS) + "\t" + str(time_OBSlog) + "\t" + str(comment_obs) + "\n")
+    time_obs = time_OBSdata_start
+    while time_obs <= time_OBSdata_stop:
+        FILE_OBS.write(time_obs.strftime("%m %d %Y %H:%M:%S") + "\t" + str(OBSd_on) + "\t" \
+                       + str(sourceOBSdata) + "\t" + str(Hmin_obs) + "\t" + str(Havg_obs) + "\t" + str(
+            Hmax_obs) + "\t" + str(unc_OBS) + "\t" + str(qf_OBS) + "\t" + str(inputEoZ) + "\t" + "9" + "\t" + str(
+            Min_DiaOBS) + "\t" + str(Max_DiaOBS) + "\t" + str(time_OBSlog) + "\t" + str(comment_obs) + "\n")
+        if time_obs >= time_OBSdata_stop:
+            break
+        else:
+            time_obs += datetime.timedelta(minutes=5)
+            if time_OBSdata_stop < time_obs:
+                FILE_OBS.write(time_OBSdata_stop.strftime("%m %d %Y %H:%M:%S") + "\t" + str(OBSd_on) + "\t" \
+                               + str(sourceOBSdata) + "\t" + str(Hmin_obs) + "\t" + str(Havg_obs) + "\t" + str(
+                    Hmax_obs) + "\t" + str(unc_OBS) + "\t" + str(qf_OBS) + "\t" + str(inputEoZ) + "\t" + "9" + "\t" + str(
+                    Min_DiaOBS) + "\t" + str(Max_DiaOBS) + "\t" + str(time_OBSlog) + "\t" + str(comment_obs) + "\n")
+                time_obs += datetime.timedelta(minutes=5)
     FILE_OBS.close()
     print("***observed data stored!***")
 
@@ -3185,13 +3197,20 @@ def add_plhobs():
         time_OBS = datetime.datetime.utcnow()
         time_OBSlog = datetime.datetime.utcnow()
         time_OBSlog = time_OBS.strftime("%m %d %Y %H:%M:%S")
-        Y_OBSdata = int(time_OBS_y.get())
-        MO_OBSdata = int(time_OBS_mo.get())
-        D_OBSdata = int(time_OBS_d.get())
-        H_OBSdata = int(time_OBS_h.get())
-        M_OBSdata = int(time_OBS_m.get())
-        time_OBSdata = datetime.datetime(Y_OBSdata, MO_OBSdata, D_OBSdata, H_OBSdata, M_OBSdata)
-        time_OBSdata = time_OBSdata.strftime("%m %d %Y %H:%M:%S")
+        Y_OBSdata_start = int(time_OBS_y_start.get())
+        MO_OBSdata_start = int(time_OBS_mo_start.get())
+        D_OBSdata_start = int(time_OBS_d_start.get())
+        H_OBSdata_start = int(time_OBS_h_start.get())
+        M_OBSdata_start = int(time_OBS_m_start.get())
+        time_OBSdata_start = datetime.datetime(Y_OBSdata_start, MO_OBSdata_start, D_OBSdata_start, H_OBSdata_start, M_OBSdata_start)
+        #time_OBSdata_start = time_OBSdata_start.strftime("%m %d %Y %H:%M:%S")
+        Y_OBSdata_stop = int(time_OBS_y_stop.get())
+        MO_OBSdata_stop = int(time_OBS_mo_stop.get())
+        D_OBSdata_stop = int(time_OBS_d_stop.get())
+        H_OBSdata_stop = int(time_OBS_h_stop.get())
+        M_OBSdata_stop = int(time_OBS_m_stop.get())
+        time_OBSdata_stop = datetime.datetime(Y_OBSdata_stop, MO_OBSdata_stop, D_OBSdata_stop, H_OBSdata_stop, M_OBSdata_stop)
+        #time_OBSdata_stop = time_OBSdata_stop.strftime("%m %d %Y %H:%M:%S")
         menu = str(SRC_var.get())
         Hmin_obs = 0 #new
         Hmax_obs = 0 #new
@@ -3295,7 +3314,7 @@ def add_plhobs():
 
         uncOBS(Havg_obs, Hmin_obs)
         save_default_file()
-        save_OBSfile(inputEoZ)
+        save_OBSfile(inputEoZ, time_OBSdata_start, time_OBSdata_stop)
         check_configfile()
 
     get_last_data()
@@ -3318,22 +3337,38 @@ def add_plhobs():
     Label(plhobs, text="month").grid(row=2, column=4)
     Label(plhobs, text="year").grid(row=2, column=5, sticky=W)
     Label(plhobs, text=":").grid(row=3, column=1)
-    time_OBS_h = Entry(plhobs, width=2)
-    time_OBS_h.grid(row=3, column=0, sticky=E)
-    time_OBS_m = Entry(plhobs, width=2)
-    time_OBS_m.grid(row=3, column=2, sticky=W)
-    time_OBS_d = Entry(plhobs, width=2)
-    time_OBS_d.grid(row=3, column=3, sticky=E)
-    time_OBS_mo = Entry(plhobs, width=2)
-    time_OBS_mo.grid(row=3, column=4)
-    time_OBS_y = Entry(plhobs, width=4)
-    time_OBS_y.grid(row=3, column=5, sticky=W)
-
-    time_OBS_y.insert(10, YearNUNAs)
-    time_OBS_mo.insert(10, MonthNUNAs)
-    time_OBS_d.insert(10, DayNUNAs)
-    time_OBS_h.insert(10, HourNUNAs)
-    time_OBS_m.insert(10, MinuteNUNAs)
+    Label(plhobs, text="Start").grid(row=3, column=0, sticky=W)
+    time_OBS_h_start = Entry(plhobs, width=2)
+    time_OBS_h_start.grid(row=3, column=0, sticky=E)
+    time_OBS_m_start = Entry(plhobs, width=2)
+    time_OBS_m_start.grid(row=3, column=2, sticky=W)
+    time_OBS_d_start = Entry(plhobs, width=2)
+    time_OBS_d_start.grid(row=3, column=3, sticky=E)
+    time_OBS_mo_start = Entry(plhobs, width=2)
+    time_OBS_mo_start.grid(row=3, column=4)
+    time_OBS_y_start = Entry(plhobs, width=4)
+    time_OBS_y_start.grid(row=3, column=5, sticky=W)
+    Label(plhobs, text="Stop").grid(row=4, column=0, sticky=W)
+    time_OBS_h_stop = Entry(plhobs, width=2)
+    time_OBS_h_stop.grid(row=4, column=0, sticky=E)
+    time_OBS_m_stop = Entry(plhobs, width=2)
+    time_OBS_m_stop.grid(row=4, column=2, sticky=W)
+    time_OBS_d_stop = Entry(plhobs, width=2)
+    time_OBS_d_stop.grid(row=4, column=3, sticky=E)
+    time_OBS_mo_stop = Entry(plhobs, width=2)
+    time_OBS_mo_stop.grid(row=4, column=4)
+    time_OBS_y_stop = Entry(plhobs, width=4)
+    time_OBS_y_stop.grid(row=4, column=5, sticky=W)
+    time_OBS_y_start.insert(10, YearNUNAs)
+    time_OBS_mo_start.insert(10, MonthNUNAs)
+    time_OBS_d_start.insert(10, DayNUNAs)
+    time_OBS_h_start.insert(10, HourNUNAs)
+    time_OBS_m_start.insert(10, MinuteNUNAs)
+    time_OBS_y_stop.insert(10, YearNUNAs)
+    time_OBS_mo_stop.insert(10, MonthNUNAs)
+    time_OBS_d_stop.insert(10, DayNUNAs)
+    time_OBS_h_stop.insert(10, HourNUNAs)
+    time_OBS_m_stop.insert(10, MinuteNUNAs)
 
     Label(plhobs, text="              ").grid(row=1, column=6, sticky=W)
     Label(plhobs, text="Plume top height range (asl):", font=("bold")).grid(row=1, column=7, columnspan=3, sticky=S)
