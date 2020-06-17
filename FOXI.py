@@ -388,7 +388,7 @@ else:
         time_ERU_m.insert(10,MinuteNUNAs)
 
         def on_button():
-            global out_txt,lead_Time, time_tveir
+            global out_txt,lead_Time, time_tveir, start_time
             out_txt = str(out.get())
             Y_eru = int(time_ERU_y.get())
             MO_eru = int(time_ERU_mo.get())
@@ -397,6 +397,8 @@ else:
             M_eru = int(time_ERU_m.get())
             time_tveir = datetime.datetime(Y_eru,MO_eru,D_eru,H_eru,M_eru)
             time_einn = datetime.datetime(int(YearNUNAs), int(MonthNUNAs), int(DayNUNAs), int(HourNUNAs),int(MinuteNUNAs))
+            if time_einn != time_tveir:
+                start_time = 'eruption_start'
             lead_Time = int((time_einn-time_tveir).total_seconds()/60)
             logging.info("Time since eruption start: " + str(lead_Time)+"min")
             logging.info("Configuration completed!")
@@ -2816,12 +2818,10 @@ while 1:
     
     N3h=0
     for x in range(0,len(stack3h)):
-        
         N3h = int (N3h + stack3h[x][-1])
         
     N1h=0
     for x in range(0,len(stack1h)):
-        
         N1h = int(N1h + stack1h[x][-1])
         
     N30min=0
