@@ -26,46 +26,42 @@ Contact: tobi@hi.is, fabiod@bgs.ac.uk
 
 RNZ170318FS
 """
+import urllib.request
+import urllib.error
+from datetime import datetime, date, timedelta
+from read import extract_data_gfs
+import os
+from shutil import copyfile
+from pathos.multiprocessing import Pool, ThreadingPool
 
+def wtfile_download(url, wtfile_dwnl):
+    print('Downloading forecast file ' + url)
+    urllib.request.urlretrieve(url, wtfile_dwnl)
+
+def elaborate_wtfiles(wtfile,wtfile_int,wtfile_prof,abs_validity, zoom, lon_corner, lat_corner, slon_source, slat_source):
+    cwd = os.getcwd()
+    if zoom:
+        os.system('wgrib2 ' + wtfile + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':400:0.01 ' + lat_corner + ':400:0.01 ' +
+                wtfile_int)
+    else:
+        copyfile(os.path.join(cwd,wtfile),os.path.join(cwd,wtfile_int))
+    print('Saving weather data along the vertical at the vent location')
+    os.system('wgrib2 ' + wtfile_int + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
+    # Extract and elaborate weather data
+    extract_data_gfs(abs_validity, wtfile_prof)
 
 def gfs_forecast_retrieve(lon_source,lat_source,nfcst, time_in):
-    import urllib.request
-    import urllib.error
-    from datetime import datetime, date, timedelta
-    from read import extract_data_gfs
-    import os
-    from shutil import copyfile
-    from pathos.multiprocessing import Pool, ThreadingPool
-
-    def wtfile_download(url, wtfile_dwnl):
-        import urllib.request
-        import urllib.error
-        print('Downloading forecast file ' + url)
-        urllib.request.urlretrieve(url, wtfile_dwnl)
-
-    def elaborate_wtfiles(wtfile,wtfile_int,wtfile_prof,abs_validity):
-        import os
-        cwd = os.getcwd()
-        if zoom:
-            os.system(
-                'wgrib2 ' + wtfile + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':400:0.01 ' + lat_corner + ':400:0.01 ' +
-                wtfile_int)
-        else:
-            copyfile(os.path.join(cwd,wtfile),os.path.join(cwd,wtfile_int))
-        print('Saving weather data along the vertical at the vent location')
-        os.system('wgrib2 ' + wtfile_int + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
-        # Extract and elaborate weather data
-        extract_data_gfs(abs_validity, wtfile_prof)
-
     cwd = os.getcwd()
     slon_source_left = str(lon_source - 2)
     slon_source_right = str(lon_source + 2)
     slat_source_bottom = str(lat_source - 2)
     slat_source_top = str(lat_source + 2)
-
     if(lon_source < 0):
         lon_source = 360 + lon_source
-
+    slon_source = str(lon_source)
+    slat_source = str(lat_source)
+    lon_corner = str(int(lon_source - 2))
+    lat_corner = str(int(lat_source - 2))
     if time_in != 999:
         now = str(time_in)
     else:
@@ -84,7 +80,11 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst, time_in):
     wtfiles_int = []
     wtfiles_prof = []
     abs_validities = []
-
+    zooms = []
+    lon_corners = []
+    lat_corners = []
+    slon_sources = []
+    slat_sources = []
     # Find last GFS analysis
     ihour = int(hour)
     if 0 <= ihour < 6:
@@ -95,10 +95,7 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst, time_in):
         ianl = 12
     else:
         ianl = 18
-    if ianl < 10:
-        anl = '0' + str(ianl)
-    else:
-        anl = str(ianl)
+    anl = "{:02d}".format(ianl)
     year_anl = year
     month_anl = month
     day_anl = day
@@ -137,12 +134,7 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst, time_in):
     # Check all forecast files are available
     max_ifcst = ifcst + nfcst
     while ifcst < max_ifcst:
-        if ifcst < 10:
-            fcst = 'f00' + str(ifcst)
-        elif 10 <= ifcst < 100:
-            fcst = 'f0' + str(ifcst)
-        else:
-            fcst = 'f' + str(ifcst)
+        fcst = 'f' + "{:03d}".format(ifcst)
         wtfile_dwnl = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
         url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile_dwnl
         try:
@@ -184,12 +176,7 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst, time_in):
             validity = '0' + str(ival)
         else:
             validity = str(ival)
-        if ifcst < 10:
-            fcst = 'f00' + str(ifcst)
-        elif 10 <= ifcst < 100:
-            fcst = 'f0' + str(ifcst)
-        else:
-            fcst = 'f' + str(ifcst)
+        fcst = 'f' + "{:03d}".format(ifcst)
         wtfile_dwnl = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
         abs_validity = year + month + day + validity
         elaborated_prof_file = 'profile_data_' + abs_validity + '.txt'
@@ -222,123 +209,24 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst, time_in):
             wtfiles.append(wtfile)
             wtfiles_int.append(wtfile_int)
             wtfiles_prof.append(wtfile_prof)
+            zooms.append(zoom)
+            lon_corners.append(lon_corner)
+            lat_corners.append(lat_corner)
+            slon_sources.append(slon_source)
+            slat_sources.append(slat_source)
     try:
         pool = ThreadingPool(nfcst)
         pool.map(wtfile_download,urls,wtfiles)
     except:
         print('No new weather data downloaded')
-    slon_source = str(lon_source)
-    slat_source = str(lat_source)
-    lon_corner = str(int(lon_source - 2))
-    lat_corner = str(int(lat_source - 2))
 
     if len(wtfiles) > 0:
         pool_1 = ThreadingPool(len(wtfiles))
-        pool_1.map(elaborate_wtfiles,wtfiles,wtfiles_int,wtfiles_prof,abs_validities)
-
-def era_interim_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
-    from ecmwfapi import ECMWFDataServer
-    from read import extract_data_erain
-    import os
-    from shutil import copyfile
-    cwd = os.getcwd()
-    if(lon_source < 0):
-        lon_source = 360 + lon_source
-    year_start = eruption_start[0:4]
-    month_start = eruption_start[4:6]
-    day_start = eruption_start[6:8]
-    hour_start = eruption_start[8:10]
-    year_stop = eruption_stop[0:4]
-    month_stop = eruption_stop[4:6]
-    day_stop = eruption_stop[6:8]
-    hour_stop = eruption_stop[8:10]
-    slon_source = str(lon_source)
-    slat_source = str(lat_source)
-    date = year_start + '-' + month_start + '-' + day_start + '/to/' + year_stop + '-' + month_stop + '-' + day_stop
-    date_bis = year_start + '-' + month_start + '-' + day_start + '_to_' + year_stop + '-' + month_stop + '-' + day_stop
-    lat_SW = str(int(lat_source) - 2)
-    lon_SW = str(int(lon_source) - 2)
-    lat_NE = str(int(lat_source) + 2)
-    lon_NE = str(int(lon_source) + 2)
-    lon_corner = str(int(lon_source))
-    lat_corner = str(int(lat_source))
-    area = lat_SW + '/' + lon_SW + '/' + lat_NE + '/' + lon_NE
-    #data_folder = 'raw_reanalysis_weather_data_' + year_start + month_start + day_start + '/'
-    data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_' + year_start + month_start + day_start + '/')
-    wtfile = 'weather_data_' + date_bis
-    wtfile_path = os.path.join(cwd,data_folder,wtfile)
-    grib_file = "pressure_level.grib"
-    grib_file_path = os.path.join(cwd,data_folder,grib_file)
-    print('Checking if file ' + wtfile + ' exists in ' + data_folder)
-
-    #if os.path.isfile(wtfile):
-    if os.path.isfile(wtfile_path):
-        print('File ' + wtfile + ' found')
-        copyfile(wtfile_path,wtfile)
-        copyfile(grib_file_path,grib_file)
-    else:
-        print('Downloading file from ERA Interim database')
-        server = ECMWFDataServer()
-        try:
-            server.retrieve({
-            "class": "ei",
-            "dataset": "interim",
-            "expver": "1",
-            'date': date,
-            'area': area,
-            "grid": "0.75/0.75",
-            "levelist": "1/2/3/5/7/10/20/30/50/70/100/125/150/175/200/225/250/300/350/400/450/500/550/600/650/700/750/775/800/825/850/875/900/925/950/975/1000",
-            "levtype": "pl",
-            "param": "129.128/130.128/131.128/132.128",
-            "step": "0",
-            "stream": "oper",
-            "time": "00:00:00/06:00:00/12:00:00/18:00:00",
-            "type": "an",
-            'target': "pressure_level.grib"
-            })
-        except:
-            print('Unable to retrieve ERA Interim data')
-
-    # Convert grib1 to grib2 with the NOAA Perl script. To make it more portable and avoiding the need to set up many paths, I have included in the package also the required files and scripts that are originally available in the grib2 installation folder
-    print('Converting grib1 data to grib2')
-
-    os.system('grib_set -s edition=2 pressure_level.grib ' + wtfile)
-    wtfile_prof = 'profile_' + date_bis + '.txt'
-    print('Saving weather data along the vertical at the vent location')
-    os.system('wgrib2 ' + wtfile + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
-    # Split wtfile_prof into multiple file, each one for a specific time step
-    splitLen = 148
-    outputBase = 'profile_'
-    input = open(wtfile_prof, 'r',encoding="utf-8", errors="surrogateescape")
-    count = 0
-    dest = None
-    steps = []
-    for line in input:
-        if count % splitLen == 0:
-            if dest: dest.close()
-            first_line = line.split(':')
-            val = first_line[2].split('d=')
-            dest = open(outputBase + val[1] + '.txt', 'w',encoding="utf-8", errors="surrogateescape")
-            steps.append(val[1])
-        dest.write(line)
-        count += 1
-    input.close()
-    dest.close()
-    for validity in steps:
-        year = validity[0:4]
-        month = validity[4:6]
-        day = validity[6:8]
-        hour = validity[8:10]
-        wtfile_prof_step = 'profile_' + validity + '.txt'
-        # Extract and elaborate weather data
-        extract_data_erain(validity, wtfile_prof_step)
+        pool_1.map(elaborate_wtfiles,wtfiles,wtfiles_int,wtfiles_prof,abs_validities, zooms, lon_corners, lat_corners, slon_sources, slat_sources)
 
 def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
-    from read import extract_data_erain
-    import os
-    from shutil import copyfile
+    from read import extract_data_era5
     from datetime import timedelta as td, datetime
-    from pathos.multiprocessing import Pool, ThreadingPool
 
     def era5_request(index):
         import cdsapi
@@ -390,7 +278,7 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
 
     def elaborate_data_era5(validity, wtfile_prof_step):
         # Extract and elaborate weather data
-        extract_data_erain(validity, wtfile_prof_step)
+        extract_data_era5(validity, wtfile_prof_step)
 
     cwd = os.getcwd()
     year_start = eruption_start[0:4]
@@ -531,19 +419,12 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
         hour = validity[8:10]
         wtfile_prof_step = 'profile_' + validity + '.txt'
         wtfiles_prof_step.append(wtfile_prof_step)
-        #extract_data_erain(year, month, day, validity, wtfile_prof_step)
 
     # Extract and elaborate weather data
     pool = ThreadingPool(len(validities))
     pool.map(elaborate_data_era5, validities, wtfiles_prof_step)
 
 def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
-    import urllib.request
-    import urllib.error
-    import os
-    from shutil import copyfile
-    from datetime import datetime,timedelta
-    from read import extract_data_gfs
 
     def datespan(startDate, endDate, delta=timedelta(days=1)):
         currentDate = startDate
@@ -552,6 +433,10 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
             currentDate += delta
 
     cwd = os.getcwd()
+    slon_source_left = str(lon_source - 2)
+    slon_source_right = str(lon_source + 2)
+    slat_source_bottom = str(lat_source - 2)
+    slat_source_top = str(lat_source + 2)
     if(lon_source < 0):
         lon_source = 360 + lon_source
     slon_source = str(lon_source)
@@ -568,93 +453,122 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
     else:
         dt = eruption_start.hour - 18
 
-    #data_folder = 'raw_reanalysis_weather_data_' + str(eruption_start.year) + str(eruption_start.month) + str(eruption_start.day) + '/'
     data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_' + str(eruption_start.year) + str(eruption_start.month) + str(eruption_start.day) + '/')
     first_analysis = eruption_start - timedelta(hours=dt)
     ifcst = dt
-    count = 1
-    for analyses in datespan(first_analysis,eruption_stop,timedelta(hours=6)):
-        year = str(analyses.year)
-        month = str(analyses.month)
-        if len(month) == 1:
-            month = '0' + month
-        day = str(analyses.day)
-        if len(day) == 1:
-            day = '0' + day
-        hour = str(analyses.hour)
-        ianl = analyses.hour
-        if (len(hour)) == 1:
-            hour = '0' + hour
+    urls = []
+    wtfiles = []
+    wtfiles_int = []
+    wtfiles_prof = []
+    abs_validities = []
+    zooms = []
+    lon_corners = []
+    lat_corners = []
+    slon_sources = []
+    slat_sources = []
+    for analysis in datespan(first_analysis,eruption_stop,timedelta(hours=6)):
+        year = str(analysis.year)
+        month = "{:02d}".format(analysis.month)
+        day = "{:02d}".format(analysis.day)
+        hour = "{:02d}".format(analysis.hour)
+        ianl = analysis.hour
         while ifcst < 6:
             ival = ianl + ifcst
-            eruption_current = datetime(analyses.year,analyses.month,analyses.day,ival)
+            eruption_current = datetime(analysis.year,analysis.month,analysis.day,ival)
             if eruption_current > eruption_stop:
                 break
-            if ival < 10:
-                validity = '0' + str(ival)
-            else:
-                validity = str(ival)
-            if ifcst < 10:
-                fcst = '00' + str(ifcst)
-            elif 10 <= ifcst < 100:
-                fcst = '0' + str(ifcst)
-            else:
-                fcst = str(ifcst)
+            validity = "{:02d}".format(ival)
+            fcst = "{:03d}".format(ifcst)
             month_validity = year + month
             day_validity = month_validity + day
             abs_validity = day_validity + validity
             elaborated_prof_file = 'profile_data_' + abs_validity + '.txt'
             elaborated_prof_file_path = os.path.join(data_folder,elaborated_prof_file)
             print('Checking if ' + elaborated_prof_file + ' exists in ' + data_folder)
-            #if os.path.isfile(data_folder + elaborated_prof_file):
             if os.path.isfile(elaborated_prof_file_path):
                 print('File ' + elaborated_prof_file + ' already available in ' + data_folder)
-                break
-                #continue
+                continue
             data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_'+ day_validity + '/')
-            wtfile_dwnl = month_validity + '/' + day_validity + '/' + 'gfs_4_' + day_validity + '_' + hour + '00_' + fcst + '.grb2'
+            wtfile_dwnl = 'gfs.t' + hour + 'z.pgrb2.0p25.f' + fcst
             wtfile = 'weather_data_' + year + month + day + hour + '_' + fcst
             wtfile_path = os.path.join(data_folder,wtfile)
             wtfile_int = 'weather_data_interpolated_' + year + month + day + hour + '_' + fcst
             wtfile_prof = 'profile_' + year + month + day + hour + validity + '.txt'
-            url1 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + '/' + hour + '/gfs.t' + hour + 'z.pgrb2.0p25.f' + fcst
-            url2 = 'https://nomads.ncdc.noaa.gov/data/gfs4/' + wtfile_dwnl
+            url1 = 'https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25_1hr.pl?file=' + wtfile_dwnl + '&all_lev=on&var_HGT=on&var_TMP=on&var_UGRD=on&var_VGRD=on&subregion=&leftlon=' + slon_source_left + '&rightlon=' + slon_source_right + '&toplat=' + slat_source_top + '&bottomlat=' + slat_source_bottom + '&dir=%2Fgfs.' + year + month + day + '%2F' + hour
+            url2 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + '/' + hour + '/' + wtfile_dwnl
             print('Checking if ' + wtfile + ' exists')
             if os.path.isfile(wtfile_path):
-            #if os.path.isfile('raw_reanalysis_weather_data_'+ day_validity + '/' + wtfile):
                 print('File ' + wtfile + ' found')
-                #copyfile('raw_reanalysis_weather_data_'+ day_validity + '/' + wtfile,wtfile)
                 copyfile(wtfile_path, wtfile)
             else:
-                print('Downloading forecast file ' + url1)
                 try:
-                    urllib.request.urlretrieve(url1, wtfile)
+                    try:
+                        url = url1
+                        urllib.request.urlopen(url)
+                        zoom = False
+                    except:
+                        url = url2
+                        urllib.request.urlopen(url)
+                        zoom = True
                 except:
-                    print('Error. Url ' + url1 + ' is not available')
-                    if ifcst == 0 or ifcst == 3:
-                        print('Downloading forecast file ' + url2)
-                        count = 1000
+                    try:
+                        new_analysis = analysis - timedelta(hours=6)
+                        new_ifcst = ifcst + 6
+                        new_year = str(new_analysis.year)
+                        new_month = "{:02d}".format(new_analysis.month)
+                        new_day = "{:02d}".format(new_analysis.day)
+                        new_hour = "{:02d}".format(new_analysis.hour)
+                        ianl_new = new_analysis.hour
+                        ival_new = ianl_new + new_ifcst
+                        validity = "{:02d}".format(ival_new)
+                        fcst = "{:03d}".format(new_ifcst)
+                        month_validity = new_year + new_month
+                        day_validity = month_validity + new_day
+                        abs_validity = day_validity + validity
+                        elaborated_prof_file = 'profile_data_' + abs_validity + '.txt'
+                        elaborated_prof_file_path = os.path.join(data_folder, elaborated_prof_file)
+                        print('Checking if ' + elaborated_prof_file + ' exists in ' + data_folder)
+                        if os.path.isfile(elaborated_prof_file_path):
+                            print('File ' + elaborated_prof_file + ' already available in ' + data_folder)
+                            continue
+                        data_folder = os.path.join(cwd, 'raw_reanalysis_weather_data_' + day_validity + '/')
+                        wtfile_dwnl = 'gfs.t' + new_hour + 'z.pgrb2.0p25.f' + fcst
+                        wtfile = 'weather_data_' + new_year + new_month + new_day + new_hour + '_' + fcst
+                        wtfile_int = 'weather_data_interpolated_' + new_year + new_month + new_day + new_hour + '_' + fcst
+                        wtfile_prof = 'profile_' + new_year + new_month + new_day + new_hour + validity + '.txt'
+                        url1 = 'https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25_1hr.pl?file=' + wtfile_dwnl + '&all_lev=on&var_HGT=on&var_TMP=on&var_UGRD=on&var_VGRD=on&subregion=&leftlon=' + slon_source_left + '&rightlon=' + slon_source_right + '&toplat=' + slat_source_top + '&bottomlat=' + slat_source_bottom + '&dir=%2Fgfs.' + new_year + new_month + new_day + '%2F' + new_hour
+                        url2 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + new_year + new_month + new_day + '/' + new_hour + '/' + wtfile_dwnl
                         try:
-                            urllib.request.urlretrieve(url2, wtfile)
+                            url = url1
+                            urllib.request.urlopen(url)
+                            zoom = False
                         except:
-                            print('Error. Url ' + url2 + ' is not available')
-                            ifcst = ifcst + 1
-                            return (False)
-                    else:
-                        if count == 1:
-                            ifcst = ifcst - 1
-                        else:
-                            ifcst = ifcst + 1
-                        continue
-            # Interpolate data to a higher resolution grid
-            print('Interpolating weather data to a finer grid around the source')
-            os.system(
-                'wgrib2 ' + wtfile + ' -set_grib_type same -new_grid_winds earth -new_grid latlon ' + lon_corner + ':400:0.01 ' + lat_corner + ':400:0.01 ' + wtfile_int)
-            print('Saving weather data along the vertical at the vent location')
-            os.system('wgrib2 ' + wtfile + ' -s -lon ' + slon_source + ' ' + slat_source + '  >' + wtfile_prof)
-            # Extract and elaborate weather data
-            extract_data_gfs(abs_validity, wtfile_prof)
+                            url = url2
+                            urllib.request.urlopen(url)
+                            zoom = True
+                    except:
+                        print('GFS data not available. Retrying with ERA5')
+                        return False
+                urls.append(url)
+                wtfiles.append(wtfile)
+                wtfiles_int.append(wtfile_int)
+                wtfiles_prof.append(wtfile_prof)
+                abs_validities.append(abs_validity)
+                zooms.append(zoom)
+                lon_corners.append(lon_corner)
+                lat_corners.append(lat_corner)
+                slon_sources.append(slon_source)
+                slat_sources.append(slat_source)
             ifcst = ifcst + 1
         ifcst = 0
+    try:
+        pool = ThreadingPool(len(wtfiles))
+        pool.map(wtfile_download, urls, wtfiles)
+    except:
+        print('No new weather data downloaded')
+    if len(wtfiles) > 0:
+        pool_1 = ThreadingPool(len(wtfiles))
+        pool_1.map(elaborate_wtfiles, wtfiles, wtfiles_int, wtfiles_prof, abs_validities, zooms, lon_corners,
+                   lat_corners, slon_sources, slat_sources)
 
     return (True)

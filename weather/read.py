@@ -120,7 +120,7 @@ def extract_data_gfs(validity, wtfile_prof_step):
     wt_output.close()
 
 
-def extract_data_erain(validity, wtfile_prof_step):
+def extract_data_era5(validity, wtfile_prof_step):
     from calc_wt_par import weather_parameters
     file = open(wtfile_prof_step, "r",encoding="utf-8", errors="surrogateescape")
     records1 = []
