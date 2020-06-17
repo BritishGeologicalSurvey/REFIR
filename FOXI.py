@@ -1252,8 +1252,8 @@ while 1:
         if ID[x]=="n.a.":
             print("...")#sensor slot not assigned
         else:
-            if run_type == 1:
-                import_autostreams(sens_file[x],sens_url[x],sens_IP[x],sens_dir[x],SensOO[x],ID[x])
+            #if run_type == 1:
+            import_autostreams(sens_file[x],sens_url[x],sens_IP[x],sens_dir[x],SensOO[x],ID[x])
    
 
 
