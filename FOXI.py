@@ -925,7 +925,7 @@ while 1:
             print("Eruption ended")
             refir_end()
         lead_Time = 0
-# INSERIRE QUI LA GENERAZIONE DEL FILE FIX_OBSIN DA EPS DATABASE. VERRÁ AGGIORNATO AD OGNI TIME STEP
+
     if run_type == 1:
         if run == 1:
 #            timin = lead_Time
