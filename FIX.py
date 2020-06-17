@@ -3203,14 +3203,12 @@ def add_plhobs():
         H_OBSdata_start = int(time_OBS_h_start.get())
         M_OBSdata_start = int(time_OBS_m_start.get())
         time_OBSdata_start = datetime.datetime(Y_OBSdata_start, MO_OBSdata_start, D_OBSdata_start, H_OBSdata_start, M_OBSdata_start)
-        #time_OBSdata_start = time_OBSdata_start.strftime("%m %d %Y %H:%M:%S")
         Y_OBSdata_stop = int(time_OBS_y_stop.get())
         MO_OBSdata_stop = int(time_OBS_mo_stop.get())
         D_OBSdata_stop = int(time_OBS_d_stop.get())
         H_OBSdata_stop = int(time_OBS_h_stop.get())
         M_OBSdata_stop = int(time_OBS_m_stop.get())
         time_OBSdata_stop = datetime.datetime(Y_OBSdata_stop, MO_OBSdata_stop, D_OBSdata_stop, H_OBSdata_stop, M_OBSdata_stop)
-        #time_OBSdata_stop = time_OBSdata_stop.strftime("%m %d %Y %H:%M:%S")
         menu = str(SRC_var.get())
         Hmin_obs = 0 #new
         Hmax_obs = 0 #new
