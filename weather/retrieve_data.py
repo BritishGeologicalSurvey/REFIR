@@ -421,8 +421,41 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
         wtfiles_prof_step.append(wtfile_prof_step)
 
     # Extract and elaborate weather data
-    pool = ThreadingPool(len(validities))
-    pool.map(elaborate_data_era5, validities, wtfiles_prof_step)
+    #pool = ThreadingPool(len(validities))
+    #pool.map(elaborate_data_era5, validities, wtfiles_prof_step)
+    max_number_processes = 100
+    if len(validities) > max_number_processes:
+        n_elaborated_days = 0
+        pools = []
+        n_pool = 0
+        while n_elaborated_days <= len(validities):
+            start = n_elaborated_days
+            end = n_elaborated_days + max_number_processes
+            if end > len(validities):
+                end = len(validities)
+            n_elaborated_days = end
+            pools.append(n_pool)
+            n_pool += 1
+            if n_elaborated_days == len(validities):
+                break
+        n_elaborated_days = 0
+        n_pool = 0
+        while n_elaborated_days <= len(validities):
+            start = n_elaborated_days
+            end = n_elaborated_days + max_number_processes
+            if end > len(validities):
+                end = len(validities)
+            try:
+                pools[n_pool] = ThreadingPool(max_number_processes)
+                pools[n_pool].map(elaborate_data_era5, validities[start:end],wtfiles_prof_step[start:end])
+            except:
+                print('Unable to process reanalysis weather data')
+                exit()
+            n_elaborated_days = end
+            n_pool += 1
+            if n_elaborated_days == len(validities):
+                break
+
 
 def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
 
