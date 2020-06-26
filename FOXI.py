@@ -1224,8 +1224,16 @@ while 1:
         # format that REFIR is used to. Any future user should create his own radar_converter module
         if ISKEF_on == 1 or ISEGS_on == 1 or ISX1_on == 1 or ISX2_on == 1:
             if idsrc == 'ISKEF' or idsrc == 'ISEGS' or idsrc == 'ISX1' or idsrc == 'ISX2':
-                retrieve_icelandic_radar(vulkan)
-                process_radar_file()
+                if run_type == 1:
+                    retrieve_icelandic_radar(vulkan)
+                    process_radar_file()
+                else:
+                    time_difference = (time_st - TimeNOW).total_seconds()
+                    if time_difference < 172800: #Retrieve automatic IMO data streams only if the time difference between the starting times of the simulation and the eruption is less than 2 day
+                        retrieve_icelandic_radar(vulkan)
+                        process_radar_file()
+                #retrieve_icelandic_radar(vulkan)
+                #process_radar_file()
             else:
                 s_filetxt = s_file +".txt"
                 if s_url !="":
