@@ -264,7 +264,6 @@ volcanoes = [(label[0], 0), (label[1], 1),
              (label[4], 4),
              (label[5], 5), (label[6], 6), (label[7], 7), (label[8], 8), (label[9], 9)]
 
-
 def ShowChoiceVulk():
     print (vulk.get())
     global vulkan
@@ -2032,9 +2031,8 @@ def showmap():
     m.arcgisimage(service='ESRI_Imagery_World_2D', xpixels=2000, verbose=True)
     # m.drawcoastlines(color='blue')
 
-    lat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    lon = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    #for i in range(0, 10):
+    lat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    lon = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for i in range(0, len(volc_lon)):
         lon[i], lat[i] = m(volc_lon[i], volc_lat[i])
 
@@ -2230,8 +2228,8 @@ def showmap():
             else:
                 None
 
-    lat2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    lon2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    lat2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    lon2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for i in range(0, 10):
         lon2[i], lat2[i] = ma(volc_lon[i], volc_lat[i])
 
