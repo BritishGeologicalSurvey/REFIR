@@ -3814,14 +3814,10 @@ while 1:
             Qlower = cur_Qlower
             FILE1 = open(out_txt+"_mer_NOW.txt", "w",encoding="utf-8", errors="surrogateescape")
             
-            FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(mer_stat[0])+"\t"+str(mer_stat[1])\
-            +"\t"+str(mer_stat[2])+"\t"+str(mer_stat[3])+"\t"+str(mer_stat[4])+"\t"\
-            +str(mer_stat[5])+"\t"+str(mer_stat[6])+\
-            "\t"+str(mer_stat[7])+"\t"+str(mer_stat[8])+"\"t"+ str(Qlower)+"\t"\
-+str(mer_stat[9])+"\t"+str(Qf_absmin)+"\t"\
-+str(Qf_absmax)+"\t"+str(Qfmer_min)+"\t"+str(Qfmer)+"\t"+str(Qfmer_max)+"\t"+str(tiba)+"\n")
+            FILE1.write(str(timin) +"\t"+str(n)+"\t"+str(mer_stat[0])+"\t"+str(mer_stat[1])+"\t"+str(mer_stat[2])+"\t"+str(mer_stat[3])+"\t"+str(mer_stat[4])+"\t"
+            +str(mer_stat[5])+"\t"+str(mer_stat[6])+"\t"+str(mer_stat[7])+"\t"+str(mer_stat[8])+"\"t"+ str(Qlower)+"\t"+str(mer_stat[9])+"\t"+str(Qf_absmin)+"\t"+str(Qf_absmax)+"\t"+str(Qfmer_min)+"\t"+str(Qfmer)+"\t"+str(Qfmer_max)+"\t"+str(tiba)+"\n")
             FILE1.close()
-        # PROVA
+
         def save_mer_logfile(n,hbe,mer_stat,MER,tiba):
         #def save_mer_logfile(n,hbe,mer_stat,MERww,MERsp,MERma,MERwood0d,tiba):
 
