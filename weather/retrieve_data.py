@@ -421,15 +421,12 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
         wtfiles_prof_step.append(wtfile_prof_step)
 
     # Extract and elaborate weather data
-    #pool = ThreadingPool(len(validities))
-    #pool.map(elaborate_data_era5, validities, wtfiles_prof_step)
     max_number_processes = 100
     if len(validities) > max_number_processes:
         n_elaborated_days = 0
         pools = []
         n_pool = 0
         while n_elaborated_days <= len(validities):
-            start = n_elaborated_days
             end = n_elaborated_days + max_number_processes
             if end > len(validities):
                 end = len(validities)
@@ -455,10 +452,12 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
             n_pool += 1
             if n_elaborated_days == len(validities):
                 break
+    else:
+        pool = ThreadingPool(len(validities))
+        pool.map(elaborate_data_era5, validities, wtfiles_prof_step)
 
 
 def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
-
     def datespan(startDate, endDate, delta=timedelta(days=1)):
         currentDate = startDate
         while currentDate < endDate:
@@ -485,8 +484,7 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
         dt = eruption_start.hour - 12
     else:
         dt = eruption_start.hour - 18
-
-    data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_' + str(eruption_start.year) + str(eruption_start.month) + str(eruption_start.day) + '/')
+    data_folder = os.path.join(cwd, 'raw_reanalysis_weather_data_' + eruption_start.strftime('%Y') + eruption_start.strftime('%m') + eruption_start.strftime('%d') + '/')
     first_analysis = eruption_start - timedelta(hours=dt)
     ifcst = dt
     urls = []
@@ -518,8 +516,10 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
             elaborated_prof_file = 'profile_data_' + abs_validity + '.txt'
             elaborated_prof_file_path = os.path.join(data_folder,elaborated_prof_file)
             print('Checking if ' + elaborated_prof_file + ' exists in ' + data_folder)
+            print(elaborated_prof_file_path,os.path.isfile(elaborated_prof_file_path))
             if os.path.isfile(elaborated_prof_file_path):
                 print('File ' + elaborated_prof_file + ' already available in ' + data_folder)
+                ifcst = ifcst + 1
                 continue
             data_folder = os.path.join(cwd,'raw_reanalysis_weather_data_'+ day_validity + '/')
             wtfile_dwnl = 'gfs.t' + hour + 'z.pgrb2.0p25.f' + fcst
