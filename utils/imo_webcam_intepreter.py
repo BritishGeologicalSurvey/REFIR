@@ -30,8 +30,8 @@ with open(fix_obsin_file,'a+',encoding='UTF-8') as refir_manual:
     n_obs = 0
     for time in time_obs:
         time_temp = datetime.datetime.strptime(time,'%Y-%m-%d_%H:%M:%S')
-        time_obs_final = datetime.datetime.strftime(time_temp,'%d %m %Y %H:%M:%S')
-        time_now = datetime.datetime.strftime(datetime.datetime.utcnow(),'%d %m %Y %H:%M:%S')
+        time_obs_final = datetime.datetime.strftime(time_temp,'%m %d %Y %H:%M:%S')
+        time_now = datetime.datetime.strftime(datetime.datetime.utcnow(),'%m %d %Y %H:%M:%S')
         uncertainty = float(plume_height_max[n_obs]) - float(plume_height_avg[n_obs])
         refir_manual.write(time_obs_final + '\t' + '1' + '\t' + '800' + '\t' + plume_height_min[n_obs]
                            + '\t' + plume_height_avg[n_obs] + '\t'  + plume_height_max[n_obs] + '\t' + str(uncertainty) + '\t4\t1\t9\t0.0\t0.0\t' + notes[n_obs] + '\n')
