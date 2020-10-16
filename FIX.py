@@ -4162,10 +4162,10 @@ def control_ESPs():
 
             # database = pd.read_excel('http://bgskwicms:81/research/volcanoes/esp/volcanoExport.xlsx', sheetname='volcanoes')
             try:
-                database = pd.read_excel('http://www.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx',
+                database = pd.read_excel('https://webapps.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx',
                                      sheetname='volcanoes')
             except:
-                database = pd.read_excel('http://www.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx',
+                database = pd.read_excel('https://webapps.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx',
                                          sheet_name='volcanoes')
             nrows = database.shape[0]
             row = 0
