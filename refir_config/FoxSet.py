@@ -8,7 +8,7 @@ Copyright (C) 2020 Tobias Dürig, Fabio Dioguardi
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
-at your option any later version.
+(at your option               any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+along with this program.                                   If not, see <https://www.gnu.org/licenses/>.
 
 If you wish to contribute to the development of REFIR or to reports bugs or other problems with
 the software, please write an email to me.
@@ -61,10 +61,10 @@ LatS = ["","","","","","","","","","","","","","","","","",""]
 LonS = ["","","","","","","","","","","","","","","","","",""]
 TypS =["","","","","","","","","","","","","","","","","",""]
 FocS =["","","","","","","","","","","","","","","","","",""]
-VolcID = ["n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a."]
-LatV = ["","","","","","","","","","",""]
-LonV = ["","","","","","","","","","",""]
-VolcH= ["","","","","","","","","","",""]
+VolcID = ["n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a."]
+LatV = ["","","","","","","","","","","",""]
+LonV = ["","","","","","","","","","","",""]
+VolcH= ["","","","","","","","","","","",""]
 DBline =["","","","","","","","","","","","","","","","","","","","","","",""]
 N_Volc = 0
 ID0 = ["n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a.","n.a."]
@@ -190,9 +190,12 @@ def icelandvolc_default():
     volcentry(volc)
     volc = ["371020", 63.883, -22.5, 230, 1, "Reykjanes"]
     volcentry(volc)
+    volc = ["371030", 63.883, -22.083, 360, 1, "Krysuvík"]
+    volcentry(volc)
     volc = ["ovaent",65.00,-17.00, 99,1,"Óvæntfjöll"]
     volcentry(volc)
-    N_Volc = 11
+    #N_Volc = 11
+    N_Volc = 12
     print("\nDefault Icelandic volcano list was generated!")
     print("Check in file \"volcano_list.ini\" if all data are correct and modify accordingly!")
     #raw_input("\n....confirm by any key! ")
@@ -208,7 +211,7 @@ def newvolc_setup():
     print("... setting up volcanoes of interest!")
     print("Up to 10 volcanoes can be added to the list")
     try:
-        df = pd.read_excel('https://webapps.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx', sheet_name='volcanoes')
+        df = pd.read_excel('http://www.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx', sheet_name='volcanoes')
         ESPs_database = True
     except:
         print('Unable to retrieve data from the ESPs database. Please provide inputs manually')

@@ -225,7 +225,7 @@ vulk = IntVar()
 vulk.set(0)  # initializing the choice
 
 try:
-    label = ['n.a.', 'n.a.', 'n.a.', 'n.a.', 'n.a.', 'n.a.', 'n.a.', 'n.a.', 'n.a.', 'n.a.']
+    label = []
     volc_lat = []
     volc_lon = []
     kurzvulk = []
@@ -258,11 +258,7 @@ except  EnvironmentError:
     # file does not exist yet
     print("Error -file volcano_list.ini not found!")
 
-volcanoes = [(label[0], 0), (label[1], 1),
-             (label[2], 2),
-             (label[3], 3),
-             (label[4], 4),
-             (label[5], 5), (label[6], 6), (label[7], 7), (label[8], 8), (label[9], 9)]
+volcanoes = [(label[0], 0), (label[1], 1),(label[2], 2),(label[3], 3),(label[4], 4),(label[5], 5), (label[6], 6), (label[7], 7), (label[8], 8), (label[9], 9), (label[10],10), (label[11],11)]
 
 def ShowChoiceVulk():
     print (vulk.get())
