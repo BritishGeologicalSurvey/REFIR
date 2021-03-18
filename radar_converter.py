@@ -63,6 +63,8 @@ def retrieve_icelandic_radar(volc_id):
         volc_name = 'oraef'
     elif volc_id == 8:
         volc_name = 'askja'
+    elif volc_id == 9 or volc_id == 10:
+        volc_name = 'keili'
     else:
         volc_name = 'ovaent'
 
