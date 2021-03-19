@@ -3226,46 +3226,40 @@ def add_plhobs():
             Havg_obs = Havg_obs_km * 1000
         for a in range(0, N_en):
             if menu == list_S[a]:
-                OBSerr = Cradarerror(list_entf[a], sens_bwidth[a])
-                if OBSerr == 99999:
-                    print("WARNING! Radar out of range??")
-                    OBSerr = 2000  # this will only occur if input error
-                    Hmin_obs = Havg_obs - OBSerr
-                    Hmax_obs = Havg_obs + OBSerr
-                else:
-                    Hmin_obs = Havg_obs - OBSerr
-                    Hmax_obs = Havg_obs + OBSerr
+                if Hmin_obs == 0 and Hmax_obs == 0:
+                    OBSerr = Cradarerror(list_entf[a], sens_bwidth[a])
+                    if OBSerr == 99999:
+                        print("WARNING! Radar out of range??")
+                        OBSerr = 2000  # this will only occur if input error
+                        Hmin_obs = Havg_obs - OBSerr
+                        Hmax_obs = Havg_obs + OBSerr
+                    else:
+                        Hmin_obs = Havg_obs - OBSerr
+                        Hmax_obs = Havg_obs + OBSerr
             else:
                 None
         ba = 0
         for b in range(N_en, N_en + N_en2):
             ba = ba + 1
             if menu == list_S[b]:
-                OBSerr = Xradarerror(list_entf[b], sens_bwidth[5 + ba])
-                if OBSerr == 99999:
-                    print("WARNING! Radar out of range??")
-                    OBSerr = 2000  # this will only occur if input error
-                    Hmin_obs = Havg_obs - OBSerr
-                    Hmax_obs = Havg_obs + OBSerr
-                else:
-                    Hmin_obs = Havg_obs - OBSerr
-                    Hmax_obs = Havg_obs + OBSerr
+                if Hmin_obs == 0 and Hmax_obs == 0:
+                    OBSerr = Xradarerror(list_entf[b], sens_bwidth[5 + ba])
+                    if OBSerr == 99999:
+                        print("WARNING! Radar out of range??")
+                        OBSerr = 2000  # this will only occur if input error
+                        Hmin_obs = Havg_obs - OBSerr
+                        Hmax_obs = Havg_obs + OBSerr
+                    else:
+                        Hmin_obs = Havg_obs - OBSerr
+                        Hmax_obs = Havg_obs + OBSerr
         if menu == "aircraft":
             OBSerr = 1000  # assumed error for plh data obtained by aircraft
-            #Hmin_obs = Havg_obs - OBSerr
-            #Hmax_obs = Havg_obs + OBSerr
         elif menu == "ground":
             OBSerr = 1500  # assumed error for ground obs obtained plh data
-            #Hmin_obs = Havg_obs - OBSerr
-            #Hmax_obs = Havg_obs + OBSerr
         elif menu == "satellite":
             OBSerr = 1000 # to review
-            #Hmin_obs = Havg_obs - OBSerr
-            #Hmax_obs = Havg_obs + OBSerr
         elif menu == "other":
             OBSerr = 1500  # assumed error for plh data by other source
-            #Hmin_obs = Havg_obs - OBSerr
-            #Hmax_obs = Havg_obs + OBSerr
 
         if Hmin_obs == 0:
             Hmin_obs = Havg_obs - OBSerr
@@ -3273,12 +3267,6 @@ def add_plhobs():
             Hmax_obs = Havg_obs + OBSerr
 
         comment_obs = str(comment_OBS.get())
-        # ID source codes for manual input:
-        # Cband radar : 101-106
-        # Xband radar : 201-206
-        # aircraft: 700
-        # ground: 800
-        # other: 900
         for a in range(0, N_en):
             if menu == list_S[a]:
                 sourceOBSdata = 101 + a
