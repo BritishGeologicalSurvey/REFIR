@@ -71,12 +71,21 @@ parser.add_argument('-N','--run_name',default='default',help='Run name.')
 parser.add_argument('-S','--scenario',default='exercise',help='Specify the scenario description of the application (e.g. EXERCISE)')
 parser.add_argument('-T','--start_time',default='now',help='Start time of the simulation in real time mode. Options: "now" and "eruption_start". \n Option "now": the simulation start time coincides with the time when FOXI is initiated. \n Option "eruption_start": the start time coincides with the eruption start time specified by the user')
 parser.add_argument('-E','--eruption_start',default='999',help='Eruption start date and time. Accepted format: DD/MM/YYYY-HH:MM')
+parser.add_argument('-NP','--no_plot',default='False',help='True: avoid saving and updating plots. This overcomes any related setting in fix_config.txt. \n False: keep the fix_config.txt plot settings')
 args = parser.parse_args()
 mode = args.mode
 run_name = args.run_name
 scenario = args.scenario
 start_time = args.start_time
 eruption_start_user = args.eruption_start
+no_plot = args.no_plot
+if no_plot.lower() == 'true':
+    no_plot = True
+elif no_plot.lower() == 'false':
+    no_plot = False
+else:
+    print('WARNING. Wrong input for argument -NP --no_plot. Keeping the plotting settings in fix_config.txt')
+    no_plot = False
 
 if mode != 'GUI' and mode != 'background':
     print('Wrong entry for argument -M --mode')
@@ -882,7 +891,13 @@ while 1:
     oo_satellite = int(configlines[175])
     qf_satellite = float(configlines[176])
     run_type_original = int(configlines[177])
-
+    if no_plot:
+        PM_Nplot = 0
+        PM_PHplot = 0
+        PM_MERplot = 0
+        PM_TME = 0
+        PM_FMERplot = 0
+        PM_FTME = 0
     if exit_param == 1:
         refir_end()
 
