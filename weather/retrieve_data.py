@@ -457,7 +457,6 @@ def era5_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
         pool = ThreadingPool(len(validities))
         pool.map(elaborate_data_era5, validities, wtfiles_prof_step)
 
-
 def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_stop):
     def datespan(startDate, endDate, delta=timedelta(days=1)):
         currentDate = startDate
@@ -600,6 +599,7 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
         pool.map(wtfile_download, urls, wtfiles)
     except:
         print('No new weather data downloaded')
+        return False
     if len(wtfiles) > 0:
         pool_1 = ThreadingPool(len(wtfiles))
         pool_1.map(elaborate_wtfiles, wtfiles, wtfiles_int, wtfiles_prof, abs_validities, zooms, lon_corners,

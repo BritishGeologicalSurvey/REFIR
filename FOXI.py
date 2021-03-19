@@ -2093,8 +2093,6 @@ while 1:
             plt.xlabel('time since eruption start (min)')
         plt.ylabel('height a.v. [m]')
         plt.title('Plume Heights by Sources and Sectors')
-        plt.ylim(0)
-
 
         # if(run_type) == 1:
         #     max_x = max(max(Cband1_t_stack, Cband2_t_stack, Cband3_t_stack, Cband4_t_stack, Cband5_t_stack, Cband6_t_stack, \
@@ -2115,9 +2113,7 @@ while 1:
             huit = 1
         plt.legend(loc='upper left')
         plt.grid()
-        
-
-        plt.savefig(out_txt+"_APH_plot.png",bbox_inches='tight',dpi=300) 
+        plt.savefig(out_txt+"_APH_plot.png",bbox_inches='tight',dpi=300)
         plt.savefig(out_txt+"_APH_plot.svg", format='svg', dpi=1200) #highresolution
         del gc.garbage[:]    
         f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
@@ -2221,7 +2217,6 @@ while 1:
 
         ax1.set_title('Western sector',color='b')
         ax2.set_title('Eastern sector',color='r')
-        plt.ylim(0)
         try:
             ax1.set_xlim(0,max_x)
             ax2.set_xlim(0,max_x)
@@ -5075,7 +5070,7 @@ while 1:
                 plt.xlabel('time since eruption start [min]')
                 plt.ylabel('height a.s.l. [m]')
                 plt.title('Plume Height a.s.l. [m]')
-                plt.ylim([0,np.amax(be_PH)+2000])
+                plt.ylim([0,np.amax(max_PH)+2000])
                 #plt.xticks
 
                 if PM_PHplot == 1:
@@ -5152,7 +5147,6 @@ while 1:
                 plt.title("First estimate of MER (CMER)")
                 
                 plt.yscale('log')
-                plt.ylim(0)
                 ax.grid()
                 try:
                     maxX=max(tiPH)                
@@ -5221,8 +5215,7 @@ while 1:
                 plt.xlabel('time since eruption start [min]')
                 plt.ylabel('mass eruption rate [kg/s]')
                 plt.title("First estimate of MER (CMER)")
-                plt.yscale('log')            
-                plt.ylim(0)
+                plt.yscale('log')
                 ax.grid()
                 try:
                     maxX=max(tiPH)                
@@ -5278,7 +5271,6 @@ while 1:
                 plt.title("Best Estimate of MER by FOXI (FMER)")
                 
                 plt.yscale('log')
-                plt.ylim(0)
                 ax.grid()
                 try:
                     maxX=max(tiPH)                
@@ -5505,8 +5497,7 @@ while 1:
                 plt.xlabel('time since eruption start [min]')
                 plt.ylabel('total mass erupted [kg]')
                 plt.title("First Estimate Of Total Erupted Mass")
-                
-                plt.ylim(0)
+
                 ax.grid()
                 fig.text(0.5, 0.5, 'REFIR',fontsize=80, color='gray',ha='center', va='center', alpha=0.09)
                 if PM_TME == 1:
@@ -5576,8 +5567,7 @@ while 1:
                 plt.xlabel('time since eruption start [min]')
                 plt.ylabel('total mass erupted [kg]')
                 plt.title("FOXI Estimate Of Total Erupted Mass")
-                
-                plt.ylim(0)
+
                 ax.grid()
                 fig.text(0.5, 0.5, 'REFIR',fontsize=80, color='gray',ha='center', va='center', alpha=0.09)
                 if PM_FTME == 1:
