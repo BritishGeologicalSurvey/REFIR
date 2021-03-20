@@ -546,7 +546,7 @@ def elaborate_weather(plume_height):
             if run_type == 1 or (run_type_original == 1 and ESPs_data_on == 1):
                 print('Retrieving new GFS forecast data')
                 nfcst = 6
-                gfs_forecast_retrieve(volcLON, volcLAT, nfcst, eruption_start_user_datetime)
+                gfs_forecast_retrieve(volcLON, volcLAT, nfcst, TimeNOW)
                 current = os.getcwd()
                 files = os.listdir(current)
                 for file in files:
