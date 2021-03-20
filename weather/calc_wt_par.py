@@ -134,7 +134,10 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
         V_avg = V_H_source
     else:
         N_avg = N_avg / (H_top - H_source)
-        N_avg = N_avg ** 0.5
+        try:
+            N_avg = N_avg ** 0.5
+        except:
+            N_avg = abs(N_avg) ** 0.5
         V_avg = V_avg / (H_top - H_source)
 
     # Woodhouse (2013) Ws parameter
