@@ -60,7 +60,8 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
         nlines = 0
         for line in f1:
             nlines += 1
-            records1.append(line.split('     '))
+            #records1.append(line.split('     '))
+            records1.append(line.split('\t'))
         for i in range(0, nlines):
             hgt.append(float(records1[i][0]))
             p.append(float(records1[i][1]))
