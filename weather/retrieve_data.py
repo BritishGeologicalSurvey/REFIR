@@ -137,7 +137,7 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst, time_in):
     while ifcst < max_ifcst:
         fcst = 'f' + "{:03d}".format(ifcst)
         wtfile_dwnl = 'gfs.t' + anl + 'z.pgrb2.0p25.' + fcst
-        url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile_dwnl
+        url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/atmos/' + wtfile_dwnl
         try:
             # urllib2.urlopen(url)
             urllib.request.urlopen(url)
@@ -192,11 +192,11 @@ def gfs_forecast_retrieve(lon_source,lat_source,nfcst, time_in):
             wtfile_int = 'weather_data_interpolated_' + year_anl + month_anl + day_anl + anl + '_' + fcst
             wtfile_prof = 'profile_' + year + month + day + anl + validity + '.txt'
             try:
-                url = 'https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25_1hr.pl?file=' + wtfile_dwnl + '&all_lev=on&var_HGT=on&var_TMP=on&var_UGRD=on&var_VGRD=on&subregion=&leftlon=' + slon_source_left + '&rightlon=' + slon_source_right + '&toplat=' + slat_source_top + '&bottomlat=' + slat_source_bottom + '&dir=%2Fgfs.' + year_anl + month_anl + day_anl + '%2F' + anl
+                url = 'https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25_1hr.pl?file=' + wtfile_dwnl + '&all_lev=on&var_HGT=on&var_TMP=on&var_UGRD=on&var_VGRD=on&subregion=&leftlon=' + slon_source_left + '&rightlon=' + slon_source_right + '&toplat=' + slat_source_top + '&bottomlat=' + slat_source_bottom + '&dir=%2Fgfs.' + year_anl + month_anl + day_anl + '%2F' + anl + '%2Fatmos'
                 urllib.request.urlopen(url)
                 zoom = False
             except:
-                url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/' + wtfile_dwnl
+                url = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year_anl + month_anl + day_anl + '/' + anl + '/atmos/' + wtfile_dwnl
                 urllib.request.urlopen(url)
                 zoom = True
             print('Checking if ' + wtfile + ' exists in ' + data_folder)
@@ -527,8 +527,8 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
             wtfile_path = os.path.join(data_folder,wtfile)
             wtfile_int = 'weather_data_interpolated_' + year + month + day + hour + '_' + fcst
             wtfile_prof = 'profile_' + year + month + day + hour + validity + '.txt'
-            url1 = 'https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25_1hr.pl?file=' + wtfile_dwnl + '&all_lev=on&var_HGT=on&var_TMP=on&var_UGRD=on&var_VGRD=on&subregion=&leftlon=' + slon_source_left + '&rightlon=' + slon_source_right + '&toplat=' + slat_source_top + '&bottomlat=' + slat_source_bottom + '&dir=%2Fgfs.' + year + month + day + '%2F' + hour
-            url2 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + '/' + hour + '/' + wtfile_dwnl
+            url1 = 'https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25_1hr.pl?file=' + wtfile_dwnl + '&all_lev=on&var_HGT=on&var_TMP=on&var_UGRD=on&var_VGRD=on&subregion=&leftlon=' + slon_source_left + '&rightlon=' + slon_source_right + '&toplat=' + slat_source_top + '&bottomlat=' + slat_source_bottom + '&dir=%2Fgfs.' + year + month + day + '%2F' + hour + '%2Fatmos'
+            url2 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + year + month + day + '/' + hour + '/atmos/' + wtfile_dwnl
             print('Checking if ' + wtfile + ' exists')
             if os.path.isfile(wtfile_path):
                 print('File ' + wtfile + ' found')
@@ -569,8 +569,8 @@ def gfs_past_forecast_retrieve(lon_source,lat_source,eruption_start,eruption_sto
                         wtfile = 'weather_data_' + new_year + new_month + new_day + new_hour + '_' + fcst
                         wtfile_int = 'weather_data_interpolated_' + new_year + new_month + new_day + new_hour + '_' + fcst
                         wtfile_prof = 'profile_' + new_year + new_month + new_day + new_hour + validity + '.txt'
-                        url1 = 'https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25_1hr.pl?file=' + wtfile_dwnl + '&all_lev=on&var_HGT=on&var_TMP=on&var_UGRD=on&var_VGRD=on&subregion=&leftlon=' + slon_source_left + '&rightlon=' + slon_source_right + '&toplat=' + slat_source_top + '&bottomlat=' + slat_source_bottom + '&dir=%2Fgfs.' + new_year + new_month + new_day + '%2F' + new_hour
-                        url2 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + new_year + new_month + new_day + '/' + new_hour + '/' + wtfile_dwnl
+                        url1 = 'https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25_1hr.pl?file=' + wtfile_dwnl + '&all_lev=on&var_HGT=on&var_TMP=on&var_UGRD=on&var_VGRD=on&subregion=&leftlon=' + slon_source_left + '&rightlon=' + slon_source_right + '&toplat=' + slat_source_top + '&bottomlat=' + slat_source_bottom + '&dir=%2Fgfs.' + new_year + new_month + new_day + '%2F' + new_hour + '%2Fatmos'
+                        url2 = 'http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.' + new_year + new_month + new_day + '/' + new_hour + '/atmos/' + wtfile_dwnl
                         try:
                             url = url1
                             urllib.request.urlopen(url)
