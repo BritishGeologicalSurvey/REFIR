@@ -546,6 +546,7 @@ def elaborate_weather(plume_height):
             if run_type == 1 or (run_type_original == 1 and ESPs_data_on == 1):
                 print('Retrieving new GFS forecast data')
                 nfcst = 6
+                print(TimeNOW)
                 gfs_forecast_retrieve(volcLON, volcLAT, nfcst, TimeNOW)
                 current = os.getcwd()
                 files = os.listdir(current)
@@ -2550,7 +2551,7 @@ while 1:
 
         global TimeNOW
 
-        if run_type == 1:
+        if run_type == 1 and start_time == 'now' :
             TimeNOW = datetime.datetime.utcnow()
         rlines =[]
         with open(radarC_file+".txt", "r",encoding="utf-8", errors="surrogateescape") as ins:
@@ -2650,7 +2651,7 @@ while 1:
 
 
         global TimeNOW
-        if run_type == 1:
+        if run_type == 1 and start_time == 'now':
             TimeNOW = datetime.datetime.utcnow()
         rlines = []
         with open(radarX_file+".txt", "r",encoding="utf-8", errors="surrogateescape") as ins:
@@ -2718,7 +2719,7 @@ while 1:
     def GFZcam (GFZ_file, source_G):
         """reads GFZ Camera data"""
         global TimeNOW,gfz_vis,gfz_havg,gfz_hstd,l
-        if run_type == 1:
+        if run_type == 1 and start_time == 'now':
             TimeNOW = datetime.datetime.utcnow()
         rlines = []
         gfz_vis,gfz_havg,gfz_hstd = np.loadtxt(GFZ_file+".txt",\
