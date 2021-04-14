@@ -211,7 +211,7 @@ def newvolc_setup():
     print("... setting up volcanoes of interest!")
     print("Up to 10 volcanoes can be added to the list")
     try:
-        df = pd.read_excel('http://www.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx', sheet_name='volcanoes')
+        df = pd.read_excel('https://webapps.bgs.ac.uk/research/volcanoes/esp/volcanoExport.xlsx', sheet_name='volcanoes')
         ESPs_database = True
     except:
         print('Unable to retrieve data from the ESPs database. Please provide inputs manually')
