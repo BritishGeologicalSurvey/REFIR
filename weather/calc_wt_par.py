@@ -52,6 +52,7 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
     if H_plume <= 0:
         H_plume = 1
     H_top = H_source + H_plume
+    print(H_top)
     #with open("log_calc_wt_par.txt", 'a',) as logwt:
     #    logwt.write(str(H_top) + "\t"+ str(H_source) + "\t" + str(H_plume) + "\n")
     print('Opening file ' + prof_file)
@@ -76,6 +77,7 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
         # Calculate buoyancy frequency. The assumption has been made that the average N is calculated from the source height to the top plume height, as it is also done in FALL3D. Indeed, in Degruyter and Bonadonna the average is from 0, though I believe it should be from the source height...
     N_avg = 0
     V_avg = 0
+    i_H_source = 0
     for i in range(nlines - 1, -1, -1):
         if i == nlines - 1:
             dTdZ[i] = (tmp_c[i] - tmp_c[i - 1]) / (hgt[i] - hgt[i - 1])
@@ -86,9 +88,17 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
         N[i] = (g ** 2 / (ca0 * tmp_k[nlines - 1])) * (1 + (ca0 / g) * dTdZ[i])
         if hgt[i] < H_source:
             i_H_source = i
+    if i_H_source == 0:
+        i_H_source = len(hgt)
+        hgt.append(H_source)
+        p.append(p[-1])
+        tmp_k.append(tmp_k[-1])
+        wind.append(wind[-1])
+        N.append(0)
+        dTdZ.append(0)
     if hgt[0] < H_top:
         print('Warning! Plume height > maximum height of the weather data domain')
-    elif hgt[nlines - 1] > H_top:
+    elif hgt[nlines] > H_top:
         print('Warning! Plume height < surface level')
     # Calculate average N and V over the plume height (from the source to the top)
     for i in range(i_H_source, -1, -1):
@@ -142,6 +152,7 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
         V_avg = V_avg / (H_top - H_source)
 
     # Woodhouse (2013) Ws parameter
+    print(N_avg, H_top)
     Ws = (1.44 * V_H_top) / (N_avg * H_top)
     # Open file to store weather parameter needed for calculating MER
     wt_par = 'weather_parameters_' + validity + '_' + str(int(H_plume)) + '.txt'
