@@ -152,7 +152,6 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
         V_avg = V_avg / (H_top - H_source)
 
     # Woodhouse (2013) Ws parameter
-    print(N_avg, H_top)
     Ws = (1.44 * V_H_top) / (N_avg * H_top)
     # Open file to store weather parameter needed for calculating MER
     wt_par = 'weather_parameters_' + validity + '_' + str(int(H_plume)) + '.txt'
