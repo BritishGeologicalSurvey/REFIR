@@ -49,6 +49,7 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
     g = 9.81
     N = []
     dTdZ = []
+    print(H_plume)
     if H_plume <= 0:
         H_plume = 1
     H_top = H_source + H_plume
@@ -72,7 +73,6 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
             wind.append(float(records1[i][6]))
             N.append(0)
             dTdZ.append(0)
-
         # Calculate buoyancy frequency. The assumption has been made that the average N is calculated from the source height to the top plume height, as it is also done in FALL3D. Indeed, in Degruyter and Bonadonna the average is from 0, though I believe it should be from the source height...
     N_avg = 0
     V_avg = 0
@@ -97,7 +97,7 @@ def weather_parameters(year, month, day, validity, prof_file,H_plume,H_source):
         dTdZ.append(0)
     if hgt[0] < H_top:
         print('Warning! Plume height > maximum height of the weather data domain')
-    elif hgt[nlines] > H_top:
+    elif hgt[nlines - 1] > H_top:
         print('Warning! Plume height < surface level')
     # Calculate average N and V over the plume height (from the source to the top)
     for i in range(i_H_source, -1, -1):
