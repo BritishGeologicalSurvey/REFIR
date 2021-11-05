@@ -16,10 +16,10 @@ SETTING DEPENDENCIES UP
   In both cases, add the binaries folder to the system PATH
 - Additional python packages needed
   pandas xlrd future pillow cdsapi pathos gdal utm
-- ECMWF client key
-  The user needs to register to: https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5
-  Once the registration is approved, to get the data follow the instructions here: https://confluence.ecmwf.int/display/WEBAPI/Accessing+ECMWF+data+servers+in+batch
-  The user needs to install the personal key in a .ecmwfapirc file, to save in different locations depending on
+- CDS API client key
+  The user needs to register to: https://cds.climate.copernicus.eu/user/register?destination=%2F%23!%2Fhome
+  Once the registration is approved, to get the data follow the instructions here: https://cds.climate.copernicus.eu/api-how-to
+  The user needs to install the personal key in a .cdsapirc file, to save in different locations depending on
   the OS. Please read the instructions.
 
 With Conda, it is possible to set a virtual environmnent with all the required dependencies specific for REFIR. This simplifies the 
@@ -29,9 +29,7 @@ Instructions for setting the Conda environment:
 	conda create --name name_of_environment -c conda-forge python=3.8 basemap pandas xlrd future pillow cdsapi pathos gdal utm
 2) activate the environment with:
 	conda activate name_of_environment
-3) install ecmwfapi
-	pip install --user https://software.ecmwf.int/wiki/download/attachments/56664858/ecmwf-api-client-python.tgz
-4) to exit from the environment:
+3) to exit from the environment:
 	conda deactivate
 
 QUICK INSTALLATION GUIDE FOR REFIR
