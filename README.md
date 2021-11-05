@@ -26,7 +26,7 @@ With Conda, it is possible to set a virtual environmnent with all the required d
 installation of the different packages and the management of the Python installation in the system.
 Instructions for setting the Conda environment:
 1) create the environment with all the needed additional packages:
-	conda create --name name_of_environment python=3.7 basemap pandas xlrd future pillow cdsapi pathos gdal utm
+	conda create --name name_of_environment -c conda-forge python=3.8 basemap pandas xlrd future pillow cdsapi pathos gdal utm
 2) activate the environment with:
 	conda activate name_of_environment
 3) install ecmwfapi
