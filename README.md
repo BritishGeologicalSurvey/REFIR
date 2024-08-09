@@ -1,7 +1,7 @@
 REFIR v 20.0
 Near-real time estimates of mass eruption rates and plume heights -
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13284703.svg)](https://doi.org/10.5281/zenodo.13284703)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13284702.svg)](https://doi.org/10.5281/zenodo.13284702)
  
 Copyright (C) 2020 Tobias Dürig[1], Fabio Dioguardi[2]
 [1] University of Iceland, Institute of Earth Sciences, Reykjavík, Iceland. tobi@hi.is
