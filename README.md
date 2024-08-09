@@ -3,8 +3,8 @@ Near-real time estimates of mass eruption rates and plume heights -
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13284703.svg)](https://doi.org/10.5281/zenodo.13284703)
  
-Copyright (C) 2020 Tobias Dürig[1], Fabio Dioguardi[2]
-[1] University of Iceland, Institute of Earth Sciences, Reykjavík, Iceland. tobi@hi.is
+Copyright (C) 2020 Tobias DÃ¼rig[1], Fabio Dioguardi[2]
+[1] University of Iceland, Institute of Earth Sciences, ReykjavÃ­k, Iceland. tobi@hi.is
 [2] British Geological Survey, The Lyell Centre, Edinburgh, United Kingdom. fabiod@bgs.ac.uk
 
 SETTING DEPENDENCIES UP
